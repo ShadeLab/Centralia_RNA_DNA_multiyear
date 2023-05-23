@@ -1,0 +1,302 @@
+---
+title: "Centralia SRA metadata"
+author: "Sam Barnett"
+date: "5/16/2023"
+output: html_document
+---
+
+## Libraries
+```{r}
+# Libraries for data
+library(dplyr)
+library(phyloseq)
+library(ape)
+library(readxl)
+
+# Libraries for plotting
+library(ggplot2)
+source("/Users/sambarnett/Documents/Misc_code/paul_tol_colors.R")
+
+site.col = paultol_colors(23)
+names(site.col) = c("Cen01", "Cen02", "Cen03", "Cen04", "Cen05", "Cen06", "Cen07",
+                    "Cen08", "Cen09", "Cen10", "Cen11", "Cen12", "Cen13", "Cen14",
+                    "Cen15", "Cen16", "Cen17", "Cen18", "Cen19", "Cen20", "Cen21",
+                    "Cen22", "Cen23")
+
+```
+
+# Initial data
+```{r}
+sample.meta = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                        sheet = "Sample_metadata", na="NA") %>%
+  filter(SiteID != "Cen24")
+
+site.data = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                        sheet = "Site_metadata", na="NA")
+
+```
+
+# Sequence attribute file
+
+DNA sample attributes
+```{r}
+DNA.attributes = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx",
+                      sheet = "DNA_SeqFiles", na="NA") %>%
+  filter(directory != "2014_16SV4_PE25_JGI") %>%
+  rename(SequenceID = SampleID) %>%
+  rename(SampleID = SoilID) %>%
+  mutate(Sample_Name = paste("DNA", SequenceID, sep="_"),
+         Organism = "not collected",
+         elevation = "not collected",) %>%
+  left_join(sample.meta %>%
+              mutate(Day = ifelse(Day < 10, paste(0, Day, sep=""), Day)) %>%
+              mutate(Collection_date = paste(Year, "-", Month, "-", Day, "T", format(as.POSIXct(Collection_time_24h), format = "%H:%M"), sep=""),
+                     extreme_event = ifelse(FireClassification == "FireAffected", "Active underground coal fire", 
+                                            ifelse(FireClassification == "Recovered", "Past underground coal fire", "None")),
+                     fire = ifelse(FireClassification == "Reference", "No", "Yes"),
+                     depth = "20 cm",
+                     env_biome = "Coal mine",
+                     env_feature = "Mountain",
+                     env_material = "Soil",
+                     geo_loc_name = "USA: Centralia, PA",
+                     collection_method = "Soil core",) %>%
+              select(SampleID, Collection_date, extreme_event, fire, depth, env_biome, env_feature, env_material, geo_loc_name, collection_method, pH),
+            by = "SampleID") %>%
+  left_join(site.data %>%
+              mutate(longitude = round(as.numeric(measurements::conv_unit(longitude, from = 'deg_dec_min', to = 'dec_deg')), digits=4),
+                     latitude = round(as.numeric(measurements::conv_unit(latitude, from = 'deg_dec_min', to = 'dec_deg')), digits=4)) %>%
+              mutate(lat_long = paste(latitude, "N", longitude, "W")) %>%
+              select(SiteID, lat_long),
+            by = "SiteID") %>%
+  mutate(negative_cntl_type = ifelse(grepl("Batch._neg", SequenceID), "empty collection tube",
+                                     ifelse(grepl("RTSF_NTC", SequenceID), "DNA-free PCR mix", "not collected")),
+         positive_cntl_type = ifelse(grepl("Mock|mock", SequenceID), "Mock commuinity", "not collected"),
+         replicate = ifelse(grepl("Batch", SequenceID), paste("Extraction replicate", gsub("Batch|_.*", "", SampleID), 
+                                                              "Sequencing technical replicate", `MiSeq run`),
+                            paste("Sequencing technical replicate", `MiSeq run`)),
+         Nucleic_acid_type = "DNA",
+         Sample_mat_proc = ifelse(!grepl("RTSF_NTC|Zymo", SequenceID), "DNA and RNA coextracted using Phenol-Chloroform method", "not collected")) %>%
+  mutate(replicate = ifelse(grepl("RTSF_NTC|Zymo", SequenceID), 
+                            paste("Library technical replicate", Library, "Sequencing technical replicate", `MiSeq run`), 
+                            replicate)) %>%
+  select(Sample_Name, Organism, Collection_date, depth, elevation, 
+         env_biome, env_feature, env_material,
+         geo_loc_name, lat_long, collection_method,
+         extreme_event, fire,
+         negative_cntl_type, pH, positive_cntl_type,
+         Sample_mat_proc, replicate, Nucleic_acid_type)
+
+DNA.attributes
+```
+
+RNA sample attributes
+```{r}
+RNA.attributes = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx",
+                      sheet = "RNA_SeqFiles", na="NA") %>%
+  filter(directory != "2014_16SV4_PE25_JGI") %>%
+  rename(SequenceID = SampleID) %>%
+  rename(SampleID = SoilID) %>%
+  mutate(Sample_Name = paste("RNA", SequenceID, sep="_"),
+         Organism = "not collected",
+         elevation = "not collected",) %>%
+  left_join(sample.meta %>%
+              mutate(Day = ifelse(Day < 10, paste(0, Day, sep=""), Day)) %>%
+              mutate(Collection_date = paste(Year, "-", Month, "-", Day, "T", format(as.POSIXct(Collection_time_24h), format = "%H:%M"), sep=""),
+                     extreme_event = ifelse(FireClassification == "FireAffected", "Active underground coal fire", 
+                                            ifelse(FireClassification == "Recovered", "Past underground coal fire", "None")),
+                     fire = ifelse(FireClassification == "Reference", "No", "Yes"),
+                     depth = "20 cm",
+                     env_biome = "Coal mine",
+                     env_feature = "Mountain",
+                     env_material = "Soil",
+                     geo_loc_name = "USA: Centralia, PA",
+                     collection_method = "Soil core",) %>%
+              select(SampleID, Collection_date, extreme_event, fire, depth, env_biome, env_feature, env_material, geo_loc_name, collection_method, pH),
+            by = "SampleID") %>%
+  left_join(site.data %>%
+              mutate(longitude = round(as.numeric(measurements::conv_unit(longitude, from = 'deg_dec_min', to = 'dec_deg')), digits=4),
+                     latitude = round(as.numeric(measurements::conv_unit(latitude, from = 'deg_dec_min', to = 'dec_deg')), digits=4)) %>%
+              mutate(lat_long = paste(latitude, "N", longitude, "W")) %>%
+              select(SiteID, lat_long),
+            by = "SiteID") %>%
+  mutate(negative_cntl_type = ifelse(grepl("Batch._neg", SequenceID), "empty collection tube",
+                                     ifelse(grepl("RTSF_NTC", SequenceID), "DNA-free PCR mix", "not collected")),
+         positive_cntl_type = ifelse(grepl("Mock|mock", SequenceID), "Mock commuinity", "not collected"),
+         replicate = ifelse(grepl("Batch", SequenceID), paste("Extraction replicate", gsub("Batch|_.*", "", SampleID), 
+                                                              "Sequencing technical replicate", `MiSeq run`),
+                            paste("Sequencing technical replicate", `MiSeq run`)),
+         Nucleic_acid_type = "Reverse transcribed RNA (cDNA)",
+         Sample_mat_proc = ifelse(!grepl("RTSF_NTC|Zymo", SequenceID), "DNA and RNA coextracted using Phenol-Chloroform method followed by reverse transcription of RNA aloquot", "not collected")) %>%
+  mutate(replicate = ifelse(grepl("RTSF_NTC|Zymo", SequenceID), 
+                            paste("Library technical replicate", Library, "Sequencing technical replicate", `MiSeq run`), 
+                            replicate)) %>%
+  select(Sample_Name, Organism, Collection_date, depth, elevation, 
+         env_biome, env_feature, env_material,
+         geo_loc_name, lat_long, collection_method,
+         extreme_event, fire,
+         negative_cntl_type, pH, positive_cntl_type,
+         Sample_mat_proc, replicate, Nucleic_acid_type)
+
+RNA.attributes
+```
+
+
+Combine attribute tables
+```{r}
+attributes.df = rbind(DNA.attributes, RNA.attributes) %>%
+  mutate(pH = as.character(pH),
+         sequence_run = ifelse(grepl("Cen10_11102016_R1_lib2|Cen10_11102016_R1_lib4", Sample_Name), "Rerun sequencing", "Original sequencing run")) %>%
+  replace(is.na(.), "not collected")
+
+attributes.df
+
+write.table(attributes.df, file = "/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Sequence_attributes_4_SRA.txt", 
+            sep="\t", col.names = TRUE, row.names = FALSE, quote=FALSE)
+```
+
+
+# Sequence metadata
+
+DNA metadata
+
+```{r}
+DNA.meta = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx",
+                      sheet = "DNA_SeqFiles", na="NA") %>%
+  filter(directory != "2014_16SV4_PE25_JGI") %>%
+  rename(SequenceID = SampleID) %>%
+  rename(SampleID = SoilID) %>%
+  mutate(sample_name = paste("DNA", SequenceID, sep="_"),
+         library_ID = sample_name,
+         title = paste("DNA 16S rRNA gene amplicon sequencing of soil in Centralia site", SiteID, "from", Year),
+         library_strategy = "AMPLICON",
+         library_source = "METAGENOMIC",
+         library_selection = "PCR",
+         library_layout = "paired",
+         platform = "ILLUMINA",
+         instrument_model = "Illumina MiSeq",
+         design_description = "Nucleic acids were coextracted using the protocol from Griffiths et al 2001. 515F and 806R were used to amplify with paired end 2X250bp sequencing",
+         filetype = "fastq",
+         filename = paste(file_prefix...10, "_R1_001_", directory, ".fastq", sep=""),
+         filename2 = paste(file_prefix...10, "_R2_001_", directory, ".fastq", sep="")) %>%
+  select(sample_name, library_ID, title, 
+         library_strategy, library_source, library_selection, library_layout,
+         platform, instrument_model, design_description,
+         filetype, filename, filename2)
+DNA.meta
+```
+
+
+RNA metadata
+
+```{r}
+RNA.meta = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx",
+                      sheet = "RNA_SeqFiles", na="NA") %>%
+  filter(directory != "2014_16SV4_PE25_JGI") %>%
+  rename(SequenceID = SampleID) %>%
+  rename(SampleID = SoilID) %>%
+  mutate(sample_name = paste("RNA", SequenceID, sep="_"),
+         library_ID = sample_name,
+         title = paste("Reverse transcribed RNA 16S rRNA gene amplicon sequencing of soil in Centralia site", SiteID, "from", Year),
+         library_strategy = "AMPLICON",
+         library_source = "METATRANSCRIPTOMIC",
+         library_selection = "PCR",
+         library_layout = "paired",
+         platform = "ILLUMINA",
+         instrument_model = "Illumina MiSeq",
+         design_description = "Nucleic acids were coextracted using the protocol from Griffiths et al 2001. RNA aliquot was reverse transcribed. DNA was removed. 515F and 806R were used to amplify with paired end 2X250bp sequencing",
+         filetype = "fastq",
+         filename = paste(file_prefix...10, "_R1_001_", directory, ".fastq", sep=""),
+         filename2 = paste(file_prefix...10, "_R2_001_", directory, ".fastq", sep="")) %>%
+  select(sample_name, library_ID, title, 
+         library_strategy, library_source, library_selection, library_layout,
+         platform, instrument_model, design_description,
+         filetype, filename, filename2)
+RNA.meta
+```
+
+Combine metadata tables
+```{r}
+metadata.df = rbind(DNA.meta, RNA.meta)
+metadata.df
+
+write.table(metadata.df, file = "/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Sequence_metadata_4_SRA.txt", 
+            sep="\t", col.names = TRUE, row.names = FALSE, quote=FALSE)
+```
+
+
+# Metagenomics files
+
+## 
+# Sequence attribute file
+
+Sample attributes
+```{r}
+MetaG.attributes = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                        sheet = "Metagenomic_samples", na="NA") %>%
+  filter(SampleID != "Cen08_07102019_R1") %>%
+  arrange(SiteID, Year) %>%
+  mutate(Seq_number = row_number()) %>%
+  mutate(SequenceID = paste(SampleID, Seq_number, sep="_S")) %>%
+  mutate(sample_name = SequenceID,
+         organism = "not collected",
+         Day = ifelse(Day < 10, paste(0, Day, sep=""), Day),
+         collection_date = paste(Year, "-", Month, "-", Day, "T", format(as.POSIXct(Collection_time_24h), format = "%H:%M"), sep=""),
+         depth = "20 cm",
+         elev = "not collected",
+         extreme_event = ifelse(FireClassification == "FireAffected", "Active underground coal fire", "None"),
+         fire = ifelse(FireClassification == "Reference", "No", "Yes"),
+         env_broad_scale = "Coal mine",
+         env_local_scale = "Mountain",
+         env_medium = "Soil",
+         geo_loc_name = "USA: Centralia, PA",
+         collection_method = "Soil core") %>%
+  left_join(site.data %>%
+              mutate(longitude = round(as.numeric(measurements::conv_unit(longitude, from = 'deg_dec_min', to = 'dec_deg')), digits=4),
+                     latitude = round(as.numeric(measurements::conv_unit(latitude, from = 'deg_dec_min', to = 'dec_deg')), digits=4)) %>%
+              mutate(lat_lon = paste(latitude, "N", longitude, "W")) %>%
+              select(SiteID, lat_lon),
+            by = "SiteID") %>%
+  mutate(samp_mat_process = "DNA extracted using Phenol-Chloroform method") %>%
+  select(sample_name, organism, collection_date, depth, elev, 
+         env_broad_scale, env_local_scale, env_medium,
+         geo_loc_name, lat_lon, collection_method,
+         extreme_event, fire, pH, samp_mat_process)
+MetaG.attributes
+
+
+write.table(MetaG.attributes, file = "/Users/sambarnett/Documents/Shade_lab/Centralia_project/Metagenomics/Sequence_attributes_4_SRA.txt", 
+            sep="\t", col.names = TRUE, row.names = FALSE, quote=FALSE)
+```
+
+
+```{r}
+MetaG.meta = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                        sheet = "Metagenomic_samples", na="NA") %>%
+  filter(SampleID != "Cen08_07102019_R1") %>%
+  arrange(SiteID, Year) %>%
+  mutate(Seq_number = row_number()) %>%
+  mutate(SequenceID = paste(SampleID, Seq_number, sep="_S")) %>%
+  mutate(sample_name = SequenceID,
+         library_ID = sample_name,
+         title = paste("Metagenome sequencing of soil in Centralia site", SiteID, "from", Year),
+         library_strategy = "WGS",
+         library_source = "METAGENOMIC",
+         library_selection = "RANDOM",
+         library_layout = "paired",
+         platform = "ILLUMINA",
+         instrument_model = "Illumina NovaSeq 6000",
+         design_description = "Nucleic acids were coextracted using the protocol from Griffiths et al 2001. Libraries were prepared with TakaraBio ThruPLEX kit and sequenced with paired end 2X150bp sequencing. Two replicate sequencing runs (L001 and L002) were performed for each.",
+         filetype = "fastq",
+         filename = paste(sample_name, "_L001_R1_001.fastq", sep=""),
+         filename2 = paste(sample_name, "_L001_R2_001.fastq", sep=""),
+         filename3 = paste(sample_name, "_L002_R1_001.fastq", sep=""),
+         filename4 = paste(sample_name, "_L002_R2_001.fastq", sep="")) %>%
+  select(sample_name, library_ID, title, 
+         library_strategy, library_source, library_selection, library_layout,
+         platform, instrument_model, design_description,
+         filetype, filename, filename2, filename3, filename4)
+MetaG.meta
+
+write.table(MetaG.meta, file = "/Users/sambarnett/Documents/Shade_lab/Centralia_project/Metagenomics/Sequence_metadata_4_SRA.txt", 
+            sep="\t", col.names = TRUE, row.names = FALSE, quote=FALSE)
+```

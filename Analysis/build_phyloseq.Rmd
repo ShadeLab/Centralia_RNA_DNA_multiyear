@@ -1,0 +1,793 @@
+---
+title: "Building Centralia Phyloseq objects"
+author: "Sam Barnett"
+date: "3/1/2022"
+output: html_document
+---
+
+# Introduction
+
+Before doing any analysis we need to put all sequencing data into phyloseq object formats.
+
+## Libraries
+```{r}
+# Libraries for data
+library(dplyr)
+library(phyloseq)
+library(ape)
+library(readxl)
+
+# Libraries for plotting
+library(ggplot2)
+source("/Users/sambarnett/Documents/Misc_code/paul_tol_colors.R")
+
+site.col = paultol_colors(23)
+names(site.col) = c("Cen01", "Cen02", "Cen03", "Cen04", "Cen05", "Cen06", "Cen07",
+                    "Cen08", "Cen09", "Cen10", "Cen11", "Cen12", "Cen13", "Cen14",
+                    "Cen15", "Cen16", "Cen17", "Cen18", "Cen19", "Cen20", "Cen21",
+                    "Cen22", "Cen23")
+
+```
+
+# Get list of bacterial and archaeal OTUs
+```{r}
+tax.df = full.tax = read.table("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/all_samples_16S_OTU_tax.txt", 
+                      comment.char = "", sep="\t", header=FALSE, quote = "") %>%
+  select(V1, V4) %>%
+  rename(OTU = V1, Taxon = V4) %>%
+  mutate(Taxon = gsub(".:", "", Taxon)) %>%
+  tidyr::separate(Taxon, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep=",") %>%
+  tibble::remove_rownames()
+
+Bact.tax.df = tax.df %>%
+  filter(Domain == "Bacteria")
+print(paste(nrow(Bact.tax.df), "Bacteria OTUs"))
+Arch.tax.df = tax.df %>%
+  filter(Domain == "Archaea")
+print(paste(nrow(Arch.tax.df), "Archaea OTUs"))
+Unk.tax.df = tax.df %>%
+  filter(Domain != "Archaea", Domain != "Bacteria")
+print(paste(nrow(Unk.tax.df), "Unclassified OTUs"))
+
+write.table(Bact.tax.df$OTU, file = "/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/bacterial_OTUs.txt",
+            quote = FALSE, col.names = FALSE, row.names = FALSE)
+write.table(Arch.tax.df$OTU, file = "/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/archaeal_OTUs.txt",
+            quote = FALSE, col.names = FALSE, row.names = FALSE)
+
+tax.df = NULL
+
+ggplot(data = Bact.tax.df %>% group_by(Phylum) %>% summarize(n_OTU = n()) %>% ungroup,
+       aes(x=Phylum, y=n_OTU)) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label=n_OTU, y=n_OTU+100), angle=90, hjust=0, size=6*5/14) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size=6, angle=90, hjust=1, vjust=0.5),
+        axis.text.y = element_text(size=6),
+        axis.title = element_text(size=7))
+
+ggplot(data = Arch.tax.df %>% group_by(Phylum) %>% summarize(n_OTU = n()) %>% ungroup,
+       aes(x=Phylum, y=n_OTU)) +
+  geom_bar(stat="identity") +
+  geom_text(aes(label=n_OTU, y=n_OTU+1), angle=90, hjust=0, size=6*5/14) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size=6, angle=90, hjust=1, vjust=0.5),
+        axis.text.y = element_text(size=6),
+        axis.title = element_text(size=7))
+
+```
+
+# Bacterial Phyloseq
+## Data import
+```{r}
+# Full metadata
+sample.meta = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                        sheet = "Sample_metadata", na="NA") %>%
+  filter(SiteID != "Cen24")
+library1.meta =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                           sheet = "Plate locations Library1", na="NA") %>%
+  add_row(SampleID = c("ZymoMockDNA", "RTSF_NTC")) %>%
+  mutate(MiSeq_library = 1)
+library2.meta =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                           sheet = "Plate locations Library2", na="NA") %>%
+  add_row(SampleID = c("ZymoMockDNA", "RTSF_NTC")) %>%
+  mutate(MiSeq_library = 2)
+library2014.meta =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                           sheet = "Plate locations Library2014", na="NA") %>%
+  mutate(MiSeq_library = 2014)
+
+sequence.meta = rbind(mutate(library1.meta, MiSeq_run = 1, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 2, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 3, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 1, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 2, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 3, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 1, NucAcid_type = "RNA", MiSeq_library = 3),
+                      mutate(library2.meta, MiSeq_run = 1, NucAcid_type = "RNA", MiSeq_library = 4),
+                      mutate(library2014.meta, MiSeq_run = 1, NucAcid_type = "DNA", MiSeq_library = 1),
+                      mutate(library2014.meta, MiSeq_run = 1, NucAcid_type = "DNA", MiSeq_library = 2),
+                      mutate(library2014.meta, MiSeq_run = 1, NucAcid_type = "DNA", MiSeq_library = 3)) %>%
+  mutate(SequenceID = paste(SampleID, "_lib", MiSeq_library, "_run", MiSeq_run, sep=""),
+         Year = as.numeric(Year),
+         SiteID = ifelse(SiteID == "NA", NA, SiteID)) %>%
+  left_join(sample.meta, by = c("SampleID", "SiteID", "Year")) %>%
+  tibble::column_to_rownames(var="SequenceID")
+
+print(paste("Number of samples in metadata:", nrow(sequence.meta)))
+
+# OTU table
+full.otu = read.table("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/all_samples_16S_OTU_table.txt",
+                              comment.char = "", sep="\t", header=TRUE) %>%
+  tibble::column_to_rownames(var="X.OTU.ID") %>%
+  as.matrix %>%
+  otu_table(taxa_are_rows = TRUE)
+
+print(paste("Number of samples in OTU table:", ncol(full.otu)))
+print(paste("Number of OTUs in OTU table:", nrow(full.otu)))
+colnames(full.otu) = gsub("RTSF_NTC_.*_lib", "RTSF_NTC_lib", colnames(full.otu))
+
+# Taxonomy tables and remove chloroplasts and mitochondria and non bacteria
+full.tax = read.table("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/all_samples_16S_OTU_tax.txt", 
+                      comment.char = "", sep="\t", header=FALSE, quote = "") %>%
+  select(V1, V4) %>%
+  rename(OTU = V1, Taxon = V4) %>%
+  mutate(Taxon = gsub(".:", "", Taxon)) %>%
+  tidyr::separate(Taxon, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep=",") %>%
+  filter(Domain == "Bacteria") %>%
+  filter(is.na(Order) | Order != "Chloroplast") %>%
+  filter(is.na(Family) | Family != "Mitochondria") %>%
+  tibble::remove_rownames() %>%
+  tibble::column_to_rownames(var="OTU") %>%
+  as.matrix %>%
+  tax_table()
+
+print(paste("Number of OTUs in taxonomy:", nrow(full.tax)))
+
+print("Missing taxa from OTU table")
+full.tax[rownames(full.tax)[!(rownames(full.tax) %in% rownames(full.otu))]]
+
+
+# Phylogenetic tree
+bact.tree = read.tree("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/all_samples_16S_OTU_bact.tree")
+bact.tree = root(bact.tree, outgroup = "X90478.1", resolve.root = TRUE)
+bact.tree = phy_tree(bact.tree)
+print(paste("Number of OTUs in tree:", length(bact.tree$tip.label)))
+
+```
+
+
+
+## Build phyloseq
+
+### Build initial phyloseq object
+```{r}
+full.physeq = phyloseq(full.otu, full.tax, bact.tree, sample_data(sequence.meta))
+full.physeq
+
+full.otu = NULL
+#full.tax = NULL
+#bact.tree = NULL
+sequence.meta = NULL
+
+```
+
+
+```{r}
+# Remove Cen10_11102016_R1 from library 1 as I resequenced in in library 2
+full.physeq = subset_samples(full.physeq, !(SampleID == "Cen10_11102016_R1" & MiSeq_library %in% c(1,3)))
+
+# Get just soil DNA and RNA phyloseqs
+init.DNA.physeq = subset_samples(full.physeq, !is.na(SiteID) & NucAcid_type == "DNA" & Year != 2014)
+init.DNA.physeq = prune_taxa(taxa_sums(init.DNA.physeq) > 0, init.DNA.physeq)
+
+init.RNA.physeq = subset_samples(full.physeq, !is.na(SiteID) & NucAcid_type == "RNA" & Year != 2014)
+init.RNA.physeq = prune_taxa(taxa_sums(init.RNA.physeq) > 0, init.RNA.physeq)
+
+init.DNA2014.physeq = subset_samples(full.physeq, !is.na(SiteID) & NucAcid_type == "DNA" & Year == 2014)
+init.DNA2014.physeq = prune_taxa(taxa_sums(init.DNA2014.physeq) > 0, init.DNA2014.physeq)
+
+full.physeq = NULL
+```
+
+### Combine replicate runs for DNA
+```{r}
+# Merge OTU table counts for each replicate run
+sample_list = unique(sample_data(init.DNA.physeq)$SampleID)
+sequence_list = unique(colnames(otu_table(init.DNA.physeq)))
+
+merge.otu = matrix(nrow = nrow(otu_table(init.DNA.physeq)), ncol = length(sample_list))
+rownames(merge.otu) = rownames(otu_table(init.DNA.physeq))
+colnames(merge.otu) = sample_list
+
+for (sam in sample_list){
+  seqs = sequence_list[grepl(sam, sequence_list)]
+  merge.otu[,sam] = rowSums(otu_table(init.DNA.physeq)[,seqs])
+}
+
+# Make new merged phyloseq
+total_counts = data.frame(read_count=colSums(merge.otu)) %>%
+  tibble::rownames_to_column(var="SampleID")
+
+merge.sam = sample_data(init.DNA.physeq) %>%
+  data.frame() %>%
+  mutate(MiSeq_run = NA) %>%
+  unique() %>%
+  mutate(SampleID_name = SampleID) %>%
+  left_join(total_counts, by="SampleID") %>%
+  tibble::column_to_rownames(var="SampleID_name")
+
+merged.DNA.physeq = phyloseq(otu_table(merge.otu, taxa_are_rows = TRUE), 
+                             tax_table(init.DNA.physeq), 
+                             phy_tree(init.DNA.physeq),
+                             sample_data(merge.sam))
+
+# Remove poorly sequenced samples
+merged.DNA.physeq = subset_samples(merged.DNA.physeq, read_count > 100000)
+merged.DNA.physeq = prune_taxa(taxa_sums(merged.DNA.physeq) > 0, merged.DNA.physeq)
+merged.DNA.physeq
+
+init.DNA.physeq = NULL
+merge.otu = NULL
+total_counts = NULL
+merge.sam = NULL
+
+```
+
+### Process RNA samples
+```{r}
+# Remove poorly sequenced samples
+sample_data(init.RNA.physeq)$read_count = colSums(otu_table(init.RNA.physeq))
+
+filt.RNA.physeq = subset_samples(init.RNA.physeq, read_count > 10000)
+filt.RNA.physeq = prune_taxa(taxa_sums(filt.RNA.physeq) > 0, filt.RNA.physeq)
+filt.RNA.physeq
+init.RNA.physeq = NULL
+```
+
+### Process DNA 2014 samples
+```{r}
+# Remove poorly sequenced samples (not actually removing any)
+sample_data(init.DNA2014.physeq)$read_count = colSums(otu_table(init.DNA2014.physeq))
+
+filt.DNA2014.physeq = subset_samples(init.DNA2014.physeq, read_count > 50000)
+filt.DNA2014.physeq = prune_taxa(taxa_sums(filt.DNA2014.physeq) > 0, filt.DNA2014.physeq)
+filt.DNA2014.physeq
+init.DNA2014.physeq = NULL
+```
+
+### Re-merge DNA-RNA samples
+
+```{r}
+# Merge OTU table
+DNA_RNA.otu = full_join(data.frame(otu_table(filt.RNA.physeq)) %>%
+                          tibble::rownames_to_column(var="OTU"),
+                        data.frame(otu_table(merged.DNA.physeq)) %>%
+                          tibble::rownames_to_column(var="OTU"),
+                        by="OTU") %>%
+  full_join(data.frame(otu_table(filt.DNA2014.physeq)) %>%
+              tibble::rownames_to_column(var="OTU"),
+            by="OTU") %>%
+  tibble::column_to_rownames(var="OTU") %>%
+  as.matrix
+
+DNA_RNA.otu[is.na(DNA_RNA.otu)] = 0
+
+# Merge metadata table
+DNA_RNA.meta = rbind(data.frame(sample_data(filt.RNA.physeq)) %>%
+                       mutate(NucAcid_type = "RNA"),
+                     data.frame(sample_data(merged.DNA.physeq)) %>%
+                       mutate(NucAcid_type = "DNA"),
+                     data.frame(sample_data(filt.DNA2014.physeq)) %>%
+                       mutate(NucAcid_type = "DNA"))
+
+
+# Combine into phyloseq object
+DNA_RNA.physeq = phyloseq(otu_table(DNA_RNA.otu, taxa_are_rows = TRUE), 
+                          full.tax, 
+                          bact.tree, 
+                          sample_data(DNA_RNA.meta))
+
+filt.RNA.physeq = NULL
+merged.DNA.physeq = NULL
+DNA_RNA.otu = NULL
+full.tax = NULL
+bact.tree = NULL
+
+DNA_RNA.physeq
+
+
+```
+
+### Save DNA RNA phyloseq
+```{r}
+saveRDS(DNA_RNA.physeq, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/RNA_DNA_physeq.RDS")
+DNA_RNA.physeq = NULL
+```
+
+# Archaeal
+```{r}
+# Full metadata
+sample.meta = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                        sheet = "Sample_metadata", na="NA") %>%
+  filter(SiteID != "Cen24")
+library1.meta =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                           sheet = "Plate locations Library1", na="NA") %>%
+  add_row(SampleID = c("ZymoMockDNA", "RTSF_NTC")) %>%
+  mutate(MiSeq_library = 1)
+library2.meta =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                           sheet = "Plate locations Library2", na="NA") %>%
+  add_row(SampleID = c("ZymoMockDNA", "RTSF_NTC")) %>%
+  mutate(MiSeq_library = 2)
+library2014.meta =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                           sheet = "Plate locations Library2014", na="NA") %>%
+  mutate(MiSeq_library = 2014)
+
+sequence.meta = rbind(mutate(library1.meta, MiSeq_run = 1, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 2, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 3, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 1, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 2, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 3, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 1, NucAcid_type = "RNA", MiSeq_library = 3),
+                      mutate(library2.meta, MiSeq_run = 1, NucAcid_type = "RNA", MiSeq_library = 4),
+                      mutate(library2014.meta, MiSeq_run = 1, NucAcid_type = "DNA", MiSeq_library = 1),
+                      mutate(library2014.meta, MiSeq_run = 1, NucAcid_type = "DNA", MiSeq_library = 2),
+                      mutate(library2014.meta, MiSeq_run = 1, NucAcid_type = "DNA", MiSeq_library = 3)) %>%
+  mutate(SequenceID = paste(SampleID, "_lib", MiSeq_library, "_run", MiSeq_run, sep=""),
+         Year = as.numeric(Year),
+         SiteID = ifelse(SiteID == "NA", NA, SiteID)) %>%
+  left_join(sample.meta, by = c("SampleID", "SiteID", "Year")) %>%
+  tibble::column_to_rownames(var="SequenceID")
+
+print(paste("Number of samples in metadata:", nrow(sequence.meta)))
+
+# OTU table
+full.otu = read.table("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/all_samples_16S_OTU_table.txt",
+                              comment.char = "", sep="\t", header=TRUE) %>%
+  tibble::column_to_rownames(var="X.OTU.ID") %>%
+  as.matrix %>%
+  otu_table(taxa_are_rows = TRUE)
+colnames(full.otu) = gsub("RTSF_NTC_.*_lib", "RTSF_NTC_lib", colnames(full.otu))
+
+
+print(paste("Number of samples in OTU table:", ncol(full.otu)))
+print(paste("Number of OTUs in OTU table:", nrow(full.otu)))
+
+
+# Taxonomy tables and filter to just Archaea
+full.tax = read.table("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/all_samples_16S_OTU_tax.txt", 
+                      comment.char = "", sep="\t", header=FALSE, quote = "") %>%
+  select(V1, V4) %>%
+  rename(OTU = V1, Taxon = V4) %>%
+  mutate(Taxon = gsub(".:", "", Taxon)) %>%
+  tidyr::separate(Taxon, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep=",") %>%
+  filter(Domain == "Archaea") %>%
+  tibble::remove_rownames() %>%
+  tibble::column_to_rownames(var="OTU") %>%
+  as.matrix %>%
+  tax_table()
+
+print(paste("Number of OTUs in taxonomy:", nrow(full.tax)))
+
+
+# Phylogenetic tree
+arch.tree = read.tree("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/all_samples_16S_OTU_arch.tree")
+arch.tree = root(arch.tree, outgroup = "J01859.1", resolve.root = TRUE)
+arch.tree = phy_tree(arch.tree)
+print(paste("Number of OTUs in tree:", length(arch.tree$tip.label)))
+
+```
+
+## Build phyloseq
+
+### Build initial phyloseq object
+```{r}
+arch.full.physeq = phyloseq(full.otu, full.tax, arch.tree, sample_data(sequence.meta))
+arch.full.physeq
+
+full.otu = NULL
+sequence.meta = NULL
+```
+
+
+```{r}
+# Remove Cen10_11102016_R1 from library 1 as I resequenced in in library 2
+arch.full.physeq = subset_samples(arch.full.physeq, !(SampleID == "Cen10_11102016_R1" & MiSeq_library %in% c(1,3)))
+
+# Get just soil DNA and RNA phyloseqs
+arch.init.DNA.physeq = subset_samples(arch.full.physeq, !is.na(SiteID) & NucAcid_type == "DNA" & Year != 2014)
+arch.init.DNA.physeq = prune_taxa(taxa_sums(arch.init.DNA.physeq) > 0, arch.init.DNA.physeq)
+
+arch.init.RNA.physeq = subset_samples(arch.full.physeq, !is.na(SiteID) & NucAcid_type == "RNA" & Year != 2014)
+arch.init.RNA.physeq = prune_taxa(taxa_sums(arch.init.RNA.physeq) > 0, arch.init.RNA.physeq)
+
+init.DNA2014.physeq = subset_samples(arch.full.physeq, !is.na(SiteID) & NucAcid_type == "DNA" & Year == 2014)
+init.DNA2014.physeq = prune_taxa(taxa_sums(init.DNA2014.physeq) > 0, init.DNA2014.physeq)
+
+arch.full.physeq = NULL
+```
+
+### Combine replicate runs for DNA
+```{r}
+# Merge OTU table counts for each replicate run
+sample_list = unique(sample_data(arch.init.DNA.physeq)$SampleID)
+sequence_list = unique(colnames(otu_table(arch.init.DNA.physeq)))
+
+merge.otu = matrix(nrow = nrow(otu_table(arch.init.DNA.physeq)), ncol = length(sample_list))
+rownames(merge.otu) = rownames(otu_table(arch.init.DNA.physeq))
+colnames(merge.otu) = sample_list
+
+for (sam in sample_list){
+  seqs = sequence_list[grepl(sam, sequence_list)]
+  merge.otu[,sam] = rowSums(otu_table(arch.init.DNA.physeq)[,seqs])
+}
+
+# Make new merged phyloseq
+total_counts = data.frame(read_count=colSums(merge.otu)) %>%
+  tibble::rownames_to_column(var="SampleID")
+
+merge.sam = sample_data(arch.init.DNA.physeq) %>%
+  data.frame() %>%
+  mutate(MiSeq_run = NA) %>%
+  unique() %>%
+  mutate(SampleID_name = SampleID) %>%
+  left_join(total_counts, by="SampleID") %>%
+  tibble::column_to_rownames(var="SampleID_name")
+
+arch.merged.DNA.physeq = phyloseq(otu_table(merge.otu, taxa_are_rows = TRUE), 
+                                  tax_table(arch.init.DNA.physeq), 
+                                  phy_tree(arch.init.DNA.physeq),
+                                  sample_data(merge.sam))
+
+arch.init.DNA.physeq = NULL
+merge.otu = NULL
+total_counts = NULL
+merge.sam = NULL
+
+```
+
+### Process RNA samples
+
+```{r}
+# Remove poorly sequenced samples
+sample_data(arch.init.RNA.physeq)$read_count = colSums(otu_table(arch.init.RNA.physeq))
+```
+
+### Process DNA 2014 samples
+
+```{r}
+# Remove poorly sequenced samples
+sample_data(init.DNA2014.physeq)$read_count = colSums(otu_table(init.DNA2014.physeq))
+```
+
+
+### Re-merge DNA-RNA samples
+
+```{r}
+# Merge OTU table
+arch.DNA_RNA.otu = full_join(data.frame(otu_table(arch.init.RNA.physeq)) %>%
+                               tibble::rownames_to_column(var="OTU"),
+                             data.frame(otu_table(arch.merged.DNA.physeq)) %>%
+                               tibble::rownames_to_column(var="OTU"),
+                             by="OTU") %>%
+  full_join(data.frame(otu_table(init.DNA2014.physeq)) %>%
+              tibble::rownames_to_column(var="OTU"),
+            by="OTU") %>%
+  tibble::column_to_rownames(var="OTU") %>%
+  as.matrix
+
+arch.DNA_RNA.otu[is.na(arch.DNA_RNA.otu)] = 0
+
+# Merge metadata table
+arch.DNA_RNA.meta = rbind(data.frame(sample_data(arch.init.RNA.physeq)) %>%
+                            select(colnames(data.frame(sample_data(arch.merged.DNA.physeq)))) %>%
+                            mutate(NucAcid_type = "RNA"),
+                          data.frame(sample_data(arch.merged.DNA.physeq)) %>%
+                            mutate(NucAcid_type = "DNA"),
+                          data.frame(sample_data(init.DNA2014.physeq)) %>%
+                            mutate(NucAcid_type = "DNA"))
+
+
+# Combine into phyloseq object
+arch.DNA_RNA.physeq = phyloseq(otu_table(arch.DNA_RNA.otu, taxa_are_rows = TRUE), 
+                               full.tax, 
+                               arch.tree, 
+                               sample_data(arch.DNA_RNA.meta))
+arch.init.RNA.physeq = NULL
+arch.merged.DNA.physeq = NULL
+arch.DNA_RNA.otu = NULL
+full.tax = NULL
+arch.tree = NULL
+
+arch.DNA_RNA.physeq
+
+
+```
+
+```{r}
+test.df = data.frame(sample_data(arch.DNA_RNA.physeq)) %>%
+  arrange(-read_count) %>%
+  group_by(NucAcid_type) %>%
+  mutate(Nuc_rank = row_number()) %>%
+  ungroup
+
+ggplot(data=test.df, aes(x=Nuc_rank, y=log(read_count))) +
+  geom_bar(stat="identity", aes(fill=FireClassification)) +
+  facet_wrap(~NucAcid_type)
+
+```
+
+### Save DNA RNA phyloseq
+```{r}
+saveRDS(arch.DNA_RNA.physeq, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/Archaeal_RNA_DNA_physeq.RDS")
+arch.DNA_RNA.physeq = NULL
+```
+
+# Controls
+```{r}
+# Full metadata
+sample.meta = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                        sheet = "Sample_metadata", na="NA") %>%
+  filter(SiteID != "Cen24")
+library1.meta =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                           sheet = "Plate locations Library1", na="NA") %>%
+  add_row(SampleID = c("ZymoMockDNA", "RTSF_NTC")) %>%
+  mutate(MiSeq_library = 1)
+library2.meta =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                           sheet = "Plate locations Library2", na="NA") %>%
+  add_row(SampleID = c("ZymoMockDNA", "RTSF_NTC")) %>%
+  mutate(MiSeq_library = 2)
+sequence.meta = rbind(mutate(library1.meta, MiSeq_run = 1, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 2, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 3, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 1, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 2, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 3, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 1, NucAcid_type = "RNA", MiSeq_library = 3),
+                      mutate(library2.meta, MiSeq_run = 1, NucAcid_type = "RNA", MiSeq_library = 4)) %>%
+  mutate(SequenceID = paste(SampleID, "_lib", MiSeq_library, "_run", MiSeq_run, sep=""),
+         Year = as.numeric(Year),
+         SiteID = ifelse(SiteID == "NA", NA, SiteID)) %>%
+  left_join(sample.meta, by = c("SampleID", "SiteID", "Year")) %>%
+  tibble::column_to_rownames(var="SequenceID")
+
+print(paste("Number of samples in metadata:", nrow(sequence.meta)))
+
+# OTU table
+full.otu = read.table("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/all_samples_16S_OTU_table.txt",
+                              comment.char = "", sep="\t", header=TRUE) %>%
+  tibble::column_to_rownames(var="X.OTU.ID") %>%
+  as.matrix %>%
+  otu_table(taxa_are_rows = TRUE)
+
+print(paste("Number of samples in OTU table:", ncol(full.otu)))
+print(paste("Number of OTUs in OTU table:", nrow(full.otu)))
+
+
+# Taxonomy tables and remove chloroplasts and mitochondria and non bacteria
+full.tax = read.table("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/all_samples_16S_OTU_tax.txt", 
+                      comment.char = "", sep="\t", header=FALSE, quote = "") %>%
+  select(V1, V4) %>%
+  rename(OTU = V1, Taxon = V4) %>%
+  mutate(Taxon = gsub(".:", "", Taxon)) %>%
+  tidyr::separate(Taxon, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep=",") %>%
+  filter(Domain == "Bacteria") %>%
+  filter(is.na(Order) | Order != "Chloroplast") %>%
+  filter(is.na(Family) | Family != "Mitochondria") %>%
+  tibble::remove_rownames() %>%
+  tibble::column_to_rownames(var="OTU") %>%
+  as.matrix %>%
+  tax_table()
+
+print(paste("Number of OTUs in taxonomy:", nrow(full.tax)))
+
+print("Missing taxa from OTU table")
+full.tax[rownames(full.tax)[!(rownames(full.tax) %in% rownames(full.otu))]]
+
+
+# Phylogenetic tree
+bact.tree = read.tree("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/all_samples_16S_OTU_bact.tree")
+bact.tree = root(bact.tree, outgroup = "X90478.1", resolve.root = TRUE)
+bact.tree = phy_tree(bact.tree)
+
+print(paste("Number of OTUs in tree:", length(bact.tree$tip.label)))
+
+```
+
+## Build phyloseq
+
+### Build initial phyloseq object
+```{r}
+full.physeq = phyloseq(full.otu, full.tax, bact.tree, sample_data(sequence.meta))
+full.physeq
+
+full.otu = NULL
+#full.tax = NULL
+#bact.tree = NULL
+sequence.meta = NULL
+```
+
+
+```{r}
+# Get just controls 
+init.con.physeq = subset_samples(full.physeq, is.na(SiteID))
+init.con.physeq = prune_taxa(taxa_sums(init.con.physeq) > 0, init.con.physeq)
+
+full.physeq = NULL
+
+sample_data(init.con.physeq) %>%
+  data.frame()
+```
+
+```{r}
+mock_actual.df = readxl::read_xlsx("/Users/sambarnett/Documents/Shade_lab/Mock_community.xlsx")
+
+mock_otu.df = data.frame(Mock_Species = c("Bacillus spizizenii", "Pseudomonas aeruginosa", "Staphyloccous aureus",
+                                          "Brucella pseudogrignonensis", "Rhizobium PvP014", "Streptomyces",
+                                          "Escherichia coli K-12 substrain MG1655", 
+                                          "Salmonella enterica subsp. enterica serovar Typhimurium str. LT2",
+                                          "Saccharomyces cerevisiae", "Cryptococcus neoformans"),
+                         OTU = c("OTU_4", "OTU_3", "OTU_10", "OTU_8", NA, "OTU_1", "OTU_15", "OTU_9", NA, NA))
+```
+
+
+```{r, fig.height=7, fig.width=7}
+init.mock.physeq = subset_samples(init.con.physeq, grepl("Batch._mock", SampleID))
+init.mock.physeq = prune_taxa(taxa_sums(init.mock.physeq) > 0, init.mock.physeq)
+set.seed(4242)
+init.mock.physeq = rarefy_even_depth(init.mock.physeq)
+
+
+mock.otu.df = otu_table(init.mock.physeq) %>%
+  data.frame() %>%
+  tibble::rownames_to_column(var="OTU") %>%
+  tidyr::gather(key="SequenceID", value="count", -OTU) %>%
+  filter(count > 0) %>%
+  group_by(SequenceID) %>%
+  mutate(total_count = sum(count)) %>%
+  ungroup %>%
+  mutate(RA = count/total_count*100) %>%
+  left_join(sample_data(init.mock.physeq) %>%
+              data.frame() %>%
+              tibble::rownames_to_column(var="SequenceID") %>%
+              select(SequenceID, SampleID, Batch, 
+                     DNA.conc, RNA.conc, 
+                     MiSeq_library, MiSeq_run,
+                     NucAcid_type),
+            by = "SequenceID") %>%
+  left_join(tax_table(init.mock.physeq) %>%
+              data.frame() %>%
+              tibble::rownames_to_column(var="OTU"),
+            by = "OTU")
+
+
+test.df = mock.otu.df %>%
+  inner_join(mock_otu.df, by="OTU") %>%
+  mutate(Taxa = ifelse(!is.na(Species) & Species != "uncultured bacterium", paste("Species: ", Species),
+                       ifelse(!is.na(Genus), paste("Genus: ", Genus), paste("Family: ", Family)))) %>%
+  mutate(Taxa = paste(OTU, ": ", Mock_Species, "\n", Taxa, sep="")) %>%
+  left_join(mock_actual.df, by = "Mock_Species")
+
+test.taxa = sort(unique(test.df$Taxa))
+taxa.col = paultol_colors(length(test.taxa))
+names(taxa.col) = test.taxa
+
+ggplot(data=test.df, aes(x=SequenceID, y=RA)) +
+  geom_bar(stat="identity", aes(fill=Taxa)) +
+  scale_fill_manual(values = taxa.col) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size=9, angle=90, hjust=1),
+        axis.text.y = element_text(size=9),
+        axis.title = element_text(size=10),
+        legend.text = element_text(size=9),
+        legend.title = element_text(size=10),
+        legend.position = "bottom",
+        legend.direction = "vertical",
+        strip.text = element_text(size=10)) +
+  guides(fill=guide_legend(override.aes=list(color="black"))) +
+  facet_grid(~NucAcid_type, scales = "free_x", space = "free")
+
+ggplot(data=test.df, aes(x=count_16S_18S, y=RA)) +
+  geom_point(aes(fill=Taxa, shape=Gram_Stain), color="black", size=3) +
+  scale_color_manual(values = taxa.col) +
+  scale_shape_manual(values = c(21, 24)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size=9, angle=90, hjust=1),
+        axis.text.y = element_text(size=9),
+        axis.title = element_text(size=10),
+        legend.text = element_text(size=9),
+        legend.title = element_text(size=10),
+        legend.position = "bottom",
+        legend.direction = "vertical",
+        strip.text = element_text(size=10)) +
+  guides(fill=guide_legend(override.aes=list(shape=22, size=3))) +
+  facet_grid(~NucAcid_type, scales = "free_x", space = "free")
+
+```
+
+# SRA metadata for upload
+
+```{r}
+# Full metadata
+sample.meta = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                        sheet = "Sample_metadata", na="NA") %>%
+  filter(SiteID != "Cen24")
+library1.meta =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                           sheet = "Plate locations Library1", na="NA") %>%
+  add_row(SampleID = c("ZymoMockDNA", "RTSF_NTC")) %>%
+  mutate(MiSeq_library = 1)
+library2.meta =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                           sheet = "Plate locations Library2", na="NA") %>%
+  add_row(SampleID = c("ZymoMockDNA", "RTSF_NTC")) %>%
+  mutate(MiSeq_library = 2)
+
+site.info = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                        sheet = "Site_metadata", na="NA") %>%
+  select(SiteID, latitude, longitude, FireFront) %>%
+  mutate(latitude = paste(gsub(" ", "d", latitude), "'0\"N", sep=""),
+         longitude = paste(gsub(" ", "d", longitude), "'0\"E", sep="")) %>%
+  mutate(latitude = round(as.numeric(sp::char2dms(latitude)), digits = 4),
+         longitude = round(as.numeric(sp::char2dms(longitude)), digits = 4)) %>%
+  mutate(lat_long = paste(latitude, "N", longitude, "W"))
+
+DNA.files =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                       sheet = "DNA_SeqFiles", na="NA") %>%
+  select(SampleID, file_prefix...10) %>%
+  rename(SequenceID = SampleID,
+         file_prefix = file_prefix...10)
+
+RNA.files =  read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                       sheet = "RNA_SeqFiles", na="NA") %>%
+  select(SampleID, file_prefix...10) %>%
+  rename(SequenceID = SampleID,
+         file_prefix = file_prefix...10)
+
+file.prefixs = rbind(DNA.files, RNA.files)
+
+```
+
+
+```{r}
+sequence.meta = rbind(mutate(library1.meta, MiSeq_run = 1, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 2, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 3, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 1, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 2, NucAcid_type = "DNA"),
+                      mutate(library2.meta, MiSeq_run = 3, NucAcid_type = "DNA"),
+                      mutate(library1.meta, MiSeq_run = 1, NucAcid_type = "RNA", MiSeq_library = 3),
+                      mutate(library2.meta, MiSeq_run = 1, NucAcid_type = "RNA", MiSeq_library = 4)) %>%
+  mutate(SequenceID = paste(SampleID, "_lib", MiSeq_library, "_run", MiSeq_run, sep=""),
+         Year = as.numeric(Year),
+         SiteID = ifelse(SiteID == "NA", NA, SiteID)) %>%
+  left_join(sample.meta, by = c("SampleID", "SiteID", "Year")) %>%
+  left_join(site.info, by = "SiteID") %>%
+  left_join(file.prefixs, by = "SequenceID") %>%
+  rename("Sample Name" = SequenceID) %>%
+  mutate(Organism = "soil metagenome",
+         "isolation source" = "Soil core",
+         "collection date" = as.Date(paste(Year, Month, Day, sep="-")),
+         "geographic location" = "USA: Centralia, PA",
+         samp_mat_process = "20 cm deep core as collected with a soil corer or shovel and homogenized and sived to 4 mm",
+         Sample_description = paste("Soil from", FireClassification, "site", SiteID, "collected in", Year)) %>%
+  mutate("collection date" = format(`collection date`, "%d-%b-%y"),
+         Sample_description = ifelse(grepl("neg", SampleID),
+                                     paste("Extraction batch", Batch, "negative control"),
+                                     ifelse(grepl("mock", SampleID),
+                                            paste("Extraction batch", Batch, "mock community control"),
+                                            ifelse(SampleID == "ZymoMockDNA", 
+                                                   paste("Zymo mock community library", MiSeq_library, "control"),
+                                                   ifelse(SampleID == "RTSF_NTC", 
+                                                          paste("RTSF library", MiSeq_library, "negative control"),
+                                                          Sample_description)))),
+         `Extraction date` = format(`Extraction date`, "%d-%b-%y")) %>%
+  mutate(`collection date` = ifelse(is.na(`collection date`), `Extraction date`, `collection date`),
+         File1 = paste(file_prefix, "_R1_001.fastq.gz", sep=""),
+         File2 = paste(file_prefix, "_R2_001.fastq.gz", sep="")) %>%
+  rename("Extraction batch" = Batch) %>%
+  select(`Sample Name`, Organism, `isolation source`, `collection date`,
+         `geographic location`, lat_long, Sample_description,
+         SiteID, Year, `Extraction batch`, `Extraction date`, `DNA conc`, `RNA conc`,
+         MiSeq_library, MiSeq_run, NucAcid_type, CarbonDioxide_ppm, AirTemperature_C, CoreTemp_C,
+         ActiveVent, FireClassification, pH, P_ppm, K_ppm, Ca_ppm, Mg_ppm, Fe_ppm, OrganicMatter_360,
+         NO3N_ppm, NH4N_ppm, SulfateSulfur_ppm, As_ppm, FireFront, File1, File2)
+```
+

@@ -1,0 +1,169 @@
+---
+title: "Map of sites sampled in Centralia"
+author: "Sam Barnett"
+date: "9/1/2021"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(readxl)
+library(ggmap)
+library(grid)
+
+source("/Users/sambarnett/Documents/Misc_code/paul_tol_colors.R")
+
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+
+
+site.list = c("Cen01", "Cen02", "Cen03", "Cen04", "Cen05", "Cen06", "Cen07",
+              "Cen08", "Cen09", "Cen10", "Cen11", "Cen12", "Cen13", "Cen14",
+              "Cen15", "Cen16", "Cen17", "Cen18", "Cen19", "Cen20", "Cen21",
+              "Cen22", "Cen23")
+
+used_sites = c("Cen03", "Cen04", "Cen06", "Cen07", "Cen08", "Cen09", "Cen10", 
+               "Cen11", "Cen12", "Cen13", "Cen14", "Cen15", "Cen16", "Cen17", 
+               "Cen18", "Cen19", "Cen21", "Cen22", "Cen23")
+
+site.col = paultol_colors(length(used_sites))
+names(site.col) = used_sites
+
+site.shape = c(21, 21, 24, 21, 22, 24, 24, 24, 24, 24, 24, 24, 24,
+               22, 21, 24, 24, 24, 22)
+names(site.shape) = used_sites
+FC.shape = c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)
+
+
+# Basic plotting theme so as not to continually repeat it
+basic_theme = theme_bw() +
+  theme(axis.text = element_text(size=6),
+        axis.title = element_text(size=7),
+        legend.text = element_text(size=6),
+        legend.title = element_text(size=7, hjust=0.5),
+        strip.text = element_text(size=7),
+        plot.title = element_text(size=8, hjust=0.5))
+
+```
+
+```{r}
+# Get site coordinates. These are found in a table with longitude (long) and latitude (lat) for each site.
+site.coords = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", sheet = "Site_metadata")  %>%
+  mutate(longitude = -1*as.numeric(measurements::conv_unit(longitude, from = 'deg_dec_min', to = 'dec_deg')),
+         latitude = as.numeric(measurements::conv_unit(latitude, from = 'deg_dec_min', to = 'dec_deg')))
+
+## Getting the center point of the cite locations.
+center = c(lon=mean(c(max(site.coords$longitude), min(site.coords$longitude))), 
+           lat=mean(c(max(site.coords$latitude), min(site.coords$latitude))))
+
+## Get the 4 edges of the region around the above center point.
+Nlat = geosphere::destPoint(center, b=0, d=350)[2]
+Slat = geosphere::destPoint(center, b=180, d=350)[2]
+Elong = geosphere::destPoint(center, b=90, d=500)[1]
+Wlong = geosphere::destPoint(center, b=270, d=500)[1]
+
+## Making a polygon (rectangle) of these edges.
+region.poly = data.frame(corner = c("NE", "SE", "SW", "NW"), 
+                         lat = c(Nlat, Slat, Slat, Nlat), 
+                         long = c(Elong, Elong, Wlong, Wlong),
+                         group=3)
+
+# Front coordinates
+front_coord.df = data.frame(front = c(1, 2),
+                            lon_start = -76.332739, lat_start = 40.801547,
+                            lon_end = c(-76.345905, -76.344572),
+                            lat_end = c(40.801056, 40.796094)) %>%
+  mutate(m = (lat_end-lat_start)/(lon_end-lon_start)) %>%
+  mutate(b = lat_start-(m*lon_start))
+```
+
+
+```{r}
+## Make state map for inset. The field sites were in PA, USA so we want to easily show where in the state the regional map (above polygon) is located
+pa.coords = map_data("state", "pennsylvania")
+pa.region.map = ggplot(data = pa.coords, aes(x=long, y = lat, group = group)) + 
+  geom_polygon(fill="white", color="black") + 
+  #geom_polygon(data=region.poly, fill="red") +
+  annotate("point", x=center["lon"], y=center["lat"], color="orange", size=1) +
+  theme_bw() +
+  basic_theme +
+  theme(legend.position = "none",
+        panel.grid = element_blank(),
+        axis.text=element_blank(),
+        axis.title=element_blank(),
+        axis.ticks=element_blank(),
+        plot.background=element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank()) +
+  coord_fixed(1.3)
+```
+
+```{r, fig.width=7, fig.height=2.5}
+## Make map of the specific region using the stamen terrain map.
+sbbox <- make_bbox(lon = c(Elong, Wlong), lat = c(Slat, Nlat), f = .1)
+region.map = get_map(location = sbbox, maptype="terrain", source="stamen") %>%
+  ggmap()
+
+site.coords$lon = site.coords$longitude
+site.coords$lat = site.coords$latitude
+
+xmax = max(layer_scales(region.map)$x$range$range)
+region.points.map = region.map +
+  geom_segment(data=front_coord.df, x=xmax,
+               aes(y=(m*xmax + b), xend=lon_end, yend=lat_end),
+               arrow = arrow(length = unit(0.05, "npc"))) +
+  geom_text(data=front_coord.df, aes(x=lon_end, y=lat_end, label=paste("Front", front, "  ")), hjust=1, size=6*5/14) +
+  geom_point(data=filter(site.coords, SiteID %in% used_sites), 
+             aes(x=lon, y=lat, fill=SiteID, shape=FireClassification), size=2) +
+  scale_shape_manual(values=FC.shape) +
+  scale_fill_manual(values=site.col) +
+  labs(x="Longitude", y="Latitude", fill="SiteID", shape="Fire classification") +
+  theme_bw() +
+  basic_theme +
+  theme(legend.position = "right",
+        legend.direction = "horizontal") +
+  guides(fill=guide_legend(override.aes=list(shape=site.shape), title.position="top", title.hjust=0.5),
+         shape=guide_legend(title.position="top", title.hjust=0.5))
+
+map.leg = g_legend(region.points.map)
+
+
+## Adding inset map to the regional map
+region.points.inset.map = region.points.map + 
+  theme(legend.position = "none") +
+  ggmap::inset(ggplotGrob(pa.region.map), 
+        xmin = max(layer_scales(region.points.map)$x$range$range)-0.3*(max(layer_scales(region.points.map)$x$range$range)-min(layer_scales(region.points.map)$x$range$range)), 
+        xmax = max(layer_scales(region.points.map)$x$range$range), 
+        ymin = min(layer_scales(region.points.map)$y$range$range),
+        ymax = min(layer_scales(region.points.map)$y$range$range)+0.3*(max(layer_scales(region.points.map)$y$range$range)-min(layer_scales(region.points.map)$y$range$range)))
+
+region.points.inset.leg.map = cowplot::plot_grid(region.points.inset.map, map.leg,
+                                                 nrow=1)
+region.points.inset.leg.map
+```
+
+Save figure
+
+```{r}
+saveRDS(region.points.inset.map, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Map_fig.RDS")
+```
+
+
+```{r}
+max(site.coords$latitude)
+max(site.coords$longitude)
+
+p <- rbind(c(max(site.coords$longitude), max(site.coords$latitude)), 
+           c(min(site.coords$longitude), max(site.coords$latitude)),
+           c(min(site.coords$longitude), min(site.coords$latitude)),
+           c(max(site.coords$longitude), min(site.coords$latitude)))
+geosphere::areaPolygon(p)
+
+?areaPolygon
+```
+

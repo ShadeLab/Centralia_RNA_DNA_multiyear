@@ -1,0 +1,208 @@
+---
+title: "Centralia combined figures"
+author: "Sam Barnett"
+date: "6/27/2022"
+output: html_document
+---
+
+# Introduction
+
+## Libraries
+```{r}
+# Libraries for data
+library(dplyr)
+library(phyloseq)
+library(ape)
+library(readxl)
+library(vegan)
+library(picante)
+library(grid)
+
+
+
+# Libraries for plotting
+library(ggplot2)
+library(ggmap)
+
+source("/Users/sambarnett/Documents/Misc_code/paul_tol_colors.R") # Colorblind friendly colors.
+
+# Functon for extracting legends
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)} 
+
+
+# Notable lists
+site.list = c("Cen01", "Cen02", "Cen03", "Cen04", "Cen05", "Cen06", "Cen07",
+              "Cen08", "Cen09", "Cen10", "Cen11", "Cen12", "Cen13", "Cen14",
+              "Cen15", "Cen16", "Cen17", "Cen18", "Cen19", "Cen20", "Cen21",
+              "Cen22", "Cen23")
+used_sites = c("Cen03", "Cen04", "Cen06", "Cen07", "Cen08", "Cen09", "Cen10", 
+               "Cen11", "Cen12", "Cen13", "Cen14", "Cen15", "Cen16", "Cen17", 
+               "Cen18", "Cen19", "Cen21", "Cen22", "Cen23")
+
+# Setting repeated plot aesthetics
+site.col = paultol_colors(length(used_sites))
+names(site.col) = used_sites
+
+site.shape = c(21, 21, 24, 21, 22, 24, 24, 24, 24, 24, 24, 24, 24,
+               22, 21, 24, 24, 24, 22)
+names(site.shape) = used_sites
+FC.shape = c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)
+
+# Basic plotting theme so as not to continually repeat it
+basic_theme = theme_bw() +
+  theme(axis.text = element_text(size=6),
+        axis.title = element_text(size=7),
+        legend.text = element_text(size=6),
+        legend.title = element_text(size=7, hjust=0.5),
+        strip.text = element_text(size=7),
+        plot.title = element_text(size=8, hjust=0.5))
+
+```
+
+Get metadata
+```{r}
+DNA_RNA.metadata = sample_data(readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/RNA_DNA_physeq.RDS")) %>%
+  data.frame()
+```
+
+
+# Figure 1: Map, Temperature, and alpha diversity
+```{r, fig.height=7, fig.width=7}
+Fig_map.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Map_fig.RDS")
+xmax = -76.33501
+
+
+Fig_1B.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_1B.RDS")
+Fig_1C.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_1C.RDS") +
+  labs(y="Whole community\nFaith's PD")
+Fig_1D.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_1D.RDS") +
+  labs(y="Active community\nFaith's PD")
+
+Fig_1leg.plot = cowplot::plot_grid(g_legend(Fig_1B.plot + guides(fill=guide_legend(override.aes=list(shape=site.shape), ncol=3),
+                                                                 shape="none", linetype="none")),
+                                   g_legend(Fig_1B.plot + theme(legend.position = "right") + guides(fill="none", color="none")),
+                                   nrow=1)
+
+Fig_1.plot = cowplot::plot_grid(cowplot::plot_grid(Fig_map.plot, Fig_1leg.plot, 
+                                                   nrow=1, rel_widths = c(1,1)),
+                                Fig_1B.plot + theme(legend.position = "none"), 
+                                cowplot::plot_grid(Fig_1C.plot + lims(y=c(60, 340)) + 
+                                                     theme(plot.title = element_text(size=7, hjust=0.5)), 
+                                                   Fig_1D.plot + lims(y=c(60, 340)) + 
+                                                     theme(plot.title = element_text(size=7, hjust=0.5)), 
+                                                   nrow=1, labels=c("C", "D"), label_size = 8),
+                                rel_heights = c(1,1,1), ncol=1, labels = c("A", "B", ""), label_size = 8)
+Fig_1.plot
+
+ggsave(Fig_1.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_1.tiff",
+       device="tiff", width=7, height=7, units="in")
+```
+
+
+# Figure 2: Time-lag analysis
+```{r, fig.height=5, fig.width=7}
+Fig_2A.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_2A.RDS")
+Fig_2B.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_2B.RDS")
+Fig_2C.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_2C.RDS")
+Fig_2D.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_2D.RDS")
+                   
+Fig_2.plot = cowplot::plot_grid(cowplot::plot_grid(Fig_2A.plot + lims(y=c(0, 0.4)) + labs(y="Whole community\nweighted UniFrac") + theme(legend.position = "none"), 
+                                                   Fig_2B.plot + lims(y=c(0, 0.4)) + labs(y="Active community\nweighted UniFrac") + theme(legend.position = "none"), 
+                                                   cowplot::plot_grid(Fig_2C.plot + lims(y=c(-0.02, 0.14)) + labs(y="Whole community\ntime lag slope"),
+                                                                      Fig_2D.plot + lims(y=c(-0.02, 0.14)) + labs(y="Active community\ntime lag slope"),
+                                                                      nrow=1, labels=c("C", "D"), label_size = 8),
+                                                   ncol=1, labels=c("A", "B", "", ""), label_size = 8),
+                                g_legend(Fig_2A.plot), rel_widths = c(1,0.2))
+Fig_2.plot
+
+ggsave(Fig_2.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_2.tiff",
+       device="tiff", width=7, height=5, units="in")
+```
+
+# Figure 3: Directionality
+```{r, fig.height=5, fig.width=7}
+Fig_3AC.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_3AC.RDS")
+Fig_3BD.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_3BD.RDS")
+
+Fig_3.plot = cowplot::plot_grid(Fig_3AC.plot, Fig_3BD.plot, g_legend(Fig_2A.plot + guides(linetype = "none")),
+                                nrow = 1, labels=c("A", "B", ""), label_size = 8,
+                                rel_widths = c(1,1,0.5))
+Fig_3.plot
+
+ggsave(Fig_3.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_3.tiff",
+       device="tiff", width=7, height=5, units="in")
+```
+
+# Figure 4: Beta diversity to reference
+
+```{r, fig.height=7, fig.width=3.5}
+Fig_4A.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_4A.RDS") +
+  labs(y="Whole community weighted UniFrac\ndistance to reference")
+Fig_4B.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_4B.RDS") +
+  labs(y="Active community weighted UniFrac\ndistance to reference")
+
+Disturbed.site.shape = site.shape[names(site.shape) %in% filter(DNA_RNA.metadata, FireClassification != "Reference")$SiteID]
+
+Fig_4.leg = g_legend(Fig_4A.plot + theme(legend.position = "bottom", legend.direction = "vertical") +
+                       guides(linetype="none",
+                              fill=guide_legend(ncol=4, override.aes=list(shape=Disturbed.site.shape))))
+
+
+Fig_4.plot = cowplot::plot_grid(Fig_4A.plot + theme(legend.position = "none"), 
+                                Fig_4B.plot + theme(legend.position = "none"),
+                                Fig_4.leg, ncol=1, labels = c("A", "B", ""), 
+                                rel_heights = c(1, 1, 0.5), label_size = 8)
+
+Fig_4.plot
+
+ggsave(Fig_4.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_4.tiff",
+       device="tiff", width=3.5, height=7, units="in")
+```
+
+
+# Figure S2: Alpha diversity by time plot
+
+```{r, fig.height=5, fig.width=7}
+Fig_S2A.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_S2A.RDS")
+Fig_S2B.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_S2B.RDS")
+
+Fig_S2.leg = g_legend(Fig_S2A.plot)
+
+Fig_S2.plot = cowplot::plot_grid(Fig_S2A.plot + labs(y="Whole community\nFaith's PD") + theme(legend.position = "none"), 
+                                 Fig_S2B.plot + labs(y="Active community\nFaith's PD") + theme(legend.position = "none"), 
+                                 Fig_S2.leg, rel_heights = c(1,1,0.5),
+                                 ncol=1, labels = c("A", "B", ""), label_size = 8)
+Fig_S2.plot
+
+ggsave(Fig_S2.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S2.tiff",
+       device="tiff", width=7, height=5, units="in")
+```
+
+
+# Figure S7: CCA analyses
+
+```{r, fig.height=4.5, fig.width=7}
+Fig_S7A.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_S7A.RDS")
+Fig_S7B.plot = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_S7B.RDS")
+Fig_S7.plot = cowplot::plot_grid(cowplot::plot_grid(Fig_S7A.plot + theme(legend.position = "none"), 
+                                                    Fig_S7B.plot + theme(legend.position = "none"),
+                                                    nrow=1, labels=c("A", "B"), label_size = 8),
+                                 g_legend(Fig_S7A.plot + theme(legend.position = "bottom") + 
+                                            guides(fill = guide_legend(order = 2, override.aes=list(shape=22), nrow=3))), 
+                                rel_heights = c(1,0.3), ncol=1)
+Fig_S7.plot
+
+ggsave(Fig_S7.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S7.tiff",
+       device="tiff", width=7, height=4.5, units="in")
+```
+
+# Session Info
+```{r}
+sessionInfo()
+```
+
+

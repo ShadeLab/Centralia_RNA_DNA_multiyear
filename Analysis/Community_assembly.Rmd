@@ -1,0 +1,395 @@
+---
+title: "Community assembly"
+author: "Sam Barnett"
+date: "3/29/2022"
+output: html_document
+---
+
+# Introduction
+
+
+## Libraries
+
+```{r}
+# Libraries for data
+library(dplyr)
+library(phyloseq)
+library(readxl)
+
+
+
+# Libraries for plotting
+library(ggplot2)
+source("/Users/sambarnett/Documents/Misc_code/paul_tol_colors.R")
+
+# Functon for extracting legends
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)} 
+
+
+# Notable lists
+site.list = c("Cen01", "Cen02", "Cen03", "Cen04", "Cen05", "Cen06", "Cen07",
+              "Cen08", "Cen09", "Cen10", "Cen11", "Cen12", "Cen13", "Cen14",
+              "Cen15", "Cen16", "Cen17", "Cen18", "Cen19", "Cen20", "Cen21",
+              "Cen22", "Cen23")
+used_sites = c("Cen03", "Cen04", "Cen06", "Cen07", "Cen08", "Cen09", "Cen10", 
+               "Cen11", "Cen12", "Cen13", "Cen14", "Cen15", "Cen16", "Cen17", 
+               "Cen18", "Cen19", "Cen21", "Cen22", "Cen23")
+
+# Setting repeated plot aesthetics
+site.col = paultol_colors(length(used_sites))
+names(site.col) = used_sites
+
+site.shape = c(21, 21, 24, 21, 22, 24, 24, 24, 24, 24, 24, 24, 24,
+               22, 21, 24, 24, 24, 22)
+names(site.shape) = used_sites
+FC.shape = c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)
+
+# Basic plotting theme so as not to continually repeat it
+basic_theme = theme_bw() +
+  theme(axis.text = element_text(size=6),
+        axis.title = element_text(size=7),
+        legend.text = element_text(size=6),
+        legend.title = element_text(size=7, hjust=0.5),
+        strip.text = element_text(size=7),
+        plot.title = element_text(size=8, hjust=0.5))
+
+```
+
+## Data import
+```{r}
+# Import filtered phyloseq
+DNA_RNA.physeq = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/RNA_DNA_physeq.RDS")
+DNA_RNA.physeq
+
+# Remove RNA samples
+DNA.physeq = subset_samples(DNA_RNA.physeq, NucAcid_type == "DNA")
+DNA.physeq = prune_taxa(taxa_sums(DNA.physeq) > 0, DNA.physeq)
+DNA.physeq
+
+# Remove 2014 samples
+DNA.physeq = subset_samples(DNA.physeq, Year != 2014)
+DNA.physeq = prune_taxa(taxa_sums(DNA.physeq) > 0, DNA.physeq)
+DNA.physeq
+
+# Remove sites not found in 3 or more years
+DNA.years = data.frame(sample_data(DNA.physeq)) %>%
+  group_by(SiteID) %>%
+  summarize(n_year = n()) %>%
+  ungroup %>%
+  arrange(n_year)
+DNA.physeq = subset_samples(DNA.physeq, SiteID %in% filter(DNA.years, n_year >= 3)$SiteID)
+DNA.physeq = prune_taxa(taxa_sums(DNA.physeq) > 0, DNA.physeq)
+DNA.physeq
+
+# Clean workspace
+DNA_RNA.physeq = NULL
+```
+
+```{r}
+# Metadata for both samples
+SamID_1.meta = data.frame(sample_data(DNA.physeq)) %>%
+  dplyr::select(SampleID, SiteID, Year, FireClassification, CoreTemp_C, pH) %>%
+  dplyr::rename(Sample_1 = SampleID, SiteID_1 = SiteID, Year_1 = Year, 
+                FireClassification_1 = FireClassification, 
+                CoreTemp_C_1 = CoreTemp_C, pH_1 = pH)
+
+SamID_2.meta = data.frame(sample_data(DNA.physeq)) %>%
+  dplyr::select(SampleID, SiteID, Year, FireClassification, CoreTemp_C, pH) %>%
+  dplyr::rename(Sample_2 = SampleID, SiteID_2 = SiteID, Year_2 = Year, 
+                FireClassification_2 = FireClassification, 
+                CoreTemp_C_2 = CoreTemp_C, pH_2 = pH)
+
+bNTI.df = read.table("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/bNTI_R10K.txt",
+                     header=TRUE) %>%
+  inner_join(SamID_1.meta, by = "Sample_1") %>%
+  inner_join(SamID_2.meta, by = "Sample_2")
+
+bNTI.df
+```
+# Within fire classes
+
+## Within class
+```{r, fig.height=3.5, fig.width=3.5}
+barpositions = data.frame(Comparison = c("FireAffected - Recovered", "FireAffected - Reference", "Recovered - Reference"),
+                          xstart = c(1, 1, 2),
+                          xend = c(2, 3, 3),
+                          ystart = c(13, 15, 13),
+                          yend = c(13.5, 15.5, 13.5),
+                          xtext = c(1.5, 2, 2.5),
+                          ytext = c(14.5, 16.5, 14.5))
+
+Class.bNTI.df = bNTI.df %>%
+  filter(Year_1 == Year_2,
+         FireClassification_1 == FireClassification_2) %>%
+  mutate(Year = Year_1,
+         FireClassification = FireClassification_1,
+         delta_pH = abs(pH_1 - pH_2),
+         delta_temp = abs(CoreTemp_C_1 - CoreTemp_C_2)) %>%
+  mutate(FireClassification = factor(FireClassification, levels=c("FireAffected", "Recovered", "Reference")))
+
+class.model = kruskal.test(bNTI ~ FireClassification, data = Class.bNTI.df)
+class.model
+class.posthoc = FSA::dunnTest(bNTI ~ FireClassification, data = Class.bNTI.df)$res %>%
+  left_join(barpositions, by = "Comparison") %>%
+  filter(P.adj < 0.05) %>%
+  mutate(sig = ifelse(P.adj < 0.001, "p<0.001", paste("p=", round(P.adj, digits = 3), sep="")))
+class.posthoc
+
+Class.bNTI.plot = ggplot(data=Class.bNTI.df, aes(x=FireClassification, y=bNTI)) +
+  geom_hline(yintercept = c(-2, 2), linetype=2) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(height=0, width=0.25, aes(shape=FireClassification)) +
+  geom_segment(data=class.posthoc, aes(x=xstart, xend=xend, y=yend, yend=yend)) +
+  geom_segment(data=class.posthoc, aes(x=xstart, xend=xstart, y=ystart, yend=yend)) +
+  geom_segment(data=class.posthoc, aes(x=xend, xend=xend, y=ystart, yend=yend)) +
+  geom_text(data=class.posthoc, aes(x=xtext, y=ytext, label=sig), size=6*5/14) +
+  scale_shape_manual(values=FC.shape) +
+  basic_theme
+Class.bNTI.plot
+
+Class.bNTI.sum = Class.bNTI.df %>%
+  mutate(process = ifelse(bNTI > 2, "Variable selection",
+                          ifelse(bNTI < -2, "Homogeneous selection",
+                                 "Weak selection"))) %>%
+  group_by(FireClassification) %>%
+  mutate(total_pairs = n()) %>%
+  ungroup %>%
+  group_by(FireClassification, process, total_pairs) %>%
+  summarize(n_pairs = n()) %>%
+  ungroup %>%
+  mutate(perc_pairs = n_pairs/total_pairs*100)
+
+Class.bNTI.bar_plot = ggplot(data=Class.bNTI.sum, aes(x=FireClassification, y=perc_pairs)) +
+  geom_bar(stat="identity", aes(fill=process)) +
+  labs(x="FireClassification", y="Percent of site pairs (%)",
+       fill="Assembly\nprocess") +
+  basic_theme
+Class.bNTI.bar_plot
+```
+
+
+```{r, fig.height=5, fig.width=7}
+class.bNTI.model.df = data.frame()
+class.bNTI.posthoc.df = data.frame()
+for (yr in c(2015, 2016, 2017, 2018, 2019, 2020, 2021)){
+  sub.model = kruskal.test(bNTI ~ FireClassification,
+                          data = filter(Class.bNTI.df, Year == yr))
+  class.bNTI.model.df = rbind(class.bNTI.model.df,
+                              data.frame(x2 = sub.model$statistic,
+                                         df = sub.model$parameter,
+                                         pvalue = sub.model$p.value,
+                                         Year = yr))
+  sub.posthoc = FSA::dunnTest(bNTI ~ FireClassification,
+                              data = filter(Class.bNTI.df, Year == yr))
+  class.bNTI.posthoc.df = rbind(class.bNTI.posthoc.df,
+                                sub.posthoc$res %>%
+                                  mutate(Year = yr))
+}
+
+class.bNTI.model.df = class.bNTI.model.df %>%
+  mutate(P.adj = p.adjust(pvalue, method = "BH"))
+
+class.bNTI.posthoc.sig.df = full_join(class.bNTI.posthoc.df, barpositions, by = "Comparison") %>%
+  filter(P.adj < 0.05, Year %in% filter(class.bNTI.model.df, P.adj < 0.05)$Year) %>%
+  mutate(sig = ifelse(P.adj < 0.001, "***",
+                      ifelse(P.adj < 0.01, "**", "*")))
+
+class.bNTI.byyear.plot = ggplot(data=Class.bNTI.df, aes(x=FireClassification, y=bNTI)) +
+  geom_hline(yintercept = c(-2, 2), linetype=2) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(height=0, width=0.25, aes(shape=FireClassification)) +
+  geom_segment(data=class.bNTI.posthoc.sig.df, aes(x=xstart, xend=xend, y=yend, yend=yend)) +
+  geom_segment(data=class.bNTI.posthoc.sig.df, aes(x=xstart, xend=xstart, y=ystart, yend=yend)) +
+  geom_segment(data=class.bNTI.posthoc.sig.df, aes(x=xend, xend=xend, y=ystart, yend=yend)) +
+  geom_text(data=class.bNTI.posthoc.sig.df, aes(x=xtext, y=ytext, label=sig)) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22, "Between classes" = 23)) +
+  basic_theme +
+  theme(legend.position = c(0.66, 0.15)) +
+  facet_wrap(~Year)
+class.bNTI.byyear.plot
+
+ggsave(class.bNTI.byyear.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S10.tiff",
+       device="tiff", width=7, height=5, units="in")
+
+```
+
+# Compare bNTI to soil temperature and pH
+```{r, fig.height=3.5, fig.width=3.5}
+year.bNTI.scaled.df = bNTI.df %>%
+  filter(Year_1 == Year_2) %>%
+  mutate(Year = Year_1,
+         delta_pH = abs(pH_1 - pH_2),
+         delta_temp = abs(CoreTemp_C_1 - CoreTemp_C_2)) %>%
+  mutate(Comparison = ifelse(FireClassification_1 == FireClassification_2,
+                             FireClassification_1,
+                             ifelse(FireClassification_1 == "FireAffected" | FireClassification_2 == "FireAffected",
+                                    ifelse(FireClassification_1 == "Reference" | FireClassification_2 == "Reference", "FireAffected vs Reference",
+                                           "FireAffected vs Recovered"),
+                                    "Recovered vs Reference"))) %>%
+  mutate(Comparison_type = ifelse(FireClassification_1 == FireClassification_2,
+                                  "Within class", "Between classes")) %>%
+  arrange(Comparison_type, Comparison) %>%
+  mutate(Comparison = factor(Comparison, 
+                             levels = c("FireAffected vs Recovered", "FireAffected vs Reference", "Recovered vs Reference",
+                                        "FireAffected", "Recovered", "Reference"))) %>%
+  mutate(FC_comp = ifelse(Comparison_type == "Between classes", "Between classes", FireClassification_1),
+         scale_delta_pH = scale(delta_pH, center = TRUE),
+         scale_delta_temp = scale(delta_temp, center = TRUE))
+
+year.model = lm(bNTI~1, data=year.bNTI.scaled.df)
+year_pH.model = lm(bNTI~scale_delta_pH, data=year.bNTI.scaled.df)
+year_pH_temp.model = lm(bNTI~scale_delta_pH*scale_delta_temp, data=year.bNTI.scaled.df)
+anova(year.model, year_pH.model, year_pH_temp.model)
+
+summary(year_pH_temp.model)
+write.table(summary(year_pH_temp.model)$coefficients, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/bNTI_linear_correlation.txt", 
+            sep="\t", quote = FALSE, row.names = TRUE)
+
+pH_temp.bNTI.plot = ggplot(data=year.bNTI.scaled.df, aes(x=delta_pH, y=bNTI)) +
+  geom_hline(yintercept = c(-2, 2), linetype=2) +
+  geom_point(aes(shape=FC_comp)) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22, "Between classes" = 23)) +
+  scale_fill_gradient(low="white", high="red") +
+  labs(x="Difference in soil pH", y="bNTI", shape="Fire Classification",
+       fill="Difference in\nsoil temp. (˚C)") +
+  basic_theme
+
+pH_temp.bNTI.plot
+
+temp_pH.bNTI.plot = ggplot(data=year.bNTI.scaled.df, aes(x=delta_temp, y=bNTI)) +
+  geom_hline(yintercept = c(-2, 2), linetype=2) +
+  geom_point(aes(shape=FC_comp)) +
+  scale_shape_manual(values=c(FC.shape, "Between classes" = 23)) +
+  scale_fill_gradient(low="white", high="purple") +
+  labs(x="Difference in soil temp. (˚C)", y="bNTI", shape="Fire Classification",
+       fill="Difference\nin soil pH") +
+  basic_theme
+
+temp_pH.bNTI.plot
+
+
+summary(year_pH_temp.model)$coefficients
+
+```
+
+# bNTI and RCbray
+```{r, fig.height=7, fig.width=3.5}
+# Read in RCbray data
+RCb.df = read.table("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/RCbray_R10K.txt",
+                    header=TRUE, sep="\t")
+
+# Site info
+site.info = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
+                        sheet = "Site_metadata", na="NA") %>%
+  select(SiteID, latitude, longitude) %>%
+  mutate(latitude = paste(gsub(" ", "d", latitude), "'0\"N", sep=""),
+         longitude = paste(gsub(" ", "d", longitude), "'0\"W", sep="")) %>%
+  mutate(latitude = round(as.numeric(sp::char2dms(latitude)), digits = 4),
+         longitude = round(as.numeric(sp::char2dms(longitude)), digits = 4))
+
+SamID_1.meta = data.frame(sample_data(DNA.physeq)) %>%
+  dplyr::select(SampleID, SiteID, Year, FireClassification, CoreTemp_C, pH) %>%
+  left_join(site.info, by = "SiteID") %>%
+  dplyr::rename(Sample_1 = SampleID, SiteID_1 = SiteID, Year_1 = Year, 
+                FireClassification_1 = FireClassification, 
+                CoreTemp_C_1 = CoreTemp_C, pH_1 = pH,
+                latitude_1 = latitude, longitude_1 = longitude)
+
+SamID_2.meta = data.frame(sample_data(DNA.physeq)) %>%
+  dplyr::select(SampleID, SiteID, Year, FireClassification, CoreTemp_C, pH) %>%
+  left_join(site.info, by = "SiteID") %>%
+  dplyr::rename(Sample_2 = SampleID, SiteID_2 = SiteID, Year_2 = Year, 
+                FireClassification_2 = FireClassification, 
+                CoreTemp_C_2 = CoreTemp_C, pH_2 = pH,
+                latitude_2 = latitude, longitude_2 = longitude)
+
+# Which site pairs from which comparison?
+determ.df = bNTI.df %>%
+  filter(FireClassification_1 == FireClassification_2,
+         Year_1 == Year_2) %>%
+  filter(bNTI <= -2 | bNTI >= 2) %>%
+  select(Sample_1, Sample_2)
+
+stochast.df = bNTI.df %>%
+  filter(FireClassification_1 == FireClassification_2,
+         Year_1 == Year_2) %>%
+  filter(bNTI > -2 & bNTI < 2) %>%
+  select(Sample_1, Sample_2)
+
+comm_assembly.df = rbind(bNTI.df %>%
+                           inner_join(determ.df, by = c("Sample_1", "Sample_2")) %>%
+                           mutate(Assembly_process = ifelse(bNTI <= -2, "Homogeneous selection",
+                                                            ifelse(bNTI >= 2, "Variable selection", NA))) %>%
+                           select(Sample_1, Sample_2, Assembly_process),
+                         RCb.df %>%
+                           rename(Sample_1 = Site1, Sample_2 = Site2) %>%
+                           inner_join(stochast.df, by = c("Sample_1", "Sample_2")) %>%
+                           mutate(Assembly_process = ifelse(RCb <= -0.95, "Homogenizing dispersal",
+                                                            ifelse(RCb >= 0.95, "Limited dispersal", "Drift alone"))) %>%
+                           select(Sample_1, Sample_2, Assembly_process),
+                         RCb.df %>%
+                           rename(Sample_2 = Site1, Sample_1 = Site2) %>%
+                           inner_join(stochast.df, by = c("Sample_1", "Sample_2")) %>%
+                           mutate(Assembly_process = ifelse(RCb <= -0.95, "Homogenizing dispersal",
+                                                            ifelse(RCb >= 0.95, "Limited dispersal", "Drift alone"))) %>%
+                           select(Sample_1, Sample_2, Assembly_process)) %>%
+  left_join(SamID_1.meta, by = "Sample_1") %>%
+  left_join(SamID_2.meta, by = "Sample_2")
+
+comm_assembly.sum = comm_assembly.df %>%
+  group_by(FireClassification_1, Year_1) %>%
+  mutate(n_total_pairs = n()) %>%
+  ungroup %>%
+  group_by(FireClassification_1, Year_1, n_total_pairs, Assembly_process) %>%
+  summarize(n_pairs = n()) %>%
+  ungroup %>%
+  mutate(perc_pairs = n_pairs/n_total_pairs*100) %>%
+  mutate(Assembly_process = factor(Assembly_process, levels=c("Drift alone", "Limited dispersal", "Homogenizing dispersal",
+                                                              "Variable selection", "Homogeneous selection")))
+
+full_assembly.plot = ggplot(data=comm_assembly.sum, aes(x=FireClassification_1, y=perc_pairs)) +
+  geom_bar(stat="identity", aes(fill=Assembly_process)) +
+  geom_text(data=unique(select(comm_assembly.sum, FireClassification_1, Year_1, n_total_pairs)), 
+            aes(x=FireClassification_1, y=10, label = n_total_pairs), size=6*5/14, color="white") +
+  scale_fill_manual(values = c("Drift alone" = "#777777", "Limited dispersal" = "#1965B0", "Homogenizing dispersal" = "#4EB265",
+                               "Variable selection" = "#F7F056", "Homogeneous selection" = "#DC050C")) +
+  labs(x="Fire classification", y="Percent of site pairs (%)", fill="Assembly process") +
+  facet_wrap(~Year_1, ncol=2) +
+  theme_bw() +
+  theme(axis.text = element_text(size=6),
+        axis.title = element_text(size=7),
+        strip.text = element_text(size=7),
+        legend.text = element_text(size=6),
+        legend.title = element_text(size=7),
+        legend.position = c(0.75, 0.12))
+
+full_assembly.plot
+```
+
+# Final plot for publication
+```{r, fig.height=7, fig.width=7}
+Fig7.plot = cowplot::plot_grid(cowplot::plot_grid(Class.bNTI.plot + theme(legend.position = "none"),
+                                                  pH_temp.bNTI.plot + theme(legend.position = "none"),
+                                                  temp_pH.bNTI.plot + theme(legend.position = "none"),
+                                                  g_legend(pH_temp.bNTI.plot + guides(shape = guide_legend(ncol=2))),
+                                                  rel_heights = c(1,1,1,0.35),
+                                                  ncol=1, labels = c("A", "B", "C", ""), label_size = 8),
+                               full_assembly.plot, nrow=1, rel_widths = c(0.6,1),
+                               labels = c("", "D"), label_size = 8)
+Fig7.plot
+
+ggsave(Fig7.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_7.tiff",
+       device="tiff", width=7, height=7, units="in")
+
+```
+
+
+# Session Info
+```{r}
+sessionInfo()
+```
+

@@ -1,0 +1,1360 @@
+---
+title: "Centralia MultiYear testing"
+author: "Sam Barnett"
+date: "1/7/2022"
+output: html_document
+---
+
+# Introduction
+This is the notebook for analysis of whole community composition in the 7 year Centralia Study. We are looking to see how bacterial diversity varies over time and fire effect. This notebook is specifically for the whole community and thus takes into account more samples than the RNA:DNA (active taxa) data but also does not include the phantom taxa. We will be looking at Alpha diversity, Beta diversity, and trajectory analysis here as well as making some nice figures. These figures will be put together into publication quality figs in a seprate notebook. Also the phyloseq that is used here was also generated in a seprate notebook where non-bacteria, chloroplasts, and mitochondria were removed.
+
+
+## Libraries and basics
+```{r}
+# Libraries for data
+library(dplyr)
+library(phyloseq)
+library(ape)
+library(readxl)
+
+# Libraries for analysis
+library(vegan)
+library(picante)
+library(ecotraj)
+
+# Libraries for plotting
+library(ggplot2)
+library(eulerr)
+library(grid)
+library(gridExtra)
+source("/Users/sambarnett/Documents/Misc_code/paul_tol_colors.R") # Colorblind friendly colors.
+
+# Functon for extracting legends
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+# Notable lists
+site.list = c("Cen01", "Cen02", "Cen03", "Cen04", "Cen05", "Cen06", "Cen07",
+              "Cen08", "Cen09", "Cen10", "Cen11", "Cen12", "Cen13", "Cen14",
+              "Cen15", "Cen16", "Cen17", "Cen18", "Cen19", "Cen20", "Cen21",
+              "Cen22", "Cen23")
+used_sites = c("Cen03", "Cen04", "Cen06", "Cen07", "Cen08", "Cen09", "Cen10", 
+               "Cen11", "Cen12", "Cen13", "Cen14", "Cen15", "Cen16", "Cen17", 
+               "Cen18", "Cen19", "Cen21", "Cen22", "Cen23")
+
+# Setting repeated plot aesthetics
+site.col = paultol_colors(length(used_sites))
+names(site.col) = used_sites
+
+site.shape = c(21, 21, 24, 21, 22, 24, 24, 24, 24, 24, 24, 24, 24,
+               22, 21, 24, 24, 24, 22)
+names(site.shape) = used_sites
+FC.shape = c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)
+
+# Basic plotting theme so as not to continually repeat it
+basic_theme = theme_bw() +
+  theme(axis.text = element_text(size=6),
+        axis.title = element_text(size=7),
+        legend.text = element_text(size=6),
+        legend.title = element_text(size=7, hjust=0.5),
+        strip.text = element_text(size=7),
+        plot.title = element_text(size=8, hjust=0.5))
+
+```
+
+
+## Data import
+For this analysis we need to remove the RNA sample set, the sample set from 2014 (not flash frozen and extracted with MoBio kits not the Phenol-Chloroform method). We also want to remove any sites that don't have samples in less than 3 years so that we can get an analysis using the timeseries.
+```{r}
+# Import filtered phyloseq
+DNA_RNA.physeq = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/RNA_DNA_physeq.RDS")
+DNA_RNA.physeq
+
+# Remove RNA samples
+DNA.physeq = subset_samples(DNA_RNA.physeq, NucAcid_type == "DNA")
+DNA.physeq = prune_taxa(taxa_sums(DNA.physeq) > 0, DNA.physeq)
+DNA.physeq
+
+# Remove 2014 samples
+DNA.physeq = subset_samples(DNA.physeq, Year != 2014)
+DNA.physeq = prune_taxa(taxa_sums(DNA.physeq) > 0, DNA.physeq)
+DNA.physeq
+
+# Remove sites not found in 3 or more years
+DNA.years = data.frame(sample_data(DNA.physeq)) %>%
+  group_by(SiteID) %>%
+  summarize(n_year = n()) %>%
+  ungroup %>%
+  arrange(n_year)
+DNA.physeq = subset_samples(DNA.physeq, SiteID %in% filter(DNA.years, n_year >= 3)$SiteID)
+DNA.physeq = prune_taxa(taxa_sums(DNA.physeq) > 0, DNA.physeq)
+DNA.physeq
+
+# DNA samples not found in RNA
+DNA_samples = filter(data.frame(sample_data(DNA_RNA.physeq)),
+                     NucAcid_type == "DNA",
+                     Year != 2014)$SampleID
+RNA_samples = filter(data.frame(sample_data(DNA_RNA.physeq)),
+                     NucAcid_type == "RNA",
+                     Year != 2014)$SampleID
+
+# Clean workspace
+DNA_RNA.physeq = NULL
+
+```
+
+
+## Rarefy dataset
+We will use rarefaction to normalize read counts to account for uneven sequencing depth across samples.
+```{r, fig.height=7, fig.width=3.5}
+min_depth = min(colSums(otu_table(DNA.physeq)))
+
+sort(colSums(otu_table(DNA.physeq)))
+# Make rarefaction curve
+# Make rarefaction curve
+test.otu = t(otu_table(DNA.physeq))
+class(test.otu) = "matrix"
+rarecurve.out = rarecurve(test.otu, step=10000)
+test.otu = NULL
+names(rarecurve.out) <- sample_data(DNA.physeq)$SampleID
+
+# Coerce data into "long" form.
+protox <- mapply(FUN = function(x, y) {
+  mydf <- as.data.frame(x)
+  colnames(mydf) <- "rare_count"
+  mydf$SampleID <- y
+  mydf$Subsample_size <- attr(x, "Subsample")
+  mydf
+}, x = rarecurve.out, y = as.list(names(rarecurve.out)), SIMPLIFY = FALSE)
+
+rarecurve.df = do.call(rbind, protox) %>%
+  left_join(data.frame(sample_data(DNA.physeq)), by = "SampleID")
+
+# Plot by temp
+ggplot(data=rarecurve.df, aes(x=Subsample_size, y=rare_count)) +
+  geom_vline(xintercept = min_depth, linetype=2) +
+  geom_line(aes(group=SampleID, color=CoreTemp_C)) +
+  scale_color_gradient(low="blue", high="red") +
+  labs(x="Rarefied read depth", y="OTU count",
+       color="Soil temp. (˚C)") +
+  facet_wrap(~FireClassification, ncol=1) +
+  basic_theme +
+  theme(axis.text.x = element_text(angle=45, hjust=1),
+        legend.position = "bottom")
+
+
+```
+
+
+```{r}
+set.seed(4242)
+rare.physeq = rarefy_even_depth(DNA.physeq)
+rare.physeq
+
+DNA.physeq = NULL
+
+rare_depth = mean(colSums(otu_table(rare.physeq)))
+print(paste("Rarifying to:", rare_depth))
+
+sample_data(rare.physeq)$SiteID = factor(sample_data(rare.physeq)$SiteID, levels=used_sites)
+
+```
+
+# Shared and different taxa across fire classifications
+For a brief inital look, lets see how many taxa (OTUs) are shared across fire classifications and how many are unique.
+```{r, fig.height=3.5, fig.width=3.5}
+# Get a table of each OTU and its labeling or detection pattern across fire classifications regimes.
+FC_sum.otu = cbind(rowSums(otu_table(subset_samples(rare.physeq, FireClassification == "FireAffected"))) > 0,
+                   rowSums(otu_table(subset_samples(rare.physeq, FireClassification == "Recovered"))) > 0,
+                   rowSums(otu_table(subset_samples(rare.physeq, FireClassification == "Reference"))) > 0)
+colnames(FC_sum.otu) = c("FireAffected", "Recovered", "Reference")
+
+# Plot venn diagram
+venn_FireClass.plot = plot(euler(FC_sum.otu), 
+                           legend = FALSE, labels = TRUE,
+                           quantities = list(TRUE, fontsize=6), 
+                           strip=FALSE, fills=c("red", "blue", "grey"))
+venn_FireClass.plot
+
+FC_sum.otu = NULL
+```
+
+
+# Soil change over time
+
+Before examining how the microbial community changes over the time series, lets look at how the overall soil changes. This might help us identify potential drivers of any temporal microbial changes we see.
+
+## Temperature
+First lets see whether soil temperature changes over time. In particular how do the fire affected sites change? This question is particularly important considering that the fire front is moving along the coal seam.
+```{r, fig.width=7, fig.height=3.5}
+temp.model.df = data.frame()
+for (FC in c("FireAffected", "Recovered", "Reference")){
+  sub_temp.model = lme(CoreTemp_C ~ Year, random = ~1|SiteID, data=filter(data.frame(sample_data(rare.physeq)), FireClassification == FC))
+  temp.model.df = rbind(temp.model.df,
+                        data.frame(summary(sub_temp.model)$tTable) %>%
+                          tibble::rownames_to_column(var="factor") %>%
+                          mutate(FireClassification = FC))
+}
+
+write.table(temp.model.df, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/temp_v_time_LME.txt", 
+            sep="\t", quote = FALSE, row.names = FALSE)
+
+temp.model.reg = temp.model.df %>%
+  mutate(p_slope = ifelse(factor == "Year", p.value, 1),
+         factor = ifelse(factor == "(Intercept)", "Intercept", factor)) %>%
+  group_by(FireClassification) %>%
+  mutate(p_slope = min(p.value)) %>%
+  ungroup %>%
+  select(factor, Value, p_slope, FireClassification) %>%
+  tidyr::spread(key=factor, value = Value) %>%
+  mutate(sig = ifelse(p_slope < 0.05, "< 0.05", "≥ 0.05"))
+
+
+temp_time_lme.plot = ggplot(data=data.frame(sample_data(rare.physeq)), aes(x=Year, y=CoreTemp_C)) +
+  geom_line(aes(group=SiteID), color="black", size=1) + 
+  geom_line(aes(color=SiteID), size=0.5) + 
+  geom_point(size=2, aes(fill=SiteID, shape=FireClassification)) +
+  geom_abline(data=temp.model.reg, aes(intercept = Intercept, slope = Year), linetype = 1, size=2, color="black") +
+  geom_abline(data=temp.model.reg, aes(intercept = Intercept, slope = Year, linetype = sig), size=1, color="white") +
+  scale_linetype_manual(values=c("< 0.05" = 1, "≥ 0.05" = 2)) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  scale_color_manual(values=site.col) +
+  labs(x="Year", y="Soil temperature (˚C)", linetype="Regression\nslope p-value") +
+  facet_grid(~FireClassification, scales = "free_y", switch="y") +
+  basic_theme +
+  theme(legend.position = "bottom",
+        legend.direction = "vertical") +
+  guides(fill=guide_legend(override.aes=list(shape=site.shape), ncol=7),
+         linetype=guide_legend(override.aes=list(color="black")))
+temp_time_lme.plot
+
+saveRDS(temp_time_lme.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_1B.RDS")
+
+
+```
+
+
+## pH
+Now does pH change over time at all?
+```{r, fig.width=7, fig.height=3.5}
+pH.model.df = data.frame()
+for (FC in c("FireAffected", "Recovered", "Reference")){
+  sub_pH.model = lme(pH ~ Year, random = ~1|SiteID, data=filter(data.frame(sample_data(rare.physeq)), FireClassification == FC))
+  pH.model.df = rbind(pH.model.df,
+                      data.frame(summary(sub_pH.model)$tTable) %>%
+                        tibble::rownames_to_column(var="factor") %>%
+                        mutate(FireClassification = FC))
+}
+
+write.table(pH.model.df, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/pH_v_time_LME.txt", 
+            sep="\t", quote = FALSE, row.names = FALSE)
+
+pH.model.reg = pH.model.df %>%
+  mutate(p_slope = ifelse(factor == "Year", p.value, 1),
+         factor = ifelse(factor == "(Intercept)", "Intercept", factor)) %>%
+  group_by(FireClassification) %>%
+  mutate(p_slope = min(p.value)) %>%
+  ungroup %>%
+  select(factor, Value, p_slope, FireClassification) %>%
+  tidyr::spread(key=factor, value = Value) %>%
+  mutate(sig = ifelse(p_slope < 0.05, "< 0.05", "≥ 0.05"))
+
+pH_time_lme.plot = ggplot(data=data.frame(sample_data(rare.physeq)), aes(x=Year, y=pH)) +
+  geom_line(aes(group=SiteID), color="black", size=1) + 
+  geom_line(aes(color=SiteID), size=0.5) + 
+  geom_point(size=2, aes(fill=SiteID, shape=FireClassification)) +
+  #geom_abline(data=pH.model.reg, aes(intercept = Intercept, slope = Year), linetype = 1, size=2, color="black") +
+  #geom_abline(data=pH.model.reg, aes(intercept = Intercept, slope = Year, linetype = sig), size=1, color="white") +
+  scale_linetype_manual(values=c("< 0.05" = 1, "≥ 0.05" = 2)) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  scale_color_manual(values=site.col) +
+  labs(x="Year", y="Soil pHerature (˚C)", linetype="Regression\nslope p-value") +
+  facet_grid(~FireClassification, scales = "free_y", switch="y") +
+  basic_theme +
+  theme(legend.position = "bottom",
+        legend.direction = "vertical") +
+  guides(fill=guide_legend(override.aes=list(shape=site.shape), ncol=7),
+         linetype=guide_legend(override.aes=list(color="black")))
+pH_time_lme.plot
+```
+
+pH doesn't change over time for the most part, but it does look like it differs fundamentally across fire classifications. Lets check that out.
+```{r, fig.width=3.5, fig.height=5}
+pH.model = aov(pH~FireClassification, data=data.frame(sample_data(rare.physeq)))
+summary(pH.model)
+pH.Tukey = TukeyHSD(pH.model, "FireClassification")
+pH.Tukey$FireClassification
+
+pH_box.plot = ggplot(data=data.frame(sample_data(rare.physeq)), aes(x=FireClassification, y=pH)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(height=0, width=0.25, aes(fill=SiteID, shape=FireClassification), color="black", size=2) +
+  annotate("segment", x=c(1.05, 2.05), xend=c(1.95, 2.95), y=c(8.6, 8.6), yend=c(8.6, 8.6)) +
+  annotate("segment", x=c(1.05, 1.95, 2.05, 2.95), xend=c(1.05, 1.95, 2.05, 2.95), y=c(8.5, 8.5, 8.5, 8.5), yend=c(8.6, 8.6, 8.6, 8.6)) +
+  annotate("text", x=c(1.5, 2.5), y=c(8.7, 8.7), label=c("p<0.001", "p=0.003"), size=6*5/14) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  labs(x="Fire class", y="Soil pH") +
+  basic_theme +
+  theme(legend.position = "bottom") +
+  guides(fill=guide_legend(override.aes=list(shape=site.shape), title.position = "top"),
+         shape="none")
+pH_box.plot
+```
+
+Plot pH analyses together.
+
+```{r, fig.height=5, fig.width=7}
+pH_time.leg = g_legend(pH_time_lme.plot + guides(linetype = "none"))
+
+pH.plot = cowplot::plot_grid(pH_time_lme.plot + theme(legend.position = "none"), 
+                             pH_box.plot + theme(legend.position = "none"),
+                   nrow=1, rel_widths = c(1,0.5),
+                   labels = c("A", "B"), label_size = 8)
+pH.plot = cowplot::plot_grid(pH.plot, pH_time.leg, ncol=1,
+                             rel_heights = c(1, 0.3))
+pH.plot
+
+ggsave(pH.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S1.tiff",
+       device="tiff", width=7, height=5, units="in")
+
+```
+
+# Alpha diversity
+Now that we see how the soils are different across fire classifications and time, lets see if the within-sample bacterial diversities vary. for this analysis we'll use multiple measures of alpha diversity (Richness, Shannon's index, Pielou's evenness index, and Faith's phylogenetic diversity index). We will probably only report one in the main manuscript.
+
+```{r, fig.height=7, fig.width=7}
+alpha_div.df = data.frame(richness=specnumber(t(otu_table(rare.physeq))),
+                          shannon=diversity(t(otu_table(rare.physeq)), 
+                                            index = "shannon")) %>%
+  tibble::rownames_to_column(var="SampleID") %>%
+  mutate(evenness = shannon/log(richness)) %>%
+  left_join(pd(t(otu_table(rare.physeq)), phy_tree(rare.physeq)) %>%
+              tibble::rownames_to_column(var="SampleID"), by="SampleID") %>%
+  tidyr::gather(key="index", value="measure", -SampleID) %>%
+  filter(index != "SR") %>%
+  mutate(index = factor(index, levels = c("richness", "shannon", "evenness", "PD"))) %>%
+  left_join(sample_data(rare.physeq), by = "SampleID") 
+
+```
+
+## Over time
+First lets look at alpha diversity over time.
+
+```{r, fig.height=7, fig.width=7}
+alpha_year.model.df = data.frame()
+for (idx in c("richness", "shannon", "evenness", "PD")){
+  for (FC in c("FireAffected", "Recovered", "Reference")){
+  ctrl <- lmeControl(opt='optim')
+  FC_alpha_year.model = lme(measure ~ Year, random = ~1|SiteID, control=ctrl,
+                            data=filter(alpha_div.df, FireClassification == FC, index == idx))
+  alpha_year.model.df = rbind(alpha_year.model.df,
+                              data.frame(summary(FC_alpha_year.model)$tTable) %>%
+                                tibble::rownames_to_column(var="factor") %>%
+                                mutate(FireClassification = FC,index = idx))
+  }
+}
+
+alpha_index_names = data.frame(alpha_index = c("Richness", "Shannon’s index", "Pielou's evenness", "Faith's PD"),
+                               index = c("richness", "shannon", "evenness", "PD")) %>%
+  mutate(alpha_index = factor(alpha_index, levels = c("Richness", "Shannon’s index", "Pielou's evenness", "Faith's PD")),
+         index = factor(index, levels = c("richness", "shannon", "evenness", "PD")))
+alpha_year.model.df = left_join(alpha_year.model.df, alpha_index_names, by="index")
+
+alpha_year.model.reg = alpha_year.model.df %>%
+  mutate(p_slope = ifelse(factor == "Year", p.value, 1),
+         factor = ifelse(factor == "(Intercept)", "Intercept", factor)) %>%
+  group_by(FireClassification, index) %>%
+  mutate(p_slope = min(p.value)) %>%
+  ungroup %>%
+  select(factor, Value, p_slope, FireClassification, index) %>%
+  tidyr::spread(key=factor, value = Value) %>%
+  mutate(sig = ifelse(p_slope < 0.05, "< 0.05", "≥ 0.05")) %>%
+  left_join(alpha_index_names, by="index")
+
+alpha_year_lme.plot = ggplot(data=left_join(alpha_div.df, alpha_index_names, by="index"), 
+                             aes(x=Year, y=measure, fill=SiteID, shape=FireClassification)) +
+  geom_line(aes(group=SiteID), color="black", size=1) + 
+  geom_line(aes(color=SiteID), size=0.5) + 
+  geom_point(size=2, aes(fill=SiteID, shape=FireClassification)) +
+  geom_abline(data=alpha_year.model.reg, aes(intercept = Intercept, slope = Year), linetype = 1, size=2, color="black") +
+  geom_abline(data=alpha_year.model.reg, aes(intercept = Intercept, slope = Year, linetype = sig), size=1, color="white") +
+  scale_linetype_manual(values=c("< 0.05" = 1, "≥ 0.05" = 2)) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  scale_color_manual(values=site.col) +
+  labs(x="Year", linetype="Regression\nslope p-value") +
+  facet_grid(alpha_index~FireClassification, scales = "free_y", switch="y") +
+  basic_theme +
+  theme(axis.title.y = element_blank(),
+        strip.placement = "outside",
+        strip.background.y = element_blank()) +
+  guides(fill=guide_legend(override.aes=list(shape=site.shape)),
+         linetype=guide_legend(override.aes=list(color="black")))
+alpha_year_lme.plot
+
+```
+
+## Over soil temperature
+
+There does seem to be a significant shift over time but only in the fire affected soils. Since we know fire affected soils are cooling over time, lets see if there are shifts in alpha diversity over soil temperature. For this analysis we will not necessarily look at fire classification.
+
+```{r, fig.height=7, fig.width=5}
+alpha_temp.model.sum = data.frame()
+for (idx in c("richness", "shannon", "evenness", "PD")){
+  alpha_temp.model = lme(measure ~ CoreTemp_C, random = ~1|SiteID, control=ctrl, 
+                        data=filter(alpha_div.df, index == idx))
+  alpha_temp.model.sum = rbind(alpha_temp.model.sum,
+                               summary(alpha_temp.model)$tTable %>%
+                                 data.frame() %>%
+                                 tibble::rownames_to_column(var="factor") %>%
+                                 mutate(index = idx))
+}
+alpha_temp.model.sum
+
+alpha_temp.model.reg = alpha_temp.model.sum %>%
+  mutate(p_slope = ifelse(factor == "CoreTemp_C", p.value, 1),
+         factor = ifelse(factor == "(Intercept)", "Intercept", factor)) %>%
+  group_by(index) %>%
+  mutate(p_slope = min(p.value)) %>%
+  ungroup %>%
+  select(factor, Value, p_slope, index) %>%
+  tidyr::spread(key=factor, value = Value) %>%
+  mutate(sig = ifelse(p_slope < 0.05, "< 0.05", "≥ 0.05"))
+
+alpha_temp.plot = ggplot(data=alpha_div.df, aes(x=CoreTemp_C, y=measure, fill=SiteID, shape=FireClassification)) +
+  geom_point(size=2) +
+  geom_abline(data=alpha_temp.model.reg, aes(intercept = Intercept, slope = CoreTemp_C), linetype = 1, size=2, color="black") +
+  geom_abline(data=alpha_temp.model.reg, aes(intercept = Intercept, slope = CoreTemp_C), linetype = 1, size=1, color="white") +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  scale_color_manual(values=site.col) +
+  labs(x="Soil temperature (˚C)", y="Evenness",
+       shape="Fire Classification", fill="Site ID") +
+  facet_grid(index~NA, scales = "free_y", switch="y") +
+  basic_theme +
+  theme(axis.title.y = element_blank(),
+        strip.placement = "outside",
+        strip.background.y = element_blank(),
+        strip.text.x = element_blank()) +
+  guides(fill=guide_legend(override.aes=list(shape=site.shape)),
+         linetype=guide_legend(override.aes=list(color="black")))
+
+alpha_temp.plot
+```
+
+Save the Faith's phylogenetic diversity plots for publication.
+
+```{r, fig.height=3.5, fig.width=7}
+# By year
+write.table(filter(alpha_year.model.df, index=="PD"), file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/WholePD_v_time_LME.txt", 
+            sep="\t", quote = FALSE, row.names = FALSE)
+
+PD_year_lme.plot = ggplot(data=filter(left_join(alpha_div.df, alpha_index_names, by="index"), index == "PD"), 
+                          aes(x=Year, y=measure, fill=SiteID, shape=FireClassification)) +
+  geom_line(aes(group=SiteID), color="black", size=1) + 
+  geom_line(aes(color=SiteID), size=0.5) + 
+  geom_point(size=2, aes(fill=SiteID, shape=FireClassification)) +
+  geom_abline(data=alpha_year.model.reg, aes(intercept = Intercept, slope = Year), linetype = 1, size=2, color="black") +
+  geom_abline(data=alpha_year.model.reg, aes(intercept = Intercept, slope = Year, linetype = sig), size=1, color="white") +
+  scale_linetype_manual(values=c("< 0.05" = 1, "≥ 0.05" = 2)) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  scale_color_manual(values=site.col) +
+  labs(x="Year", y="Faith's PD", linetype="Regression\nslope p-value") +
+  facet_grid(~FireClassification, scales = "free_y", switch="y") +
+  basic_theme +
+  theme(legend.position = "bottom",
+        legend.direction = "vertical") +
+  guides(fill=guide_legend(override.aes=list(shape=site.shape), ncol=7),
+         linetype=guide_legend(override.aes=list(color="black")))
+PD_year_lme.plot
+
+saveRDS(PD_year_lme.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_S2A.RDS")
+
+```
+
+
+```{r, fig.height=3.5, fig.width=3.5}
+# By temperature
+write.table(filter(alpha_temp.model.sum, index=="PD"), file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/WholePD_v_temp_LME.txt", 
+            sep="\t", quote = FALSE, row.names = FALSE)
+
+PD_temp.plot = ggplot(data=filter(alpha_div.df, index == "PD"), aes(x=CoreTemp_C, y=measure, fill=SiteID, shape=FireClassification)) +
+  geom_point(size=2) +
+  geom_abline(data=filter(alpha_temp.model.reg, index == "PD"), aes(intercept = Intercept, slope = CoreTemp_C), linetype = 1, size=2, color="black") +
+  geom_abline(data=filter(alpha_temp.model.reg, index == "PD"), aes(intercept = Intercept, slope = CoreTemp_C), linetype = 1, size=1, color="white") +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  scale_color_manual(values=site.col) +
+  labs(x="Soil temperature (˚C)", y="Faith's PD",
+       shape="Fire Classification", fill="Site ID") +
+  basic_theme +
+  theme(legend.position = "none")
+PD_temp.plot
+saveRDS(PD_temp.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_1C.RDS")
+
+```
+
+
+# Beta diversity
+
+Well, there is clearly variation in bacterial diversity across samples. Now lets examine the between-sample bacterial diversities and tease apart differences in community compositions. For this analysis we'll use two measures of beta diversity (Bray-Curtis dissimilarity and weighted UniFrac distance). We will probably only report one in the main manuscript.
+
+## Bray-Curtis
+First lets use Bray-Curtis dissimilarity. This measure takes into account OTU differences and abundance variation but not phylogenetic distance.
+
+### PERMANOVA
+Does fire class or sampling year explain any of the variation in community compositional differences?
+```{r}
+# Set up the blocking design for the permanova. In this case since we are repeatedly sampling the same sites over multiple years I include SiteID as the block. This is similar to "strata" in the old version of adonis.
+perm <- how(nperm = 999)
+dat = data.frame(sample_data(rare.physeq))
+setBlocks(perm) <- with(dat, SiteID)
+
+# Get the Bray-Curtis dissimilarity
+BC.dist = vegdist(t(otu_table(rare.physeq)), method="bray", binary=FALSE, diag=TRUE, upper=TRUE)
+
+# Run adonis2 
+set.seed(4242)
+BC.adonis = adonis2(formula = BC.dist ~ FireClassification*as.factor(Year), 
+                    permutations = perm, data = dat)
+BC.adonis
+```
+
+### Ordination
+```{r, fig.width=7, fig.height=5}
+set.seed(4242)
+BC.ord = pcoa(BC.dist)
+Xaxis = paste("PCo1 (", round(BC.ord$values[1,2]*100, digits=2), "%)", sep="")
+Yaxis = paste("PCo2 (", round(BC.ord$values[2,2]*100, digits=2), "%)", sep="")
+
+BC.ord.df = data.frame(BC.ord$vectors) %>%
+  tibble::rownames_to_column(var="SampleID") %>%
+  select(SampleID, Axis.1, Axis.2) %>%
+  left_join(sample_data(rare.physeq), by = "SampleID") %>%
+  arrange(Year) %>%
+  group_by(SiteID) %>%
+  mutate(YearRank = row_number()) %>%
+  ungroup %>%
+  mutate(AirTemperature_C = as.numeric(AirTemperature_C)) %>%
+  mutate(diff_temp = CoreTemp_C-AirTemperature_C)
+
+## Now plot by different aesthetics to put together into one full figure.
+
+# By site ID
+BC_site.plot = ggplot(data=BC.ord.df, aes(x=Axis.1, y=Axis.2)) +
+  geom_point(aes(fill=SiteID, shape=FireClassification), size=2) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  labs(x=Xaxis, y=Yaxis) +
+  basic_theme +
+  guides(shape = guide_legend(order = 1),
+         fill = guide_legend(order = 2, override.aes=list(shape=site.shape)))
+
+# By year
+BC_time.plot = ggplot(data=BC.ord.df, aes(x=Axis.1, y=Axis.2)) +
+  geom_point(aes(fill=Year, shape=FireClassification), size=2) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_gradient(low="white", high="black") +
+  labs(x=Xaxis, y=Yaxis) +
+  basic_theme +
+  guides(shape = guide_legend(order = 1),
+         fill = guide_legend(order = 2, override.aes=list(shape=22)))
+
+# Now plot together
+BC_FireClassYear.leg = g_legend(BC_time.plot + theme(legend.position = "bottom", legend.direction = "vertical") +
+                                  guides(fill = guide_legend(ncol=2, override.aes=list(shape=22))))
+BC_SiteID.leg = g_legend(BC_site.plot + guides(shape="none", fill = guide_legend(override.aes=list(shape=site.shape), ncol=5)))
+
+cowplot::plot_grid(cowplot::plot_grid(BC_site.plot + theme(legend.position = "none"),
+                                      BC_time.plot + theme(legend.position = "none"), nrow=1),
+                   cowplot::plot_grid(BC_SiteID.leg, BC_FireClassYear.leg, nrow=1),
+                   ncol=1, rel_heights = c(1,0.5))
+                   
+```
+
+### Multivariate homogeneity of groups dispersions 
+Does the dispersion of the groups (fire classifications) differ? This may be one of the underylying causes of betadiversity variation across groups. It does appear so in the ordinations as fire affected sites seem to be more dispersed than either recovered or reference sites. Lets see if that is statistically relevant.
+```{r}
+batadisp.groups = factor(sample_data(rare.physeq)$FireClassification)
+
+betadisper.res = betadisper(BC.dist, batadisp.groups)
+betadisper.res
+anova(betadisper.res)
+
+betadisper.HSD <- TukeyHSD(betadisper.res)
+betadisper.HSD
+```
+
+
+## Weighted UniFrac
+Now lets use weighted UniFrac distance. This measure takes into account OTU differences and abundance variation and phylogenetic distance. UniFrac was found to be useful for distinguishing Centralia microbial communities in previous studies.
+
+### PERMANOVA
+Does fire class or sampling year explain any of the variation in community compositional differences?
+```{r}
+# Set up the blocking design for the permanova. In this case since we are repeatedly sampling the same sites over multiple years I include SiteID as the block. This is similar to "strata" in the old version of adonis.
+perm <- how(nperm = 999)
+dat = data.frame(sample_data(rare.physeq))
+setBlocks(perm) <- with(dat, SiteID)
+
+# Get the weighted UniFrac distance
+wUF.dist = distance(rare.physeq, method = "wunifrac")
+
+# Run adonis2 
+set.seed(4242)
+wUF.adonis = adonis2(formula = wUF.dist ~ FireClassification*as.factor(Year), 
+                    permutations = perm, data = dat)
+wUF.adonis
+
+write.table(wUF.adonis, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/Whole_wUF_PERMANOVA.txt", 
+            sep="\t", quote = FALSE, row.names = TRUE)
+```
+
+### Ordination
+```{r, fig.width=7, fig.height=5}
+set.seed(4242)
+wUF.ord = pcoa(wUF.dist)
+Xaxis = paste("PCo1 (", round(wUF.ord$values[1,2]*100, digits=2), "%)", sep="")
+Yaxis = paste("PCo2 (", round(wUF.ord$values[2,2]*100, digits=2), "%)", sep="")
+
+wUF.ord.df = data.frame(wUF.ord$vectors) %>%
+  tibble::rownames_to_column(var="SampleID") %>%
+  select(SampleID, Axis.1, Axis.2) %>%
+  left_join(sample_data(rare.physeq), by = "SampleID") %>%
+  arrange(Year) %>%
+  group_by(SiteID) %>%
+  mutate(YearRank = row_number()) %>%
+  ungroup %>%
+  mutate(AirTemperature_C = as.numeric(AirTemperature_C)) %>%
+  mutate(diff_temp = CoreTemp_C-AirTemperature_C)
+
+## Now plot by different aesthetics to put together into one full figure.
+
+# By site ID
+wUF_site.plot = ggplot(data=wUF.ord.df, aes(x=Axis.1, y=Axis.2)) +
+  geom_point(aes(fill=SiteID, shape=FireClassification), size=2) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  labs(x=Xaxis, y=Yaxis) +
+  basic_theme +
+  guides(shape = guide_legend(order = 1),
+         fill = guide_legend(order = 2, override.aes=list(shape=site.shape)))
+
+# By year
+wUF_time.plot = ggplot(data=wUF.ord.df, aes(x=Axis.1, y=Axis.2)) +
+  geom_point(aes(fill=Year, shape=FireClassification), size=2) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_gradient(low="white", high="black") +
+  labs(x=Xaxis, y=Yaxis) +
+  basic_theme +
+  guides(shape = guide_legend(order = 1),
+         fill = guide_legend(order = 2, override.aes=list(shape=22)))
+
+# Now plot together
+wUF_FireClassYear.leg = g_legend(wUF_time.plot + theme(legend.position = "bottom", legend.direction = "vertical") +
+                                  guides(fill = guide_legend(ncol=2, override.aes=list(shape=22))))
+wUF_SiteID.leg = g_legend(wUF_site.plot + guides(shape="none", fill = guide_legend(override.aes=list(shape=site.shape), ncol=5)))
+
+wUF_full.plot = cowplot::plot_grid(cowplot::plot_grid(wUF_site.plot + theme(legend.position = "none"),
+                                                      wUF_time.plot + theme(legend.position = "none"), 
+                                                      labels = c("A", "B"), label_size = 8, nrow=1),
+                                   cowplot::plot_grid(wUF_SiteID.leg, wUF_FireClassYear.leg, nrow=1),
+                                   ncol=1, rel_heights = c(1,0.5))
+wUF_full.plot
+
+ggsave(wUF_full.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S3.tiff",
+       device="tiff", width=7, height=5, units="in")
+                   
+```
+
+### Post hoc pairwise analyses
+
+Since we saw that both year and fire classification significantly explained variation in community composition, lets look at these closer and variation within year and within fire class.
+
+### Across fire classifications within year
+```{r}
+yearly.wUF.adonis.df = data.frame()
+yearly.wUF.ord.df = data.frame()
+yearly.Xaxis = c()
+yearly.Yaxis = c()
+for (yr in c(2015, 2016, 2017, 2018, 2019, 2020, 2021)){
+  sub.physeq = subset_samples(rare.physeq, Year == yr)
+  sub.physeq = prune_taxa(taxa_sums(sub.physeq) > 0, sub.physeq)
+  sub.wUF.dist = distance(sub.physeq, method = "wunifrac")
+  
+  # PERMANOVA
+  set.seed(4242)
+  sub.wUF.adonis = adonis2(formula = sub.wUF.dist ~ FireClassification, 
+                          data = data.frame(sample_data(sub.physeq)))
+  sub.wUF.adonis.df = data.frame(sub.wUF.adonis) %>%
+    tibble::rownames_to_column(var="variable") %>%
+    mutate(Year = yr)
+  yearly.wUF.adonis.df = rbind(yearly.wUF.adonis.df, sub.wUF.adonis.df)
+  
+  # Ordination
+  sub.wUF.ord = pcoa(sub.wUF.dist)
+  yearly.Xaxis[as.character(yr)] = paste(round(sub.wUF.ord$values[1,2]*100, digits=2), "%", sep="")
+  yearly.Yaxis[as.character(yr)] = paste(round(sub.wUF.ord$values[2,2]*100, digits=2), "%", sep="")
+  
+  sub.wUF.ord.df = data.frame(sub.wUF.ord$vectors) %>%
+    tibble::rownames_to_column(var="SampleID") %>%
+    select(SampleID, Axis.1, Axis.2) %>%
+    left_join(sample_data(sub.physeq), by = "SampleID")
+  yearly.wUF.ord.df = rbind(yearly.wUF.ord.df, sub.wUF.ord.df)
+  
+  sub.physeq = NULL
+}
+
+yearly.wUF.adonis.df = yearly.wUF.adonis.df %>%
+  filter(variable == "FireClassification") %>%
+  mutate(padj = p.adjust(Pr..F., method = "BH"))
+yearly.wUF.adonis.df
+
+write.table(yearly.wUF.adonis.df, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/Whole_wUF_v_PostHoc_yearly.txt", 
+            sep="\t", quote = FALSE, row.names = FALSE)
+
+```
+
+
+```{r, fig.width=5, fig.height=10}
+yearly.wUF_fireclass.plot.list = list()
+for (yr in c(2015, 2016, 2017, 2018, 2019, 2020, 2021)){
+  if (filter(yearly.wUF.adonis.df, Year == yr)$padj < 0.05){
+    facetype = "bold"
+  }else{
+    facetype = "plain"
+  }
+  subyear.wUF_fireclass.plot = ggplot(data=filter(yearly.wUF.ord.df, Year == yr), aes(x=Axis.1, y=Axis.2)) +
+    geom_point(aes(fill=FireClassification, shape=FireClassification), size=2) +
+    scale_shape_manual(values=FC.shape) +
+    scale_fill_manual(values=c("FireAffected" = "red", "Recovered" = "blue", "Reference" = "grey")) +
+    labs(x=paste("PCoA1 (", yearly.Xaxis[as.character(yr)], ")", sep=""), 
+         y=paste("PCoA2 (", yearly.Yaxis[as.character(yr)], ")", sep=""),
+         title=paste(yr, ": Var=", round(filter(yearly.wUF.adonis.df, Year == yr)$R2*100, digits = 2),
+                     "%, p-value=", round(filter(yearly.wUF.adonis.df, Year == yr)$padj, digits = 3),
+                     sep="")) +
+    basic_theme +
+    theme(plot.title = element_text(size=8, hjust=0.5, face = facetype),
+          legend.position = "none")
+  yearly.wUF_fireclass.plot.list[[as.character(yr)]] = subyear.wUF_fireclass.plot
+}
+  
+yearly.wUF_fireclass.leg = g_legend(yearly.wUF_fireclass.plot.list[[1]] +
+                                     theme(legend.position = "right"))
+    
+# By fire classification
+yearly.wUF_fireclass.plot = cowplot::plot_grid(plotlist = yearly.wUF_fireclass.plot.list,
+                                               yearly.wUF_fireclass.leg, ncol=2)
+yearly.wUF_fireclass.plot
+
+ggsave(yearly.wUF_fireclass.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S5.tiff",
+       device="tiff", width=5, height=10, units="in")
+
+```
+
+### Across years within fire classification
+
+```{r}
+classly.wUF.adonis.df = data.frame()
+classly.wUF.ord.df = data.frame()
+classly.Xaxis = c()
+classly.Yaxis = c()
+
+for (Fcls in c(c("FireAffected", "Recovered", "Reference"))){
+  sub.physeq = subset_samples(rare.physeq, FireClassification == Fcls)
+  sub.physeq = prune_taxa(taxa_sums(sub.physeq) > 0, sub.physeq)
+  sample_data(sub.physeq)$Year = as.factor(sample_data(sub.physeq)$Year)
+
+  # PERMANOVA
+  perm <- how(nperm = 999)
+  dat = data.frame(sample_data(sub.physeq))
+  setBlocks(perm) <- with(dat, SiteID)
+
+  sub.wUF.dist = distance(sub.physeq, method = "wunifrac")
+  set.seed(4242)
+  sub.wUF.adonis = adonis2(formula = sub.wUF.dist ~ Year, 
+                           permutations = perm, data = dat)
+  sub.wUF.adonis.df = data.frame(sub.wUF.adonis) %>%
+    tibble::rownames_to_column(var="variable") %>%
+    mutate(FireClassification = Fcls)
+  classly.wUF.adonis.df = rbind(classly.wUF.adonis.df, sub.wUF.adonis.df)
+  
+  # Ordination
+  sub.wUF.ord = pcoa(sub.wUF.dist)
+  classly.Xaxis[as.character(Fcls)] = paste(round(sub.wUF.ord$values[1,2]*100, digits=2), "%", sep="")
+  classly.Yaxis[as.character(Fcls)] = paste(round(sub.wUF.ord$values[2,2]*100, digits=2), "%", sep="")
+  
+  sub.wUF.ord.df = data.frame(sub.wUF.ord$vectors) %>%
+    tibble::rownames_to_column(var="SampleID") %>%
+    select(SampleID, Axis.1, Axis.2) %>%
+    left_join(sample_data(sub.physeq), by = "SampleID")
+  classly.wUF.ord.df = rbind(classly.wUF.ord.df, sub.wUF.ord.df)
+  sub.physeq = NULL
+}
+
+classly.wUF.adonis.df = classly.wUF.adonis.df %>%
+  filter(variable == "Year") %>%
+  mutate(padj = p.adjust(Pr..F., method = "BH"))
+classly.wUF.adonis.df
+
+write.table(classly.wUF.adonis.df, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/Whole_wUF_v_PostHoc_FireClass.txt", 
+            sep="\t", quote = FALSE, row.names = FALSE)
+
+```
+
+
+```{r, fig.width=5, fig.height=5}
+# Plot all subsetted ordinations
+classly.wUF_fireclass.plot.list = list()
+for (Fcls in c(c("FireAffected", "Recovered", "Reference"))){
+  if (filter(classly.wUF.adonis.df, FireClassification == Fcls)$padj < 0.05){
+    facetype = "bold"
+  }else{
+    facetype = "plain"
+  }
+  suwUFlass.wUF_fireclass.plot = ggplot(data=filter(classly.wUF.ord.df, FireClassification == Fcls), aes(x=Axis.1, y=Axis.2)) +
+    geom_point(aes(fill=as.numeric(as.character(Year)), shape=FireClassification), size=2) +
+    scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+    scale_fill_gradient(low="white", high="black") +
+    labs(x=paste("PCoA1 (", classly.Xaxis[as.character(Fcls)], ")", sep=""), 
+         y=paste("PCoA2 (", classly.Yaxis[as.character(Fcls)], ")", sep=""),
+         title=paste(Fcls, ": Var=", round(filter(classly.wUF.adonis.df, FireClassification == Fcls)$R2*100, digits = 2),
+                     "%, p-value=", round(filter(classly.wUF.adonis.df, FireClassification == Fcls)$padj, digits = 3),
+                     sep=""),
+         fill="Year") +
+    basic_theme +
+    theme(plot.title = element_text(size=8, hjust=0.5, face = facetype),
+          legend.position = "none") +
+    guides(fill = guide_legend(order = 2, override.aes=list(shape=22)))
+  classly.wUF_fireclass.plot.list[[as.character(Fcls)]] = suwUFlass.wUF_fireclass.plot
+}
+
+# Make unified legend
+suwUFlass.wUF_fireclass.plot = ggplot(data=classly.wUF.ord.df, aes(x=Axis.1, y=Axis.2)) +
+  geom_point(aes(fill=as.numeric(as.character(Year)), shape=FireClassification), size=2) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_gradient(low="white", high="black") +
+  labs(x=paste("PCoA1 (", classly.Xaxis[as.character(Fcls)], ")", sep=""), 
+       y=paste("PCoA2 (", classly.Yaxis[as.character(Fcls)], ")", sep=""),
+       title=paste(Fcls, ": Var=", round(filter(classly.wUF.adonis.df, FireClassification == Fcls)$R2*100, digits = 2),
+                   "%, p-value=", round(filter(classly.wUF.adonis.df, FireClassification == Fcls)$padj, digits = 3),
+                   sep=""),
+       fill="Year") +
+  basic_theme +
+  theme(plot.title = element_text(size=8, hjust=0.5, face = facetype),
+        legend.position = "none") +
+  guides(fill = guide_legend(order = 2, override.aes=list(shape=22)))
+  
+classly.wUF_fireclass.leg = g_legend(suwUFlass.wUF_fireclass.plot +
+                                     theme(legend.position = "bottom",
+                                           legend.direction = "vertical"))
+    
+# By fire classification
+classly.wUF_fireclass.plot = cowplot::plot_grid(plotlist = classly.wUF_fireclass.plot.list,
+                                               classly.wUF_fireclass.leg)
+classly.wUF_fireclass.plot
+
+
+ggsave(classly.wUF_fireclass.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S4.tiff",
+       device="tiff", width=5, height=5, units="in")
+
+```
+
+
+### Multivariate homogeneity of groups dispersions 
+Does the dispersion of the groups (fire classifications) differ? This may be one of the underylying causes of betadiversity variation across groups. It does appear so in the ordinations as fire affected sites seem to be more dispersed than either recovered or reference sites. Lets see if that is statistically relevant.
+```{r}
+batadisp.groups = factor(sample_data(rare.physeq)$FireClassification)
+
+betadisper.res = betadisper(wUF.dist, batadisp.groups)
+betadisper.res
+anova(betadisper.res)
+
+betadisper.HSD <- TukeyHSD(betadisper.res)
+betadisper.HSD
+
+write.table(betadisper.HSD$group, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/Whole_wUF_betadispersion.txt", 
+            sep="\t", quote = FALSE, row.names = TRUE)
+
+
+```
+
+
+## CCA analysis
+Now lets see how the betadiversity variation is related to various soil properties. For the properties, I'll test soil temp, CO2, pH, phosphate, potassium, calcium, magnesium, iron, SOM, Nitrate, ammonium, sulfate, and arsenic. Note that it is likely that many of these covary. For this again I will use weighted UniFrac.
+
+```{r, fig.width=3.5, fig.height=5}
+var_goodnames = data.frame(labels = c("CoreTemp_C", "Ca_ppm", "Fe_ppm", "NO3N_ppm",
+                                      "Mg_ppm", "OrganicMatter_360", "pH", "P_ppm",
+                                      "CarbonDioxide_ppm", "NH4N_ppm", "K_ppm", "As_ppm"),
+                           goodnames = c("Temp.", "Ca", "Fe", "NO3", "Mg", "SOM", 
+                                         "pH", "P", "CO2", "NH4", "K", "As"))
+
+set.seed(4242)
+cap_ord.full <- ordinate(physeq = rare.physeq, method = "CAP", distance = wUF.dist, 
+                    formula = ~ CoreTemp_C + pH + CarbonDioxide_ppm + OrganicMatter_360 +
+                      P_ppm + K_ppm + Ca_ppm + Mg_ppm + Fe_ppm + NO3N_ppm + NH4N_ppm + 
+                      SulfateSulfur_ppm + As_ppm)
+
+set.seed(4242)
+cap_ord.null <- ordinate(physeq = rare.physeq, method = "CAP", distance = wUF.dist, 
+                         formula = ~ 1)
+
+# Model selection to get just significant variables
+set.seed(4242)
+ordistep.res = ordistep(cap_ord.null, scope = formula(cap_ord.full), perm.max = 1000, trace=F)
+goodform = ordistep.res$call$formula
+set.seed(4242)
+cap_ord <- ordinate(physeq = rare.physeq, method = "CAP", distance = wUF.dist, formula = goodform)
+
+# CAP plot
+cap.ord.df = data.frame(vegan::scores(cap_ord, display="sites")) %>%
+  tibble::rownames_to_column(var="SampleID") %>%
+  select(SampleID, CAP1, CAP2) %>%
+  left_join(sample_data(rare.physeq), by = "SampleID") %>%
+  arrange(Year) %>%
+  group_by(SiteID) %>%
+  mutate(YearRank = row_number()) %>%
+  ungroup %>%
+  mutate(AirTemperature_C = as.numeric(AirTemperature_C)) %>%
+  mutate(diff_temp = CoreTemp_C-AirTemperature_C)
+
+eigvec = vegan::eigenvals(cap_ord)
+fracvar = round(eigvec/sum(eigvec)*100, 2)
+
+cap_plot = ggplot(data=cap.ord.df, aes(x=CAP1, y=CAP2)) +
+  geom_point(aes(fill=Year, shape=FireClassification), size=2) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_gradient(low="white", high="black") +
+  labs(x=paste("CAP1 (", fracvar[1], "%)", sep=""),
+       y=paste("CAP2 (", fracvar[2], "%)", sep=""))
+
+# Now add the environmental variables as arrows
+arrowmat <- vegan::scores(cap_ord, display = "bp")
+
+# Add labels, make a data.frame
+arrowdf <- data.frame(labels = rownames(arrowmat), arrowmat) %>%
+  mutate(labels = gsub("\\.", ":", labels))
+colnames(arrowdf) = c("labels", "xend", "yend")
+arrowdf = arrowdf %>%
+  left_join(var_goodnames, by = "labels") %>%
+  rename(old_labels = labels) %>%
+  rename(labels = goodnames)
+
+# Define the arrow aesthetic mapping
+arrow_map <- aes(xend = xend, yend = yend, x = 0, y = 0, 
+                 color = NULL)
+
+label_map <- aes(x = xend + 0.02*xend/abs(xend), y = yend, 
+                 color = NULL, label = labels)
+
+arrowhead = arrow(length = unit(0.02, "npc"), type = "closed")
+
+# Make a new graphic
+cap.plot = cap_plot + 
+  geom_segment(mapping = arrow_map, size = 1.2, data = arrowdf, color = "black", arrow = arrowhead) + 
+  geom_segment(mapping = arrow_map, size = 0.5, data = arrowdf, color = "orange", arrow = arrowhead) + 
+  geom_label(mapping = label_map, data = filter(arrowdf, xend < 0), show.legend = FALSE, size=6*5/14, hjust=1, fill="orange", color="black") +
+  geom_label(mapping = label_map, data = filter(arrowdf, xend > 0), show.legend = FALSE, size=6*5/14, hjust=0, fill="orange", color="black") +
+  labs(title = paste("Variables explain ", round(100*RsquareAdj(cap_ord)$r.squared, 3), "% of whole community variation", sep="")) +
+  basic_theme +
+  theme(legend.position="bottom",
+        legend.direction = "vertical") +
+  guides(shape = guide_legend(order = 1),
+         fill = guide_legend(order = 2, override.aes=list(shape=22), ncol=2))
+cap.plot
+
+
+saveRDS(cap.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_S7A.RDS")
+
+
+```
+
+
+## Time lag analysis
+
+To see if the communities are significantly changing in composition over time. We expect more distant timepoints to be more distant in composition. I'll use weighted UniFrac here.
+
+```{r, fig.height=5, fig.width=7}
+# Metadata for both samples
+SamID_1.meta = data.frame(sample_data(rare.physeq)) %>%
+  select(SampleID, SiteID, Year, FireClassification, CoreTemp_C, pH) %>%
+  rename(SampleID_1 = SampleID, SiteID_1 = SiteID, Year_1 = Year, 
+         FireClassification_1 = FireClassification, 
+         CoreTemp_C_1 = CoreTemp_C, pH_1 = pH)
+
+SamID_2.meta = data.frame(sample_data(rare.physeq)) %>%
+  select(SampleID, SiteID, Year, FireClassification, CoreTemp_C, pH) %>%
+  rename(SampleID_2 = SampleID, SiteID_2 = SiteID, Year_2 = Year, 
+         FireClassification_2 = FireClassification, 
+         CoreTemp_C_2 = CoreTemp_C, pH_2 = pH)
+
+# Get paired community distances
+wUF.dist.mat = as.matrix(wUF.dist)
+wUF.dist.mat[upper.tri(wUF.dist.mat, diag=TRUE)] = NA
+time.wUF.dist.df = data.frame(wUF.dist.mat) %>%
+  tibble::rownames_to_column(var="SampleID_1") %>%
+  tidyr::gather(key="SampleID_2", value="wUF", -SampleID_1) %>%
+  filter(!is.na(wUF)) %>%
+  left_join(SamID_1.meta, by= "SampleID_1") %>%
+  left_join(SamID_2.meta, by= "SampleID_2") %>%
+  filter(Year_1 != Year_2,
+         SiteID_1 == SiteID_2) %>%
+  mutate(delta_year = abs(Year_1 - Year_2),
+         delta_temp = abs(CoreTemp_C_1-CoreTemp_C_2),
+         delta_pH = abs(pH_1-pH_2)) %>%
+  mutate(sqrt_delta_year = sqrt(delta_year))
+
+# Linear regressions
+timelag.model.df = data.frame()
+for (FC in c("FireAffected", "Recovered", "Reference")){
+  ctrl <- lmeControl(opt='optim')
+  FC_timelag.model = lme(wUF ~ sqrt_delta_year, random = ~1|SiteID_1, control=ctrl,
+                         data=filter(time.wUF.dist.df, FireClassification_1 == FC))
+  timelag.model.df = rbind(timelag.model.df,
+                              data.frame(summary(FC_timelag.model)$tTable) %>%
+                                tibble::rownames_to_column(var="factor") %>%
+                                mutate(FireClassification_1 = FC))
+}
+
+write.table(timelag.model.df, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/Whole_time_lag_LME.txt", 
+            sep="\t", quote = FALSE, row.names = FALSE)
+
+
+timelag.model.reg = timelag.model.df %>%
+  mutate(p_slope = ifelse(factor == "sqrt_delta_year", p.value, 1),
+         factor = ifelse(factor == "(Intercept)", "Intercept", factor)) %>%
+  group_by(FireClassification_1) %>%
+  mutate(p_slope = min(p_slope)) %>%
+  ungroup %>%
+  select(factor, Value, p_slope, FireClassification_1) %>%
+  tidyr::spread(key=factor, value = Value) %>%
+  mutate(sig = ifelse(p_slope < 0.05, "< 0.05", "≥ 0.05"))
+
+timelag.plot = ggplot(data=time.wUF.dist.df, aes(x=sqrt_delta_year, y=wUF)) +
+  geom_point(size=2, aes(fill=SiteID_1, shape=FireClassification_1)) +
+  geom_abline(data=timelag.model.reg, aes(intercept = Intercept, slope = sqrt_delta_year), linetype = 1, size=2, color="black") +
+  geom_abline(data=timelag.model.reg, aes(intercept = Intercept, slope = sqrt_delta_year, linetype = sig), size=1, color="white") +
+  scale_linetype_manual(values=c("< 0.05" = 1, "≥ 0.05" = 2)) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  labs(x="Square root of the difference in years", y="Weighted UniFrac distance", 
+       linetype="Regression\nslope p-value", fill="SiteID", shape="Fire Classification") +
+  facet_grid(~FireClassification_1, scales = "free_y", switch="y") +
+  basic_theme +
+  guides(linetype=guide_legend(override.aes=list(color="black")),
+         fill=guide_legend(ncol=2, override.aes=list(shape=site.shape)))
+timelag.plot
+
+saveRDS(timelag.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_2A.RDS")
+
+
+```
+
+```{r, fig.height=3.5, fig.width=3.5}
+timelag.sep.df = data.frame()
+for (SiteID in unique(time.wUF.dist.df$SiteID_1)){
+  sub.model = lm(wUF ~ sqrt_delta_year, filter(time.wUF.dist.df, SiteID_1 == SiteID))
+  timelag.sep.df = rbind(timelag.sep.df,
+                         data.frame(Intercept = summary(sub.model)$coefficients[1],
+                                    slope = summary(sub.model)$coefficients[2],
+                                    p_slope = summary(sub.model)$coefficients[8]) %>%
+                           mutate(SiteID = SiteID))
+}
+timelag.meta.df = data.frame(sample_data(rare.physeq)) %>%
+  group_by(SiteID, FireClassification) %>%
+  summarize(min_temp = min(CoreTemp_C),
+            max_temp = max(CoreTemp_C),
+            mean_pH = mean(pH),
+            n_year = n()) %>%
+  ungroup %>%
+  mutate(delta_temp = max_temp-min_temp,
+         FireClassification_1 = FireClassification) %>%
+  mutate(testemp = delta_temp/max_temp)
+timelag.sep.df = left_join(timelag.sep.df, timelag.meta.df, by = "SiteID") %>%
+  mutate(sig = ifelse(p_slope < 0.05, "< 0.05", "≥ 0.05"))
+
+## Compare slopes and maximum temperature
+maxtempslope.model = lm(slope ~ max_temp, data=timelag.sep.df)
+summary(maxtempslope.model)
+
+timelag_slope_temp.plot = ggplot(data=timelag.sep.df, aes(x=max_temp, y=slope)) +
+  geom_point(size=2, aes(fill=SiteID, shape=FireClassification)) +
+  geom_abline(intercept = summary(maxtempslope.model)$coefficients[[1]], 
+              slope = summary(maxtempslope.model)$coefficients[[2]], 
+              linetype = 1, size=2, color="black") +
+  geom_abline(intercept = summary(maxtempslope.model)$coefficients[[1]], 
+              slope = summary(maxtempslope.model)$coefficients[[2]], 
+              linetype = 1, size=1, color="white") +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  labs(x="Maximum temperature (˚C)", y="Time lag slope", fill="SiteID") +
+  basic_theme +
+  theme(legend.position = "none")
+timelag_slope_temp.plot
+
+saveRDS(timelag_slope_temp.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_2C.RDS")
+
+
+```
+
+## Trajectory analysis
+
+Now we want to see if the communities are changing directionally over time which would potentially indicate a change in state. For this we'll just use wighted UniFrac.
+
+```{r}
+# Metadata for both samples
+SiteID_1.meta = data.frame(sample_data(rare.physeq)) %>%
+  group_by(SiteID, FireClassification) %>%
+  summarize(mean_pH_1 = mean(pH),
+            sd_pH_1 = sd(pH),
+            n_year_1 = n(),
+            max_temp_1 = max(CoreTemp_C),
+            min_temp_1 = min(CoreTemp_C)) %>%
+  ungroup %>%
+  rename(SiteID_1 = SiteID,
+         FireClassification_1 = FireClassification)
+
+SiteID_2.meta = data.frame(sample_data(rare.physeq)) %>%
+  group_by(SiteID, FireClassification) %>%
+  summarize(mean_pH_2 = mean(pH),
+            sd_pH_2 = sd(pH),
+            n_year_2 = n(),
+            max_temp_2 = max(CoreTemp_C),
+            min_temp_2 = min(CoreTemp_C)) %>%
+  ungroup %>%
+  rename(SiteID_2 = SiteID,
+         FireClassification_2 = FireClassification)
+
+# data for analysis
+D = as.matrix(wUF.dist)
+All.samples.meta = data.frame(sample_data(rare.physeq)) %>%
+  arrange(SiteID, Year) %>%
+  group_by(survey = Year-2014)
+D = D[All.samples.meta$SampleID, All.samples.meta$SampleID] %>%
+  as.dist()
+sites = All.samples.meta$SiteID
+surveys = All.samples.meta$survey
+
+# Trajectory directionality
+traj.direct.df = data.frame(directionality = trajectoryDirectionality(D, sites, surveys)) %>%
+  tibble::rownames_to_column(var="SiteID_1") %>%
+  left_join(SiteID_1.meta, by = "SiteID_1") %>%
+  mutate(delta_temp = max_temp_1-min_temp_1)
+
+```
+
+First look at directionaitiy across fire classifications
+```{r}
+traj.direct.dunn = dunn.test::dunn.test(traj.direct.df$directionality, traj.direct.df$FireClassification_1, method="bh")
+```
+
+Next look at directionality over maximum disturbance intensity
+```{r, fig.height=3.5, fig.width=7}
+traj_max_temp.model = lm(directionality~max_temp_1, data=traj.direct.df)
+summary(traj_max_temp.model)
+
+```
+
+Now plot these results
+```{r, fig.height=3.5, fig.width=3.5}
+# Across fire class
+traj.direct.plot = ggplot(data=traj.direct.df, aes(x=FireClassification_1, y=directionality)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(height=0, width=0.25, size=2, aes(shape=FireClassification_1, fill=SiteID_1)) +
+  annotate("segment", x=c(1, 1), xend=c(2, 3), y=c(0.49, 0.51), yend=c(0.49, 0.51)) +
+  annotate("segment", x=c(1, 1, 2, 3), xend=c(1, 1, 2, 3), y=c(0.485, 0.505, 0.485, 0.505), yend=c(0.49, 0.51, 0.49, 0.51)) +
+  annotate("text", x=c(1.5, 2), y=c(0.5, 0.52), size=6*5/14,
+           label=c(paste("p=", round(traj.direct.dunn$P.adjusted[1], digits = 3), sep=""), 
+                   paste("p=", round(traj.direct.dunn$P.adjusted[2], digits = 3), sep=""))) +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  lims(y=c(0.30, 0.52)) +
+  labs(x = "Fire Classification", y = "Whole community\ntrajectory directionality") +
+  basic_theme +
+  theme(legend.position = "none")
+
+# Across disturbance intensity
+traj_max_temp.plot = ggplot(data=traj.direct.df, aes(x=max_temp_1, y=directionality)) +
+  geom_point(aes(shape=FireClassification_1, fill=SiteID_1), size=2) +
+  geom_abline(intercept = summary(traj_max_temp.model)$coefficients[[1]], 
+              slope = summary(traj_max_temp.model)$coefficients[[2]], 
+              linetype = 1, size=2, color="black") +
+  geom_abline(intercept = summary(traj_max_temp.model)$coefficients[[1]], 
+              slope = summary(traj_max_temp.model)$coefficients[[2]], 
+              linetype = 1, size=1, color="white") +
+  scale_shape_manual(values=c("FireAffected" = 24, "Recovered" = 21, "Reference" = 22)) +
+  scale_fill_manual(values=site.col) +
+  lims(y=c(0.30, 0.52)) +
+  labs(x="Maximum soil temperature (˚C)", y="Whole community\ntrajectory directionality") +
+  basic_theme +
+  theme(legend.position = "none")
+
+trajectory_full.plot = cowplot::plot_grid(traj.direct.plot, traj_max_temp.plot, 
+                                          ncol=1, labels = c("A", "C"), label_size = 8)
+trajectory_full.plot
+
+saveRDS(trajectory_full.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_3AC.RDS")
+
+```
+
+
+# Community distances to reference over time and disturbance intensity
+Unfortunately, our sampling design precludes us from directly measuring resiliance and resistance. Instead lets take a look at how the bacterial communities in the fire affected or recovered soils differ from reference communities across time and disturbance intensity.
+
+First we need a dataframe of paired sample distance/dissimilarity measures and metadata with average measures across reference sites. These will be disturbed sites paired with reference sites within the same year. We also need average distances among reference sites.
+```{r}
+# Metadata dataframe
+Reference.meta = data.frame(sample_data(rare.physeq)) %>%
+  filter(NucAcid_type == "DNA", FireClassification == "Reference") %>%
+  select(SampleID, Year) %>%
+  rename(Reference_sample = SampleID)
+Disturbed.meta = data.frame(sample_data(rare.physeq)) %>%
+  filter(NucAcid_type == "DNA", FireClassification != "Reference") %>%
+  rename(Disturbed_sample = SampleID)
+
+# Distance and dissimilarity Dataframe for disturbed soils
+Disturbed_Dist.df = data.frame(as.matrix(wUF.dist)) %>%
+  tibble::rownames_to_column(var="Disturbed_sample") %>%
+  tidyr::gather(key="Reference_sample", value="wUF", -Disturbed_sample) %>%
+  filter(!is.na(wUF)) %>%
+  inner_join(Disturbed.meta, by = "Disturbed_sample") %>%
+  inner_join(Reference.meta, by = c("Reference_sample", "Year")) %>%
+  group_by(Disturbed_sample) %>%
+  summarize(mean_wUF = mean(wUF),
+            sd_wUF = sd(wUF),
+            n_comp = n()) %>%
+  ungroup %>%
+  mutate(SE_wUF = sd_wUF/sqrt(n_comp)) %>%
+  left_join(Disturbed.meta, by = "Disturbed_sample")
+  
+# Distance and dissimilarity Dataframe for reference soils
+wUF.dist.mat = as.matrix(wUF.dist)
+wUF.dist.mat[upper.tri(wUF.dist.mat, diag = TRUE)] = NA
+Reference_Dist.df = data.frame(wUF.dist.mat) %>%
+  tibble::rownames_to_column(var="Reference_sample1") %>%
+  tidyr::gather(key="Reference_sample2", value="wUF", -Reference_sample1) %>%
+  filter(!is.na(wUF)) %>%
+  inner_join(rename(Reference.meta, Reference_sample1 = Reference_sample), 
+             by = c("Reference_sample1")) %>%
+  inner_join(rename(Reference.meta, Reference_sample2 = Reference_sample), 
+             by = c("Reference_sample2", "Year"))
+
+```
+
+Now lets plot the distances/dissimilarites over temperature
+
+```{r, fig.height=5, fig.width=5}
+# Weighted UniFrac
+wUF_by_temp.model = lme(mean_wUF ~ CoreTemp_C, random = ~1|SiteID, data=Disturbed_Dist.df)
+wUF_by_temp.model.sum = summary(wUF_by_temp.model)$tTable
+wUF_by_temp.model.sum
+
+wUF_by_temp.plot = ggplot(data=Disturbed_Dist.df, aes(x=CoreTemp_C, y=mean_wUF)) +
+  geom_hline(yintercept = Reference_Dist.df$wUF, color="grey", linetype=2) +
+  geom_errorbar(aes(ymin=mean_wUF-SE_wUF, ymax=mean_wUF+SE_wUF), color="black", size=1, width=0) +
+  geom_errorbar(aes(ymin=mean_wUF-SE_wUF, ymax=mean_wUF+SE_wUF, color=SiteID), size=0.5, width=0) +
+  geom_point(size=2, aes(fill=SiteID, shape=FireClassification)) +
+  geom_abline(slope=wUF_by_temp.model.sum[2], intercept = wUF_by_temp.model.sum[1], size=1, color="black") +
+  geom_abline(slope=wUF_by_temp.model.sum[2], intercept = wUF_by_temp.model.sum[1], size=0.5, color="white") +
+  #scale_linetype_manual(values=c("< 0.05" = 1, "≥ 0.05" = 2)) +
+  scale_shape_manual(values=FC.shape) +
+  scale_fill_manual(values=site.col) +
+  scale_color_manual(values=site.col) +
+  labs(x="Soil temperature (˚C)", y="Mean weighted UniFrac distance to references", linetype="Regression\nslope p-value") +
+  lims(y=c(0, 0.4)) +
+  basic_theme +
+  theme(legend.position = "none")
+
+
+wUF_by_temp.plot
+
+saveRDS(wUF_by_temp.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_4A.RDS")
+
+```
+
+# Session Info
+```{r}
+sessionInfo()
+```
+
+
+# New trajectory by pH
+
+
+```{r}
+# Metadata for both samples
+FireSite.meta = data.frame(sample_data(rare.physeq)) %>%
+  filter(FireClassification == "FireAffected") %>%
+  group_by(SiteID) %>%
+  summarize(mean_pH_FA = mean(pH),
+            sd_pH_FA = sd(pH),
+            n_year_FA = n(),
+            max_temp_FA = max(CoreTemp_C),
+            min_temp_FA = min(CoreTemp_C)) %>%
+  ungroup %>%
+  rename(FireSite = SiteID)
+
+RecRef.meta = data.frame(sample_data(rare.physeq)) %>%
+  filter(FireClassification != "FireAffected") %>%
+  group_by(SiteID) %>%
+  summarize(mean_pH_RR = mean(pH),
+            sd_pH_RR = sd(pH),
+            n_year_RR = n(),
+            max_temp_RR = max(CoreTemp_C),
+            min_temp_RR = min(CoreTemp_C)) %>%
+  ungroup %>%
+  rename(RecRefSite = SiteID)
+
+# data for analysis
+D = as.matrix(wUF.dist)
+
+RR.sites = as.character(RecRef.meta$RecRefSite)
+FA.sites = as.character(FireSite.meta$FireSite)
+
+
+new_directionalities.df = data.frame()
+for (FA_site in FA.sites){
+  FA_samples = arrange(filter(data.frame(sample_data(rare.physeq)), SiteID == FA_site), Year)$SampleID
+  for (RR_site in RR.sites){
+    FA_RR_D = matrix(NA, nrow = length(FA_samples)+1, ncol = length(FA_samples)+1)
+    colnames(FA_RR_D) = c(FA_samples, RR_site)
+    rownames(FA_RR_D) = c(FA_samples, RR_site)
+    FA_RR_D[FA_samples, FA_samples] = D[FA_samples, FA_samples]
+    FA_RR_D[RR_site, RR_site] = 0
+    for (FA_sam in FA_samples){
+      mean_dist = mean(D[FA_sam, filter(data.frame(sample_data(rare.physeq)), SiteID == RR_site)$SampleID])
+      FA_RR_D[FA_sam, RR_site] = mean_dist
+      FA_RR_D[RR_site, FA_sam] = mean_dist
+    }
+    FA_RR_D = as.dist(FA_RR_D)
+    sites = rep(FA_site, length(FA_samples)+1)
+    surveys = seq(1, length(FA_samples)+1)
+    sub.directionality = trajectoryDirectionality(FA_RR_D, sites, surveys)
+    new_directionalities.df = rbind(new_directionalities.df,
+                                    data.frame(FireSite = FA_site,
+                                               RecRefSite = RR_site,
+                                               directionality = sub.directionality[[1]]))
+  }
+}
+
+new_directionalities.meta.df = new_directionalities.df %>%
+  left_join(FireSite.meta, by = "FireSite") %>%
+  left_join(RecRef.meta, by = "RecRefSite") %>%
+  mutate(diff_max_temp = max_temp_FA-max_temp_RR,
+         diff_mean_pH = abs(mean_pH_FA-mean_pH_RR))
+
+```
+
+```{r}
+ggplot(data=new_directionalities.meta.df, aes(x=diff_mean_pH, y=directionality)) +
+  geom_point() +
+  facet_wrap(~FireSite)
+```
+
