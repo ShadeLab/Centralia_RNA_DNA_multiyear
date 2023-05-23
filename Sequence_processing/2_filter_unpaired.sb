@@ -1,0 +1,34 @@
+#!/bin/bash
+
+########### Resource request ############
+
+#SBATCH --job-name=filt_unpaired
+#SBATCH --time=01:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --output=lib2014_S2_filt_unpaired.out
+
+########### Command lines ###########
+
+module load Conda/3
+conda activate amplicon_processing
+
+echo "Filtering out unpaired reads after trimming primers"
+echo " "
+for pfx in $(cat ~/data/Centralia/MultiYear_seqdata/lib2014_file_prefix_list.txt)
+do
+	echo ${pfx}
+	~/repo/Pairfq/scripts/pairfq_lite.pl makepairs \
+		-f /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/trimmed_reads/${pfx}_trimmed_R1_001.fastq \
+		-r /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/trimmed_reads/${pfx}_trimmed_R2_001.fastq \
+		-fp /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/${pfx}_trimmed_R1_001.fastq \
+		-rp /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/${pfx}_trimmed_R2_001.fastq \
+		-fs /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/${pfx}_trimmed_unpaired_R1_001.fastq \
+		-rs /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/${pfx}_trimmed_unpaired_R2_001.fastq
+done
+echo " "
+echo " "
+echo "Done!"
+
+conda deactivate

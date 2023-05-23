@@ -1,0 +1,49 @@
+#!/bin/bash
+
+########### Resource request ############
+
+#SBATCH --job-name=maxee_noN_filt
+#SBATCH --time=04:00:00
+#SBATCH --mem=30G
+#SBATCH --output=lib2014_S4_maxEE_noN_filt.out
+
+########### Command lines ###########
+
+module load Conda/3
+conda activate amplicon_processing
+
+echo "Concatinating all samples and counting reads"
+python ~/notebooks/Centralia/seq_processing/Concatinate_merged_fastq.py \
+	~/data/Centralia/MultiYear_seqdata/lib2014_merged_file_list.txt \
+	/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/lib2014_merged_reads.fastq
+echo " "
+echo " "
+
+echo "Filtering by maxEE"
+/mnt/research/ShadeLab/WorkingSpace/usearch64 \
+	-fastq_filter /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/lib2014_merged_reads.fastq \
+	-fastq_maxee 1 \
+	-fastaout /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE.fasta
+echo ""
+echo "Prefiltered"
+grep -c	"orig_name" /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/lib2014_merged_reads.fastq
+echo "Postfilterd"
+grep -c ">" /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE.fasta
+echo ""
+echo ""
+
+echo "Filtering reads containing N"
+bioawk -c fastx '{if ($seq !~ /N/){print ">" $name " " $4 "\n" $seq}}' \
+	/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE.fasta \
+	> /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.fasta
+echo ""
+echo "Prefiltered"
+grep -c	">" /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE.fasta
+echo "Postfilterd"
+grep -c ">" /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.fasta
+echo " "
+echo " "
+
+echo "Done!"
+
+conda deactivate

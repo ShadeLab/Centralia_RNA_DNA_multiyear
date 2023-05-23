@@ -1,0 +1,57 @@
+#!/bin/bash
+
+########### Resource request ############
+
+#SBATCH --job-name=filt_align_homopol
+#SBATCH --time=10:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=40G
+#SBATCH --output=lib2014_S6_filt_align_homopol.out
+#SBATCH -A shade-cole-bonito
+
+########### Command lines ###########
+
+module load Conda/3
+conda activate amplicon_processing
+
+echo "Screening sequences: positions 651 to 1538"
+echo " "
+mothur "#screen.seqs(fasta=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.unique.filter.fasta, processors=20, name=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.names, group=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_group_file.txt, start=651, end=1538, maxhomop=8)"
+echo " "
+echo " "
+
+echo "Filtering sequences"
+echo " "
+mothur "#filter.seqs(fasta=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.unique.filter.good.fasta, processors=20, vertical=T)"
+echo " "
+echo " "
+
+echo "Prefiltered"
+grep -c	">" /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.unique.filter.fasta
+echo "Postfilterd"
+grep -c ">" /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.unique.filter.good.filter.fasta
+echo " "
+echo " "
+
+echo "Inflate sequences"
+echo " "
+mothur "#deunique.seqs(fasta=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.unique.filter.good.filter.fasta, name=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.names)"
+echo " "
+echo " "
+
+echo "Generate final QCed read file"
+echo " "
+perl -pe 's/[-.]//g if ! /^>/' /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.unique.filter.good.filter.redundant.fasta \
+	> /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib2014_finalQC.fasta
+mothur "#summary.seqs(fasta=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib2014_finalQC.fasta, processors=1)"
+echo " "
+echo " "
+
+echo "Final sequence count"
+grep -c ">" /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib2014_finalQC.fasta
+echo " "
+
+echo "Done!"
+conda deactivate

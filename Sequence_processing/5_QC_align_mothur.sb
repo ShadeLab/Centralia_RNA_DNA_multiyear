@@ -1,0 +1,52 @@
+#!/bin/bash
+
+########### Resource request ############
+
+#SBATCH --job-name=align_mothur
+#SBATCH --time=05:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=30G
+#SBATCH --output=lib2014_S5_align_mothur.out
+
+########### Command lines ###########
+
+module load Conda/3
+conda activate amplicon_processing
+
+echo "Making group file"
+echo " "
+perl -ne 'if(/^>/){ s/>(.+)(_\d+) .+/$1$2\t$1/; print;}' \
+	/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.fasta \
+	> /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_group_file.txt
+echo " "
+echo " "
+
+echo "Getting unique sequences"
+echo " "
+mothur "#unique.seqs(fasta=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.fasta)"
+echo " "
+echo " "
+
+echo "Aligning sequences"
+echo " "
+mothur "#align.seqs(candidate=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.unique.fasta, template=~/databases/mothur_silva_seed/silva.seed_v132.filter.fasta, processors=20,  flip=T)"
+echo " "
+echo " "
+
+echo "Removing gaps in full alignment"
+echo " "
+mothur "#filter.seqs(vertical=t, fasta=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.unique.align, processors=20)"
+echo " "
+echo " "
+
+echo "Print alignment summary"
+echo " "
+mothur "#summary.seqs(fasta=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.unique.filter.fasta, processors=20, name=/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/lib2014_merged_maxEE_noN.names)"
+echo " "
+echo " "
+
+echo "Done!"
+conda deactivate
+

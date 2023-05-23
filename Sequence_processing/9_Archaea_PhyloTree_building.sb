@@ -1,0 +1,50 @@
+#!/bin/bash
+
+########### Resource request ############
+
+#SBATCH --job-name=fasttree
+#SBATCH --time=02:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=10G
+#SBATCH --output=S9_archaea_fasttree.out
+
+########### Command lines ###########
+
+module load Conda/3
+conda activate amplicon_processing
+
+cd ~/data/Centralia/MultiYear_seqdata
+
+echo "Subsetting OTU fasta to just archaeal OTUs"
+echo " "
+python ~/notebooks/Centralia/seq_processing/Subset_fasta.py all_samples_16S_OTU.fasta archaeal_OTUs.txt all_samples_16S_OTU_arch.fasta
+echo " "
+echo " "
+
+echo "Aligning sequences using SSU-align"
+echo " "
+ssu-prep -f -x -b 50 --rfonly --dna all_samples_16S_OTU_arch.fasta ssu_aln 20
+
+./ssu_aln.ssu-align.sh
+ssu-mask --dna --afa ssu_aln
+echo " "
+echo " "
+
+echo "Adding E. coli as the root: accession J01859"
+echo " "
+ssu-align -f -n archaea --dna --rfonly J01859.fasta sso_aln
+ssu-mask -s ssu_aln/ssu_aln.archaea.mask --dna --afa sso_aln/
+cat sso_aln/sso_aln.archaea.mask.afa ssu_aln/ssu_aln.archaea.mask.afa > aln_for_archaeal_OTU_tree.fasta
+echo " "
+echo " "
+
+echo "Building phylogenetic tree with FastTree"
+echo " "
+FastTree -nt aln_for_archaeal_OTU_tree.fasta > all_samples_16S_OTU_arch.tree
+echo " "
+echo " "
+echo "Done!"
+
+conda deactivate

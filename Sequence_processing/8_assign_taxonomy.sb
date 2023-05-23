@@ -1,0 +1,26 @@
+#!/bin/bash
+
+########### Resource request ############
+
+#SBATCH --job-name=sintax
+#SBATCH --time=01:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=10G
+#SBATCH --output=S8_sintax.out
+
+########### Command lines ###########
+
+module load Conda/3
+conda activate amplicon_processing
+
+cd ~/data/Centralia/MultiYear_seqdata
+
+echo "Assigning taxonomy using sintax from vsearch"
+echo " "
+vsearch --threads 20 --sintax all_samples_16S_OTU.fasta --db ~/databases/SILVA_132_sintax_97_16S.fasta --tabbedout all_samples_16S_OTU_tax.txt --sintax_cutoff 0.8
+echo " "
+echo " "
+
+conda deactivate

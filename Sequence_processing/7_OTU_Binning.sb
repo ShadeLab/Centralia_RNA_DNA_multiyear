@@ -1,0 +1,78 @@
+#!/bin/bash
+
+########### Resource request ############
+
+#SBATCH --job-name=OTU_binning
+#SBATCH --time=20:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=50G
+#SBATCH --output=S7_OTU_binning.out
+#SBATCH -A shade-cole-bonito
+
+########### Command lines ###########
+
+module load Conda/3
+conda activate amplicon_processing
+
+echo "Concatinating final QC fasta files"
+echo " "
+cat /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib1_run1_finalQC.fasta \
+	/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib1_run2_finalQC.fasta \
+	/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib1_run3_finalQC.fasta \
+	/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib2_run1_finalQC.fasta \
+	/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib2_run2_finalQC.fasta	\
+	/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib2_run3_finalQC.fasta	\
+	/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib3_run1_finalQC.fasta \
+	/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib4_run1_finalQC.fasta \
+	/mnt/research/ShadeLab/Barnett/Centralia/MultiYear_finalQCreads/lib2014_finalQC.fasta \
+	> /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.fasta
+echo " "
+echo " "
+
+echo "Getting just unique sequences"
+echo " "
+/mnt/research/ShadeLab/WorkingSpace/usearch64 \
+	-fastx_uniques /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.fasta \
+	-fastaout /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.unique.fasta \
+	-sizeout \
+	-threads 20 \
+	-minuniquesize 2
+echo " "
+echo "Unique sequences:"
+grep -c ">" /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.unique.fasta
+echo " "
+echo " "
+
+echo "Clustering at 97%"
+echo " "
+/mnt/research/ShadeLab/WorkingSpace/usearch64 \
+	-sortbysize /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.unique.fasta \
+	-fastaout /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.unique.sorted.fasta \
+	-minsize 2
+/mnt/research/ShadeLab/WorkingSpace/usearch64 \
+	-cluster_otus /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.unique.sorted.fasta \
+	-otus ~/data/Centralia/MultiYear_seqdata/all_samples_16S_OTU.fasta \
+	-relabel OTU_
+echo " "
+echo "OTUs:"
+grep -c ">" ~/data/Centralia/MultiYear_seqdata/all_samples_16S_OTU.fasta
+echo " "
+echo " "
+
+echo "Mapping reads to OTUs"
+echo " "
+perl -pe "s/^>(.+)(_[^_]+)\n\$/>\$1\$2;sample=\$1\n/" /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.fasta \
+	> /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.usearchfmt.fasta
+/mnt/research/ShadeLab/WorkingSpace/usearch64 -otutab /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.usearchfmt.fasta \
+	-otus ~/data/Centralia/MultiYear_seqdata/all_samples_16S_OTU.fasta \
+	-uc /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.otus.uc \
+	-otutabout ~/data/Centralia/MultiYear_seqdata/all_samples_16S_OTU_table.txt \
+	-notmatched /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/all_reads_finalQC.unmapped.fasta \
+	-threads 20
+echo " "
+echo " "
+echo "Done!"
+
+conda deactivate

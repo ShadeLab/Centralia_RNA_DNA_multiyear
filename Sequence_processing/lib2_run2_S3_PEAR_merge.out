@@ -1,0 +1,2567 @@
+
+Lmod is automatically replacing "Python/3.6.4" with "Conda/3".
+
+Merging paired end reads with PEAR
+ 
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen23_13102015_R1_S1_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen23_13102015_R1_S1_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.216217
+  C: 0.288278
+  G: 0.276454
+  T: 0.219051
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 26%Assemblying reads: 52%Assemblying reads: 79%Assemblying reads: 100%
+
+Assembled reads ...................: 304,596 / 304,926 (99.892%)
+Discarded reads ...................: 0 / 304,926 (0.000%)
+Not assembled reads ...............: 330 / 304,926 (0.108%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_13102015_R1_S1_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_13102015_R1_S1_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_13102015_R1_S1_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_13102015_R1_S1_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen10_20102017_R1_S2_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen10_20102017_R1_S2_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.201387
+  C: 0.311483
+  G: 0.271492
+  T: 0.215638
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 100%
+
+Assembled reads ...................: 3,070 / 3,101 (99.000%)
+Discarded reads ...................: 0 / 3,101 (0.000%)
+Not assembled reads ...............: 31 / 3,101 (1.000%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_20102017_R1_S2_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_20102017_R1_S2_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_20102017_R1_S2_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_20102017_R1_S2_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen18_14102015_R1_S3_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen18_14102015_R1_S3_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.211979
+  C: 0.292665
+  G: 0.280950
+  T: 0.214406
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 23%Assemblying reads: 46%Assemblying reads: 69%Assemblying reads: 92%Assemblying reads: 100%
+
+Assembled reads ...................: 347,184 / 347,488 (99.913%)
+Discarded reads ...................: 0 / 347,488 (0.000%)
+Not assembled reads ...............: 304 / 347,488 (0.087%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_14102015_R1_S3_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_14102015_R1_S3_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_14102015_R1_S3_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_14102015_R1_S3_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen06_03102018_R1_S4_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen06_03102018_R1_S4_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.219989
+  C: 0.284531
+  G: 0.272650
+  T: 0.222830
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 30%Assemblying reads: 61%Assemblying reads: 92%Assemblying reads: 100%
+
+Assembled reads ...................: 259,680 / 260,090 (99.842%)
+Discarded reads ...................: 0 / 260,090 (0.000%)
+Not assembled reads ...............: 410 / 260,090 (0.158%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen06_03102018_R1_S4_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen06_03102018_R1_S4_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen06_03102018_R1_S4_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen06_03102018_R1_S4_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen17_12102015_R1_S5_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen17_12102015_R1_S5_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.209645
+  C: 0.294884
+  G: 0.282752
+  T: 0.212719
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 47%Assemblying reads: 94%Assemblying reads: 100%
+
+Assembled reads ...................: 170,079 / 170,260 (99.894%)
+Discarded reads ...................: 0 / 170,260 (0.000%)
+Not assembled reads ...............: 181 / 170,260 (0.106%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_12102015_R1_S5_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_12102015_R1_S5_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_12102015_R1_S5_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_12102015_R1_S5_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen06_06102021_R1_S6_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen06_06102021_R1_S6_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.217327
+  C: 0.287069
+  G: 0.275280
+  T: 0.220324
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 31%Assemblying reads: 62%Assemblying reads: 93%Assemblying reads: 100%
+
+Assembled reads ...................: 257,142 / 257,464 (99.875%)
+Discarded reads ...................: 0 / 257,464 (0.000%)
+Not assembled reads ...............: 322 / 257,464 (0.125%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen06_06102021_R1_S6_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen06_06102021_R1_S6_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen06_06102021_R1_S6_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen06_06102021_R1_S6_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen10_13102020_R1_S7_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen10_13102020_R1_S7_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.212211
+  C: 0.292375
+  G: 0.280039
+  T: 0.215376
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 87%Assemblying reads: 100%
+
+Assembled reads ...................: 91,792 / 91,892 (99.891%)
+Discarded reads ...................: 0 / 91,892 (0.000%)
+Not assembled reads ...............: 100 / 91,892 (0.109%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_13102020_R1_S7_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_13102020_R1_S7_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_13102020_R1_S7_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_13102020_R1_S7_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_13102020_R1_S8_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_13102020_R1_S8_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.206302
+  C: 0.299770
+  G: 0.284669
+  T: 0.209259
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 31%Assemblying reads: 62%Assemblying reads: 94%Assemblying reads: 100%
+
+Assembled reads ...................: 256,109 / 256,535 (99.834%)
+Discarded reads ...................: 0 / 256,535 (0.000%)
+Not assembled reads ...............: 426 / 256,535 (0.166%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_13102020_R1_S8_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_13102020_R1_S8_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_13102020_R1_S8_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_13102020_R1_S8_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen07_15102020_R1_S9_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen07_15102020_R1_S9_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.213972
+  C: 0.290325
+  G: 0.278867
+  T: 0.216836
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 38%Assemblying reads: 76%Assemblying reads: 100%
+
+Assembled reads ...................: 209,510 / 209,805 (99.859%)
+Discarded reads ...................: 0 / 209,805 (0.000%)
+Not assembled reads ...............: 295 / 209,805 (0.141%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_15102020_R1_S9_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_15102020_R1_S9_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_15102020_R1_S9_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_15102020_R1_S9_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen18_14102020_R1_S10_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen18_14102020_R1_S10_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.212573
+  C: 0.291846
+  G: 0.280553
+  T: 0.215029
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 40%Assemblying reads: 80%Assemblying reads: 100%
+
+Assembled reads ...................: 199,491 / 199,728 (99.881%)
+Discarded reads ...................: 0 / 199,728 (0.000%)
+Not assembled reads ...............: 237 / 199,728 (0.119%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_14102020_R1_S10_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_14102020_R1_S10_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_14102020_R1_S10_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_14102020_R1_S10_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen15_05102021_R1_S11_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen15_05102021_R1_S11_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.216505
+  C: 0.287741
+  G: 0.276475
+  T: 0.219279
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 40%Assemblying reads: 80%Assemblying reads: 100%
+
+Assembled reads ...................: 201,042 / 201,276 (99.884%)
+Discarded reads ...................: 0 / 201,276 (0.000%)
+Not assembled reads ...............: 234 / 201,276 (0.116%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen15_05102021_R1_S11_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen15_05102021_R1_S11_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen15_05102021_R1_S11_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen15_05102021_R1_S11_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen13_13102020_R1_S12_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen13_13102020_R1_S12_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.207022
+  C: 0.297557
+  G: 0.285943
+  T: 0.209478
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 48%Assemblying reads: 97%Assemblying reads: 100%
+
+Assembled reads ...................: 164,814 / 165,069 (99.846%)
+Discarded reads ...................: 0 / 165,069 (0.000%)
+Not assembled reads ...............: 255 / 165,069 (0.154%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_13102020_R1_S12_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_13102020_R1_S12_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_13102020_R1_S12_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_13102020_R1_S12_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen03_08102019_R1_S13_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen03_08102019_R1_S13_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.213594
+  C: 0.290560
+  G: 0.279287
+  T: 0.216559
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 42%Assemblying reads: 84%Assemblying reads: 100%
+
+Assembled reads ...................: 189,458 / 189,743 (99.850%)
+Discarded reads ...................: 0 / 189,743 (0.000%)
+Not assembled reads ...............: 285 / 189,743 (0.150%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen03_08102019_R1_S13_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen03_08102019_R1_S13_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen03_08102019_R1_S13_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen03_08102019_R1_S13_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen21_06102019_R1_S14_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen21_06102019_R1_S14_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.213126
+  C: 0.291249
+  G: 0.279784
+  T: 0.215841
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 24%Assemblying reads: 49%Assemblying reads: 74%Assemblying reads: 98%Assemblying reads: 100%
+
+Assembled reads ...................: 325,525 / 325,945 (99.871%)
+Discarded reads ...................: 0 / 325,945 (0.000%)
+Not assembled reads ...............: 420 / 325,945 (0.129%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen21_06102019_R1_S14_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen21_06102019_R1_S14_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen21_06102019_R1_S14_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen21_06102019_R1_S14_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen23_04102018_R1_S15_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen23_04102018_R1_S15_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.216379
+  C: 0.287759
+  G: 0.276691
+  T: 0.219171
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 38%Assemblying reads: 76%Assemblying reads: 100%
+
+Assembled reads ...................: 209,388 / 209,618 (99.890%)
+Discarded reads ...................: 0 / 209,618 (0.000%)
+Not assembled reads ...............: 230 / 209,618 (0.110%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_04102018_R1_S15_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_04102018_R1_S15_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_04102018_R1_S15_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_04102018_R1_S15_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen19_13102020_R1_S16_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen19_13102020_R1_S16_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.219961
+  C: 0.284941
+  G: 0.271890
+  T: 0.223208
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 44%Assemblying reads: 88%Assemblying reads: 100%
+
+Assembled reads ...................: 180,772 / 181,134 (99.800%)
+Discarded reads ...................: 0 / 181,134 (0.000%)
+Not assembled reads ...............: 362 / 181,134 (0.200%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_13102020_R1_S16_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_13102020_R1_S16_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_13102020_R1_S16_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_13102020_R1_S16_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen17_21102017_R1_S17_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen17_21102017_R1_S17_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.214215
+  C: 0.290210
+  G: 0.278942
+  T: 0.216633
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 42%Assemblying reads: 85%Assemblying reads: 100%
+
+Assembled reads ...................: 187,955 / 188,158 (99.892%)
+Discarded reads ...................: 0 / 188,158 (0.000%)
+Not assembled reads ...............: 203 / 188,158 (0.108%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_21102017_R1_S17_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_21102017_R1_S17_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_21102017_R1_S17_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_21102017_R1_S17_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen13_20102017_R1_S18_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen13_20102017_R1_S18_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.203530
+  C: 0.300789
+  G: 0.289818
+  T: 0.205862
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 53%Assemblying reads: 100%
+
+Assembled reads ...................: 149,195 / 149,305 (99.926%)
+Discarded reads ...................: 0 / 149,305 (0.000%)
+Not assembled reads ...............: 110 / 149,305 (0.074%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_20102017_R1_S18_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_20102017_R1_S18_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_20102017_R1_S18_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_20102017_R1_S18_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen12_11102016_R1_S19_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen12_11102016_R1_S19_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.204233
+  C: 0.300898
+  G: 0.288290
+  T: 0.206579
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 42%Assemblying reads: 84%Assemblying reads: 100%
+
+Assembled reads ...................: 190,210 / 190,319 (99.943%)
+Discarded reads ...................: 0 / 190,319 (0.000%)
+Not assembled reads ...............: 109 / 190,319 (0.057%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen12_11102016_R1_S19_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen12_11102016_R1_S19_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen12_11102016_R1_S19_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen12_11102016_R1_S19_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch7_neg_S20_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch7_neg_S20_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.231483
+  C: 0.274263
+  G: 0.257233
+  T: 0.237022
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 100%
+
+Assembled reads ...................: 5,219 / 5,249 (99.428%)
+Discarded reads ...................: 0 / 5,249 (0.000%)
+Not assembled reads ...............: 30 / 5,249 (0.572%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch7_neg_S20_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch7_neg_S20_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch7_neg_S20_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch7_neg_S20_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch7_mock_S21_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch7_mock_S21_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.214420
+  C: 0.288963
+  G: 0.278583
+  T: 0.218035
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 36%Assemblying reads: 73%Assemblying reads: 100%
+
+Assembled reads ...................: 219,536 / 219,708 (99.922%)
+Discarded reads ...................: 0 / 219,708 (0.000%)
+Not assembled reads ...............: 172 / 219,708 (0.078%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch7_mock_S21_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch7_mock_S21_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch7_mock_S21_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch7_mock_S21_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_20102017_R1_S22_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_20102017_R1_S22_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.205417
+  C: 0.299215
+  G: 0.287463
+  T: 0.207905
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 34%Assemblying reads: 68%Assemblying reads: 100%
+
+Assembled reads ...................: 236,864 / 237,017 (99.935%)
+Discarded reads ...................: 0 / 237,017 (0.000%)
+Not assembled reads ...............: 153 / 237,017 (0.065%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_20102017_R1_S22_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_20102017_R1_S22_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_20102017_R1_S22_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_20102017_R1_S22_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen12_03102018_R1_S23_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen12_03102018_R1_S23_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.206808
+  C: 0.297764
+  G: 0.286199
+  T: 0.209229
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 43%Assemblying reads: 86%Assemblying reads: 100%
+
+Assembled reads ...................: 186,419 / 186,553 (99.928%)
+Discarded reads ...................: 0 / 186,553 (0.000%)
+Not assembled reads ...............: 134 / 186,553 (0.072%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen12_03102018_R1_S23_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen12_03102018_R1_S23_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen12_03102018_R1_S23_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen12_03102018_R1_S23_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen07_21102017_R1_S24_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen07_21102017_R1_S24_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.218293
+  C: 0.286350
+  G: 0.274302
+  T: 0.221054
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 30%Assemblying reads: 60%Assemblying reads: 90%Assemblying reads: 100%
+
+Assembled reads ...................: 266,633 / 266,904 (99.898%)
+Discarded reads ...................: 0 / 266,904 (0.000%)
+Not assembled reads ...............: 271 / 266,904 (0.102%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_21102017_R1_S24_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_21102017_R1_S24_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_21102017_R1_S24_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_21102017_R1_S24_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen18_21102017_R1_S25_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen18_21102017_R1_S25_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.212795
+  C: 0.291669
+  G: 0.280486
+  T: 0.215050
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 64%Assemblying reads: 100%
+
+Assembled reads ...................: 125,187 / 125,287 (99.920%)
+Discarded reads ...................: 0 / 125,287 (0.000%)
+Not assembled reads ...............: 100 / 125,287 (0.080%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_21102017_R1_S25_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_21102017_R1_S25_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_21102017_R1_S25_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_21102017_R1_S25_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen23_06102021_R1_S26_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen23_06102021_R1_S26_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.215419
+  C: 0.288623
+  G: 0.277796
+  T: 0.218162
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 58%Assemblying reads: 100%
+
+Assembled reads ...................: 138,295 / 138,381 (99.938%)
+Discarded reads ...................: 0 / 138,381 (0.000%)
+Not assembled reads ...............: 86 / 138,381 (0.062%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_06102021_R1_S26_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_06102021_R1_S26_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_06102021_R1_S26_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen23_06102021_R1_S26_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen19_05102021_R1_S27_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen19_05102021_R1_S27_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.215610
+  C: 0.288666
+  G: 0.277656
+  T: 0.218069
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 49%Assemblying reads: 98%Assemblying reads: 100%
+
+Assembled reads ...................: 163,653 / 163,757 (99.936%)
+Discarded reads ...................: 0 / 163,757 (0.000%)
+Not assembled reads ...............: 104 / 163,757 (0.064%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_05102021_R1_S27_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_05102021_R1_S27_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_05102021_R1_S27_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_05102021_R1_S27_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen04_14102015_R1_S28_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen04_14102015_R1_S28_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.209507
+  C: 0.294745
+  G: 0.283598
+  T: 0.212150
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 47%Assemblying reads: 94%Assemblying reads: 100%
+
+Assembled reads ...................: 169,760 / 169,879 (99.930%)
+Discarded reads ...................: 0 / 169,879 (0.000%)
+Not assembled reads ...............: 119 / 169,879 (0.070%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen04_14102015_R1_S28_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen04_14102015_R1_S28_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen04_14102015_R1_S28_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen04_14102015_R1_S28_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen13_06102019_R1_S29_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen13_06102019_R1_S29_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.205461
+  C: 0.298825
+  G: 0.287865
+  T: 0.207848
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 44%Assemblying reads: 89%Assemblying reads: 100%
+
+Assembled reads ...................: 180,543 / 180,714 (99.905%)
+Discarded reads ...................: 0 / 180,714 (0.000%)
+Not assembled reads ...............: 171 / 180,714 (0.095%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_06102019_R1_S29_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_06102019_R1_S29_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_06102019_R1_S29_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_06102019_R1_S29_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen04_03102018_R1_S30_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen04_03102018_R1_S30_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.212703
+  C: 0.291379
+  G: 0.280598
+  T: 0.215320
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 36%Assemblying reads: 72%Assemblying reads: 100%
+
+Assembled reads ...................: 221,925 / 222,093 (99.924%)
+Discarded reads ...................: 0 / 222,093 (0.000%)
+Not assembled reads ...............: 168 / 222,093 (0.076%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen04_03102018_R1_S30_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen04_03102018_R1_S30_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen04_03102018_R1_S30_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen04_03102018_R1_S30_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen17_12102016_R1_S31_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen17_12102016_R1_S31_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.215814
+  C: 0.288357
+  G: 0.277465
+  T: 0.218363
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 44%Assemblying reads: 88%Assemblying reads: 100%
+
+Assembled reads ...................: 181,780 / 181,883 (99.943%)
+Discarded reads ...................: 0 / 181,883 (0.000%)
+Not assembled reads ...............: 103 / 181,883 (0.057%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_12102016_R1_S31_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_12102016_R1_S31_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_12102016_R1_S31_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_12102016_R1_S31_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_03102018_R1_S32_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_03102018_R1_S32_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.210908
+  C: 0.294178
+  G: 0.281376
+  T: 0.213538
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 26%Assemblying reads: 53%Assemblying reads: 79%Assemblying reads: 100%
+
+Assembled reads ...................: 302,275 / 302,537 (99.913%)
+Discarded reads ...................: 0 / 302,537 (0.000%)
+Not assembled reads ...............: 262 / 302,537 (0.087%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_03102018_R1_S32_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_03102018_R1_S32_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_03102018_R1_S32_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_03102018_R1_S32_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen13_03102018_R1_S33_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen13_03102018_R1_S33_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.208631
+  C: 0.295918
+  G: 0.284311
+  T: 0.211140
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 76%Assemblying reads: 100%
+
+Assembled reads ...................: 105,464 / 105,593 (99.878%)
+Discarded reads ...................: 0 / 105,593 (0.000%)
+Not assembled reads ...............: 129 / 105,593 (0.122%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_03102018_R1_S33_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_03102018_R1_S33_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_03102018_R1_S33_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_03102018_R1_S33_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen17_03102018_R1_S34_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen17_03102018_R1_S34_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.214278
+  C: 0.290078
+  G: 0.278662
+  T: 0.216982
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 70%Assemblying reads: 100%
+
+Assembled reads ...................: 113,445 / 113,572 (99.888%)
+Discarded reads ...................: 0 / 113,572 (0.000%)
+Not assembled reads ...............: 127 / 113,572 (0.112%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_03102018_R1_S34_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_03102018_R1_S34_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_03102018_R1_S34_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_03102018_R1_S34_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen19_02102018_R1_S35_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen19_02102018_R1_S35_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.208622
+  C: 0.295986
+  G: 0.284047
+  T: 0.211345
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 56%Assemblying reads: 100%
+
+Assembled reads ...................: 141,386 / 141,513 (99.910%)
+Discarded reads ...................: 0 / 141,513 (0.000%)
+Not assembled reads ...............: 127 / 141,513 (0.090%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_02102018_R1_S35_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_02102018_R1_S35_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_02102018_R1_S35_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen19_02102018_R1_S35_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_12102015_R1_S36_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_12102015_R1_S36_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.201650
+  C: 0.303348
+  G: 0.291171
+  T: 0.203830
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 51%Assemblying reads: 100%
+
+Assembled reads ...................: 156,216 / 156,374 (99.899%)
+Discarded reads ...................: 0 / 156,374 (0.000%)
+Not assembled reads ...............: 158 / 156,374 (0.101%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_12102015_R1_S36_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_12102015_R1_S36_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_12102015_R1_S36_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_12102015_R1_S36_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen16_06102019_R1_S37_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen16_06102019_R1_S37_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.210517
+  C: 0.293851
+  G: 0.282266
+  T: 0.213367
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 62%Assemblying reads: 100%
+
+Assembled reads ...................: 128,216 / 128,372 (99.878%)
+Discarded reads ...................: 0 / 128,372 (0.000%)
+Not assembled reads ...............: 156 / 128,372 (0.122%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen16_06102019_R1_S37_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen16_06102019_R1_S37_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen16_06102019_R1_S37_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen16_06102019_R1_S37_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen07_04102018_R1_S38_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen07_04102018_R1_S38_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.216051
+  C: 0.287969
+  G: 0.276942
+  T: 0.219038
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 47%Assemblying reads: 94%Assemblying reads: 100%
+
+Assembled reads ...................: 171,187 / 171,383 (99.886%)
+Discarded reads ...................: 0 / 171,383 (0.000%)
+Not assembled reads ...............: 196 / 171,383 (0.114%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_04102018_R1_S38_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_04102018_R1_S38_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_04102018_R1_S38_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen07_04102018_R1_S38_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_07102021_R1_S39_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_07102021_R1_S39_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.212278
+  C: 0.291858
+  G: 0.280779
+  T: 0.215085
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 70%Assemblying reads: 100%
+
+Assembled reads ...................: 114,087 / 114,207 (99.895%)
+Discarded reads ...................: 0 / 114,207 (0.000%)
+Not assembled reads ...............: 120 / 114,207 (0.105%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_07102021_R1_S39_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_07102021_R1_S39_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_07102021_R1_S39_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_07102021_R1_S39_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen17_14102020_R1_S40_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen17_14102020_R1_S40_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.215496
+  C: 0.289414
+  G: 0.276785
+  T: 0.218306
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 42%Assemblying reads: 84%Assemblying reads: 100%
+
+Assembled reads ...................: 190,879 / 191,117 (99.875%)
+Discarded reads ...................: 0 / 191,117 (0.000%)
+Not assembled reads ...............: 238 / 191,117 (0.125%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_14102020_R1_S40_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_14102020_R1_S40_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_14102020_R1_S40_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen17_14102020_R1_S40_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen18_05102021_R1_S41_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen18_05102021_R1_S41_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.213332
+  C: 0.291370
+  G: 0.279815
+  T: 0.215483
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 63%Assemblying reads: 100%
+
+Assembled reads ...................: 126,077 / 126,185 (99.914%)
+Discarded reads ...................: 0 / 126,185 (0.000%)
+Not assembled reads ...............: 108 / 126,185 (0.086%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_05102021_R1_S41_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_05102021_R1_S41_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_05102021_R1_S41_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen18_05102021_R1_S41_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen10_07102021_R1_S42_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen10_07102021_R1_S42_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.209168
+  C: 0.295432
+  G: 0.283678
+  T: 0.211723
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 61%Assemblying reads: 100%
+
+Assembled reads ...................: 129,957 / 130,058 (99.922%)
+Discarded reads ...................: 0 / 130,058 (0.000%)
+Not assembled reads ...............: 101 / 130,058 (0.078%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_07102021_R1_S42_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_07102021_R1_S42_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_07102021_R1_S42_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_07102021_R1_S42_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen08_15102020_R1_S43_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen08_15102020_R1_S43_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.212895
+  C: 0.291439
+  G: 0.280391
+  T: 0.215275
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 52%Assemblying reads: 100%
+
+Assembled reads ...................: 153,211 / 153,302 (99.941%)
+Discarded reads ...................: 0 / 153,302 (0.000%)
+Not assembled reads ...............: 91 / 153,302 (0.059%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen08_15102020_R1_S43_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen08_15102020_R1_S43_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen08_15102020_R1_S43_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen08_15102020_R1_S43_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch8_neg_S44_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch8_neg_S44_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.205722
+  C: 0.306465
+  G: 0.273514
+  T: 0.214299
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 100%
+
+Assembled reads ...................: 829 / 843 (98.339%)
+Discarded reads ...................: 0 / 843 (0.000%)
+Not assembled reads ...............: 14 / 843 (1.661%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch8_neg_S44_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch8_neg_S44_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch8_neg_S44_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch8_neg_S44_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch8_mock_S45_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch8_mock_S45_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.216420
+  C: 0.286962
+  G: 0.276667
+  T: 0.219950
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 40%Assemblying reads: 80%Assemblying reads: 100%
+
+Assembled reads ...................: 200,358 / 200,526 (99.916%)
+Discarded reads ...................: 0 / 200,526 (0.000%)
+Not assembled reads ...............: 168 / 200,526 (0.084%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch8_mock_S45_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch8_mock_S45_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch8_mock_S45_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch8_mock_S45_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen02_03102018_R1_S46_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen02_03102018_R1_S46_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.210022
+  C: 0.294133
+  G: 0.283126
+  T: 0.212718
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 52%Assemblying reads: 100%
+
+Assembled reads ...................: 152,256 / 152,356 (99.934%)
+Discarded reads ...................: 0 / 152,356 (0.000%)
+Not assembled reads ...............: 100 / 152,356 (0.066%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen02_03102018_R1_S46_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen02_03102018_R1_S46_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen02_03102018_R1_S46_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen02_03102018_R1_S46_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen02_05102021_R1_S47_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen02_05102021_R1_S47_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.211023
+  C: 0.292846
+  G: 0.282810
+  T: 0.213320
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 60%Assemblying reads: 100%
+
+Assembled reads ...................: 132,298 / 132,380 (99.938%)
+Discarded reads ...................: 0 / 132,380 (0.000%)
+Not assembled reads ...............: 82 / 132,380 (0.062%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen02_05102021_R1_S47_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen02_05102021_R1_S47_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen02_05102021_R1_S47_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen02_05102021_R1_S47_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen09_06102021_R1_S48_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen09_06102021_R1_S48_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.219443
+  C: 0.285573
+  G: 0.272870
+  T: 0.222114
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 59%Assemblying reads: 100%
+
+Assembled reads ...................: 136,124 / 136,266 (99.896%)
+Discarded reads ...................: 0 / 136,266 (0.000%)
+Not assembled reads ...............: 142 / 136,266 (0.104%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen09_06102021_R1_S48_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen09_06102021_R1_S48_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen09_06102021_R1_S48_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen09_06102021_R1_S48_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen14_11102016_R1_S49_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen14_11102016_R1_S49_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.199179
+  C: 0.305492
+  G: 0.293911
+  T: 0.201418
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 40%Assemblying reads: 80%Assemblying reads: 100%
+
+Assembled reads ...................: 200,563 / 200,723 (99.920%)
+Discarded reads ...................: 0 / 200,723 (0.000%)
+Not assembled reads ...............: 160 / 200,723 (0.080%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_11102016_R1_S49_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_11102016_R1_S49_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_11102016_R1_S49_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_11102016_R1_S49_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen14_02102018_R1_S50_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen14_02102018_R1_S50_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.202253
+  C: 0.302408
+  G: 0.290667
+  T: 0.204673
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 38%Assemblying reads: 77%Assemblying reads: 100%
+
+Assembled reads ...................: 206,489 / 206,662 (99.916%)
+Discarded reads ...................: 0 / 206,662 (0.000%)
+Not assembled reads ...............: 173 / 206,662 (0.084%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_02102018_R1_S50_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_02102018_R1_S50_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_02102018_R1_S50_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_02102018_R1_S50_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen14_06102019_R1_S51_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen14_06102019_R1_S51_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.205233
+  C: 0.299355
+  G: 0.288060
+  T: 0.207352
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 44%Assemblying reads: 88%Assemblying reads: 100%
+
+Assembled reads ...................: 181,199 / 181,310 (99.939%)
+Discarded reads ...................: 0 / 181,310 (0.000%)
+Not assembled reads ...............: 111 / 181,310 (0.061%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_06102019_R1_S51_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_06102019_R1_S51_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_06102019_R1_S51_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_06102019_R1_S51_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen14_13102020_R1_S52_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen14_13102020_R1_S52_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.211459
+  C: 0.293184
+  G: 0.281563
+  T: 0.213793
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 47%Assemblying reads: 94%Assemblying reads: 100%
+
+Assembled reads ...................: 171,199 / 171,351 (99.911%)
+Discarded reads ...................: 0 / 171,351 (0.000%)
+Not assembled reads ...............: 152 / 171,351 (0.089%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_13102020_R1_S52_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_13102020_R1_S52_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_13102020_R1_S52_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_13102020_R1_S52_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen14_05102021_R1_S53_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen14_05102021_R1_S53_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.211594
+  C: 0.292780
+  G: 0.281505
+  T: 0.214121
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 37%Assemblying reads: 75%Assemblying reads: 100%
+
+Assembled reads ...................: 212,686 / 212,859 (99.919%)
+Discarded reads ...................: 0 / 212,859 (0.000%)
+Not assembled reads ...............: 173 / 212,859 (0.081%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_05102021_R1_S53_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_05102021_R1_S53_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_05102021_R1_S53_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen14_05102021_R1_S53_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen13_11102016_R1_S54_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen13_11102016_R1_S54_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.202698
+  C: 0.301935
+  G: 0.290258
+  T: 0.205108
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 50%Assemblying reads: 100%
+
+Assembled reads ...................: 160,489 / 160,632 (99.911%)
+Discarded reads ...................: 0 / 160,632 (0.000%)
+Not assembled reads ...............: 143 / 160,632 (0.089%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_11102016_R1_S54_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_11102016_R1_S54_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_11102016_R1_S54_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen13_11102016_R1_S54_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_06102019_R1_S55_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen22_06102019_R1_S55_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.199640
+  C: 0.305960
+  G: 0.292706
+  T: 0.201695
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 30%Assemblying reads: 61%Assemblying reads: 92%Assemblying reads: 100%
+
+Assembled reads ...................: 262,450 / 262,658 (99.921%)
+Discarded reads ...................: 0 / 262,658 (0.000%)
+Not assembled reads ...............: 208 / 262,658 (0.079%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_06102019_R1_S55_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_06102019_R1_S55_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_06102019_R1_S55_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen22_06102019_R1_S55_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen10_11102016_R1_S56_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen10_11102016_R1_S56_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.201521
+  C: 0.303995
+  G: 0.290265
+  T: 0.204219
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 37%Assemblying reads: 74%Assemblying reads: 100%
+
+Assembled reads ...................: 216,173 / 216,410 (99.890%)
+Discarded reads ...................: 0 / 216,410 (0.000%)
+Not assembled reads ...............: 237 / 216,410 (0.110%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_11102016_R1_S56_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_11102016_R1_S56_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_11102016_R1_S56_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen10_11102016_R1_S56_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch9_neg_S57_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch9_neg_S57_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.207190
+  C: 0.302380
+  G: 0.269924
+  T: 0.220505
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 100%
+
+Assembled reads ...................: 364 / 368 (98.913%)
+Discarded reads ...................: 0 / 368 (0.000%)
+Not assembled reads ...............: 4 / 368 (1.087%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch9_neg_S57_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch9_neg_S57_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch9_neg_S57_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch9_neg_S57_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch9_mock_S58_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Batch9_mock_S58_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.214198
+  C: 0.288999
+  G: 0.279219
+  T: 0.217585
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 100%
+
+Assembled reads ...................: 77,465 / 77,498 (99.957%)
+Discarded reads ...................: 0 / 77,498 (0.000%)
+Not assembled reads ...............: 33 / 77,498 (0.043%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch9_mock_S58_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch9_mock_S58_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch9_mock_S58_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Batch9_mock_S58_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen09_12102016_R1_S59_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/Cen09_12102016_R1_S59_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.207324
+  C: 0.304000
+  G: 0.271466
+  T: 0.217210
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 100%
+
+Assembled reads ...................: 350 / 352 (99.432%)
+Discarded reads ...................: 0 / 352 (0.000%)
+Not assembled reads ...............: 2 / 352 (0.568%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen09_12102016_R1_S59_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen09_12102016_R1_S59_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen09_12102016_R1_S59_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/Cen09_12102016_R1_S59_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/RTSF_NTC_973_S60_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/RTSF_NTC_973_S60_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.212284
+  C: 0.297466
+  G: 0.269871
+  T: 0.220379
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 100%
+
+Assembled reads ...................: 220 / 232 (94.828%)
+Discarded reads ...................: 0 / 232 (0.000%)
+Not assembled reads ...............: 12 / 232 (5.172%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/RTSF_NTC_973_S60_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/RTSF_NTC_973_S60_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/RTSF_NTC_973_S60_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/RTSF_NTC_973_S60_L001.merged.fastq.unassembled.reverse.fastq
+ ____  _____    _    ____ 
+|  _ \| ____|  / \  |  _ \
+| |_) |  _|   / _ \ | |_) |
+|  __/| |___ / ___ \|  _ <
+|_|   |_____/_/   \_\_| \_\
+
+PEAR v0.9.6 [January 15, 2015]
+
+Citation - PEAR: a fast and accurate Illumina Paired-End reAd mergeR
+Zhang et al (2014) Bioinformatics 30(5): 614-620 | doi:10.1093/bioinformatics/btt593
+
+Forward reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/ZymoMockDNA_S61_L001_trimmed_R1_001.fastq
+Reverse reads file.................: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/filt_trimmed_reads/20220131_A_16SV4_PE250/ZymoMockDNA_S61_L001_trimmed_R2_001.fastq
+PHRED..............................: 33
+Using empirical frequencies........: YES
+Statistical method.................: OES
+Maximum assembly length............: 600
+Minimum assembly length............: 50
+p-value............................: 0.010000
+Quality score threshold (trimming).: 0
+Minimum read size after trimming...: 1
+Maximal ratio of uncalled bases....: 1.000000
+Minimum overlap....................: 10
+Scoring method.....................: Scaled score
+Threads............................: 20
+
+Allocating memory..................: 200,000,000 bytes
+Computing empirical frequencies....: DONE
+  A: 0.224650
+  C: 0.278036
+  G: 0.268971
+  T: 0.228343
+  0 uncalled bases
+Assemblying reads: 0%Assemblying reads: 44%Assemblying reads: 89%Assemblying reads: 100%
+
+Assembled reads ...................: 180,264 / 180,361 (99.946%)
+Discarded reads ...................: 0 / 180,361 (0.000%)
+Not assembled reads ...............: 97 / 180,361 (0.054%)
+Assembled reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/ZymoMockDNA_S61_L001.merged.fastq.assembled.fastq
+Discarded reads file...............: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/ZymoMockDNA_S61_L001.merged.fastq.discarded.fastq
+Unassembled forward reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/ZymoMockDNA_S61_L001.merged.fastq.unassembled.forward.fastq
+Unassembled reverse reads file.....: /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/20220131_A_16SV4_PE250/ZymoMockDNA_S61_L001.merged.fastq.unassembled.reverse.fastq

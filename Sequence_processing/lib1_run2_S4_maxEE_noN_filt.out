@@ -1,0 +1,133 @@
+
+Lmod is automatically replacing "Python/3.6.4" with "Conda/3".
+
+Concatinating all samples and counting reads
+Number of arguments:  3 arguments.
+Manifest file:  /mnt/home/barne424/data/Centralia/MultiYear_seqdata/lib1_run2_merged_file_list.txt
+Output fastq:  /mnt/research/ShadeLab/Barnett/Centralia/MultiYear_intermediateseq/PEAR_merged_reads/lib1_run2_merged_reads.fastq
+
+---
+
+Running Cen08_04102018_R1_lib1_run2
+Running Cen19_19102017_R1_lib1_run2
+Running Cen04_14102020_R1_lib1_run2
+Running Cen11_11102016_R1_lib1_run2
+Running Cen16_02102018_R1_lib1_run2
+Running Cen06_14102020_R1_lib1_run2
+Running Cen05_14102015_R1_lib1_run2
+Running Cen17_05102021_R1_lib1_run2
+Running Cen23_21102017_R1_lib1_run2
+Running Cen20_12102015_R1_lib1_run2
+Running Cen03_12102016_R1_lib1_run2
+Running Cen07_12102016_R1_lib1_run2
+Running Cen12_12102015_R1_lib1_run2
+Running Cen11_13102020_R1_lib1_run2
+Running Cen21_12102015_R1_lib1_run2
+Running Cen21_02102018_R1_lib1_run2
+Running Cen15_11102016_R1_lib1_run2
+Running Cen03_03102018_R1_lib1_run2
+Running Batch2_neg_lib1_run2
+Running Batch2_mock_lib1_run2
+Running Cen04_06102021_R1_lib1_run2
+Running Cen23_15102020_R1_lib1_run2
+Running Cen12_20102017_R1_lib1_run2
+Running Cen03_06102021_R1_lib1_run2
+Running Cen04_20102017_R1_lib1_run2
+Running Cen16_15102020_R1_lib1_run2
+Running Cen14_19102017_R1_lib1_run2
+Running Cen08_12102016_R1_lib1_run2
+Running Cen07_06102021_R1_lib1_run2
+Running Cen21_19102017_R1_lib1_run2
+Running Cen11_12102015_R1_lib1_run2
+Running Cen06_20102017_R1_lib1_run2
+Running Cen09_04102018_R1_lib1_run2
+Running Cen16_05102021_R1_lib1_run2
+Running Cen14_12102015_R1_lib1_run2
+Running Cen18_12102016_R1_lib1_run2
+Running Cen06_12102016_R1_lib1_run2
+Running Cen15_06102019_R1_lib1_run2
+Running Batch3_neg_lib1_run2
+Running Batch3_mock_lib1_run2
+Running Cen11_06102021_R1_lib1_run2
+Running Cen03_14102020_R1_lib1_run2
+Running Cen10_11102016_R1_lib1_run2
+Running Cen17_06102019_R1_lib1_run2
+Running Cen10_03102018_R1_lib1_run2
+Running Cen15_13102020_R1_lib1_run2
+Running Cen13_06102021_R1_lib1_run2
+Running Cen07_13102015_R1_lib1_run2
+Running Cen09_21102017_R1_lib1_run2
+Running Cen03_14102015_R1_lib1_run2
+Running Cen06_14102015_R1_lib1_run2
+Running Cen11_03102018_R1_lib1_run2
+Running Cen07_07102019_R1_lib1_run2
+Running Cen04_08102019_R1_lib1_run2
+Running Cen09_07102019_R1_lib1_run2
+Running Cen10_06102019_R1_lib1_run2
+Running Cen18_07102019_R1_lib1_run2
+Running Cen19_06102019_R1_lib1_run2
+Running Batch4_neg_lib1_run2
+Running Batch4_mock_lib1_run2
+Running Cen11_20102017_R1_lib1_run2
+Running Cen16_19102017_R1_lib1_run2
+Running Cen16_12102015_R1_lib1_run2
+Running Cen21_11102016_R1_lib1_run2
+Running Cen08_06102021_R1_lib1_run2
+Running Cen21_13102020_R1_lib1_run2
+Running Cen08_21102017_R1_lib1_run2
+Running Cen09_14102020_R1_lib1_run2
+Running Cen15_12102015_R1_lib1_run2
+Running Cen16_11102016_R1_lib1_run2
+Running Cen21_05102021_R1_lib1_run2
+Running Batch1_neg_lib1_run2
+Running Batch1_mock_lib1_run2
+Running Cen15_02102018_R1_lib1_run2
+Running Cen08_13102015_R1_lib1_run2
+Running Cen15_19102017_R1_lib1_run2
+Running Cen19_12102015_R1_lib1_run2
+Running Cen08_07102019_R1_lib1_run2
+Running Cen19_11102016_R1_lib1_run2
+Running Cen11_06102019_R1_lib1_run2
+Running Cen03_20102017_R1_lib1_run2
+Running Cen23_12102016_R1_lib1_run2
+Running Cen23_07102019_R1_lib1_run2
+Running Cen18_04102018_R1_lib1_run2
+Running Cen22_11102016_R1_lib1_run2
+Running Cen04_12102016_R1_lib1_run2
+Running Batch5_neg_lib1_run2
+Running Batch5_mock_lib1_run2
+Running RTSF_NTC_lib1_run2
+Running ZymoMockDNA_lib1_run2
+ 
+ 
+Filtering by maxEE
+usearch v10.0.240_i86linux64, 132Gb RAM, 20 cores
+(C) Copyright 2013-17 Robert C. Edgar, all rights reserved.
+http://drive5.com/usearch
+
+License: evanssa6@msu.edu, max 1 process(es)
+
+00:00 38Mb   CPU has 20 cores, defaulting to 10 threads
+
+WARNING: Max OMP threads 1
+
+00:00 38Mb      0.1% Filtering00:01 38Mb      0.2% Filtering, 0.0% passed00:02 38Mb      0.9% Filtering, 99.5% passed00:03 38Mb      1.9% Filtering, 99.4% passed00:04 38Mb      2.9% Filtering, 99.4% passed00:05 38Mb      3.9% Filtering, 99.4% passed00:06 38Mb      4.9% Filtering, 99.4% passed00:07 38Mb      6.0% Filtering, 99.4% passed00:08 38Mb      7.0% Filtering, 99.4% passed00:09 38Mb      8.0% Filtering, 99.4% passed00:10 38Mb      9.0% Filtering, 99.4% passed00:11 38Mb     10.0% Filtering, 99.4% passed00:12 38Mb     11.1% Filtering, 99.5% passed00:13 38Mb     12.0% Filtering, 99.5% passed00:14 38Mb     13.0% Filtering, 99.5% passed00:15 38Mb     14.1% Filtering, 99.5% passed00:16 38Mb     15.1% Filtering, 99.5% passed00:17 38Mb     16.1% Filtering, 99.5% passed00:18 38Mb     17.1% Filtering, 99.5% passed00:19 38Mb     18.1% Filtering, 99.5% passed00:20 38Mb     19.1% Filtering, 99.5% passed00:21 38Mb     20.2% Filtering, 99.5% passed00:22 38Mb     21.2% Filtering, 99.5% passed00:23 38Mb     22.2% Filtering, 99.5% passed00:24 38Mb     23.2% Filtering, 99.5% passed00:25 38Mb     24.2% Filtering, 99.5% passed00:26 38Mb     25.2% Filtering, 99.5% passed00:27 38Mb     26.1% Filtering, 99.5% passed00:28 38Mb     27.2% Filtering, 99.5% passed00:29 38Mb     28.2% Filtering, 99.5% passed00:30 38Mb     29.2% Filtering, 99.5% passed00:31 38Mb     30.2% Filtering, 99.5% passed00:32 38Mb     31.2% Filtering, 99.5% passed00:33 38Mb     32.2% Filtering, 99.5% passed00:34 38Mb     33.2% Filtering, 99.5% passed00:35 38Mb     34.2% Filtering, 99.5% passed00:36 38Mb     35.2% Filtering, 99.5% passed00:37 38Mb     36.2% Filtering, 99.5% passed00:38 38Mb     37.2% Filtering, 99.5% passed00:39 38Mb     38.2% Filtering, 99.5% passed00:40 38Mb     39.2% Filtering, 99.5% passed00:41 38Mb     40.2% Filtering, 99.5% passed00:42 38Mb     41.2% Filtering, 99.5% passed00:43 38Mb     42.2% Filtering, 99.5% passed00:44 38Mb     43.2% Filtering, 99.5% passed00:45 38Mb     44.2% Filtering, 99.5% passed00:46 38Mb     45.2% Filtering, 99.5% passed00:47 38Mb     46.2% Filtering, 99.5% passed00:48 38Mb     47.1% Filtering, 99.5% passed00:49 38Mb     48.1% Filtering, 99.5% passed00:50 38Mb     49.1% Filtering, 99.5% passed00:51 38Mb     50.1% Filtering, 99.5% passed00:52 38Mb     51.1% Filtering, 99.5% passed00:53 38Mb     52.1% Filtering, 99.5% passed00:54 38Mb     53.1% Filtering, 99.5% passed00:55 38Mb     54.1% Filtering, 99.5% passed00:56 38Mb     55.2% Filtering, 99.5% passed00:57 38Mb     56.2% Filtering, 99.4% passed00:58 38Mb     57.2% Filtering, 99.4% passed00:59 38Mb     58.2% Filtering, 99.4% passed01:00 38Mb     59.2% Filtering, 99.3% passed01:01 38Mb     60.2% Filtering, 99.3% passed01:02 38Mb     61.3% Filtering, 99.3% passed01:03 38Mb     62.2% Filtering, 99.2% passed01:04 38Mb     63.1% Filtering, 99.2% passed01:05 38Mb     64.0% Filtering, 99.2% passed01:06 38Mb     65.0% Filtering, 99.2% passed01:07 38Mb     66.0% Filtering, 99.2% passed01:08 38Mb     67.0% Filtering, 99.2% passed01:09 38Mb     68.0% Filtering, 99.2% passed01:10 38Mb     69.0% Filtering, 99.2% passed01:11 38Mb     70.0% Filtering, 99.2% passed01:12 38Mb     71.1% Filtering, 99.2% passed01:13 38Mb     72.0% Filtering, 99.2% passed01:14 38Mb     73.1% Filtering, 99.2% passed01:15 38Mb     74.1% Filtering, 99.2% passed01:16 38Mb     75.1% Filtering, 99.2% passed01:17 38Mb     76.1% Filtering, 99.2% passed01:18 38Mb     77.1% Filtering, 99.2% passed01:19 38Mb     78.1% Filtering, 99.3% passed01:20 38Mb     79.1% Filtering, 99.3% passed01:21 38Mb     80.1% Filtering, 99.3% passed01:22 38Mb     81.2% Filtering, 99.3% passed01:23 38Mb     82.1% Filtering, 99.3% passed01:24 38Mb     83.1% Filtering, 99.3% passed01:25 38Mb     84.1% Filtering, 99.3% passed01:26 38Mb     85.2% Filtering, 99.3% passed01:27 38Mb     86.2% Filtering, 99.3% passed01:28 38Mb     87.1% Filtering, 99.3% passed01:29 38Mb     88.1% Filtering, 99.3% passed01:30 38Mb     89.1% Filtering, 99.3% passed01:31 38Mb     90.1% Filtering, 99.3% passed01:32 38Mb     91.1% Filtering, 99.3% passed01:33 38Mb     92.1% Filtering, 99.3% passed01:34 38Mb     93.1% Filtering, 99.3% passed01:35 38Mb     94.1% Filtering, 99.3% passed01:36 38Mb     95.1% Filtering, 99.3% passed01:37 38Mb     96.1% Filtering, 99.3% passed01:38 38Mb     97.0% Filtering, 99.3% passed01:39 38Mb     98.0% Filtering, 99.3% passed01:40 38Mb     99.0% Filtering, 99.3% passed01:40 4.2Mb   100.0% Filtering, 99.3% passed
+  10643494  Reads (10.6M)                   
+     72506  Discarded reads with expected errs > 1.00
+  10570988  Filtered reads (10.6M, 99.3%)
+
+Prefiltered
+10643494
+Postfilterd
+10570988
+
+
+Filtering reads containing N
+
+Prefiltered
+10570988
+Postfilterd
+10570988
+ 
+ 
+Done!
