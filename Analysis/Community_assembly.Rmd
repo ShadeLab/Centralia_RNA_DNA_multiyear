@@ -1,12 +1,16 @@
 ---
 title: "Community assembly"
 author: "Sam Barnett"
-date: "3/29/2022"
-output: html_document
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
 ---
 
 # Introduction
 
+Here we look at the results from analyzing community assembly across Centralia soils. Specifically we will be using the bNTI metric in conjuction with RCbray to determine dominant assembly processes across sites within each year. For both bNTI and RCbray, calculations were first made on the MSU HPCC using R scripts with paralell processing. Here we are simply importing those values and running the statistical analyses.
 
 ## Libraries
 
@@ -110,9 +114,10 @@ bNTI.df = read.table("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Mu
 
 bNTI.df
 ```
-# Within fire classes
+# Compare bNTI to soil within fire classes
 
-## Within class
+First look at assembly across sites within each fire classification.
+
 ```{r, fig.height=3.5, fig.width=3.5}
 barpositions = data.frame(Comparison = c("FireAffected - Recovered", "FireAffected - Reference", "Recovered - Reference"),
                           xstart = c(1, 1, 2),
@@ -213,11 +218,15 @@ class.bNTI.byyear.plot = ggplot(data=Class.bNTI.df, aes(x=FireClassification, y=
 class.bNTI.byyear.plot
 
 ggsave(class.bNTI.byyear.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S10.tiff",
-       device="tiff", width=7, height=5, units="in")
+       device="tiff", width=7, height=5, units="in", bg="white")
 
 ```
 
 # Compare bNTI to soil temperature and pH
+
+Next look at assembly across sites as they relate to differences in soil temperature and pH
+
+
 ```{r, fig.height=3.5, fig.width=3.5}
 year.bNTI.scaled.df = bNTI.df %>%
   filter(Year_1 == Year_2) %>%
@@ -277,6 +286,9 @@ summary(year_pH_temp.model)$coefficients
 ```
 
 # bNTI and RCbray
+
+Now combine bNTI with RCbray to determine involvement of both selection and dispersal in assembly.
+
 ```{r, fig.height=7, fig.width=3.5}
 # Read in RCbray data
 RCb.df = read.table("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/RCbray_R10K.txt",
@@ -371,6 +383,9 @@ full_assembly.plot
 ```
 
 # Final plot for publication
+
+Lets combine all these figures into something for publication!
+
 ```{r, fig.height=7, fig.width=7}
 Fig7.plot = cowplot::plot_grid(cowplot::plot_grid(Class.bNTI.plot + theme(legend.position = "none"),
                                                   pH_temp.bNTI.plot + theme(legend.position = "none"),
@@ -383,7 +398,7 @@ Fig7.plot = cowplot::plot_grid(cowplot::plot_grid(Class.bNTI.plot + theme(legend
 Fig7.plot
 
 ggsave(Fig7.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_7.tiff",
-       device="tiff", width=7, height=7, units="in")
+       device="tiff", width=7, height=7, units="in", bg="white")
 
 ```
 
