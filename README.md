@@ -7,7 +7,7 @@
 ### Data
 The raw data for this study are available in the NCBI SRA under bioproject [PRJNA973689](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA973689/)
 
-The processed data for this study are available on figshare under DOI [10.6084/m9.figshare.23060354](https://icer.msu.edu/)
+The processed data for this study are available on figshare under DOI [10.6084/m9.figshare.23060354](https://figshare.com/articles/dataset/Centralia_multiyear_DNA_RNA/23060354)
 
 ### To cite this work or code
 
