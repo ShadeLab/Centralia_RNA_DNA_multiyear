@@ -3,7 +3,7 @@ title: "qPCR analysis"
 author: "Sam Barnett"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  md_document:
+  github_document:
     toc: true
     toc_depth: 2
 ---
