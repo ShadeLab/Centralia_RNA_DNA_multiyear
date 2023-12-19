@@ -1,34 +1,114 @@
----
-title: "Centralia MultiYear RNA:DNA ratio analysis"
-author: "Sam Barnett"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-output:
-  github_document:
-    toc: true
-    toc_depth: 2
----
+Centralia MultiYear RNA:DNA ratio analysis
+================
+Sam Barnett
+19 December, 2023
+
+-   [Introduction](#introduction)
+    -   [Libraries](#libraries)
+    -   [Data import](#data-import)
+    -   [Rarefy dataset](#rarefy-dataset)
+-   [Calculate DNA:RNA ratios](#calculate-dnarna-ratios)
+-   [Examination of Phantom taxa](#examination-of-phantom-taxa)
+-   [Alpha diversity](#alpha-diversity)
+    -   [Over time](#over-time)
+    -   [Over soil temperature](#over-soil-temperature)
+-   [Taxonomy of active taxa](#taxonomy-of-active-taxa)
+    -   [Phylum level diversity of active
+        taxa](#phylum-level-diversity-of-active-taxa)
+-   [Beta diversity](#beta-diversity)
+    -   [Bray-Curtis](#bray-curtis)
+    -   [Weighted UniFrac](#weighted-unifrac)
+    -   [CCA analysis](#cca-analysis)
+    -   [Time lag analysis](#time-lag-analysis)
+    -   [Trajectory analysis](#trajectory-analysis)
+-   [Community distances to reference over time and disturbance
+    intensity](#community-distances-to-reference-over-time-and-disturbance-intensity)
+    -   [Percent of Bray-Curtis dissimilarity due to
+        active](#percent-of-bray-curtis-dissimilarity-due-to-active)
+-   [UpSet plots](#upset-plots)
+-   [Session info](#session-info)
 
 # Introduction
-This is the notebook for analysis of active community composition in the 7 year Centralia Study. We are looking to see how active bacteria vary over time and fire effect. This notebook is specifically for the active community and thus takes into account only samples with the RNA:DNA (active taxa) data and includes the phantom taxa. We will be looking at Alpha diversity, Beta diversity, and trajectory analysis here as well as making some nice figures. These figures will be put together into publication quality figs in a seprate notebook. Also the phyloseq that is used here was also generated in a seprate notebook where non-bacteria, chloroplasts, and mitochondria were removed.
+
+This is the notebook for analysis of active community composition in the
+7 year Centralia Study. We are looking to see how active bacteria vary
+over time and fire effect. This notebook is specifically for the active
+community and thus takes into account only samples with the RNA:DNA
+(active taxa) data and includes the phantom taxa. We will be looking at
+Alpha diversity, Beta diversity, and trajectory analysis here as well as
+making some nice figures. These figures will be put together into
+publication quality figs in a seprate notebook. Also the phyloseq that
+is used here was also generated in a seprate notebook where
+non-bacteria, chloroplasts, and mitochondria were removed.
 
 ## Libraries
-```{r}
+
+``` r
 # Libraries for data
 library(dplyr)
+```
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
 library(phyloseq)
 library(ape)
 library(readxl)
 
 # Libraries for analysis
 library(vegan)
-library(picante)
-library(ecotraj)
+```
 
+    ## Loading required package: permute
+
+    ## Loading required package: lattice
+
+    ## This is vegan 2.6-4
+
+``` r
+library(picante)
+```
+
+    ## Loading required package: nlme
+
+    ## 
+    ## Attaching package: 'nlme'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     collapse
+
+``` r
+library(ecotraj)
+```
+
+    ## Loading required package: Rcpp
+
+``` r
 # Libraries for plotting
 library(ggplot2)
 library(eulerr)
 library(grid)
 library(gridExtra)
+```
+
+    ## 
+    ## Attaching package: 'gridExtra'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     combine
+
+``` r
 source("/Users/sambarnett/Documents/Misc_code/paul_tol_colors.R") # Colorblind friendly colors.
 
 # Functon for extracting legends
@@ -79,19 +159,39 @@ present_theme = theme_bw() +
         plot.title = element_text(size=14, hjust=0.5))
 ```
 
-
 ## Data import
-For this analysis we need to removes sample set from 2014 (not flash frozen and extracted with MoBio kits not the Phenol-Chloroform method). We also want to remove any sites that don't have samples in less than 3 years for either DNA or RNA so that we can get an analysis using the timeseries.
 
-```{r}
+For this analysis we need to removes sample set from 2014 (not flash
+frozen and extracted with MoBio kits not the Phenol-Chloroform method).
+We also want to remove any sites that don’t have samples in less than 3
+years for either DNA or RNA so that we can get an analysis using the
+timeseries.
+
+``` r
 DNA_RNA.physeq = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/RNA_DNA_physeq.RDS")
 DNA_RNA.physeq
+```
 
+    ## phyloseq-class experiment-level object
+    ## otu_table()   OTU Table:         [ 67553 taxa and 309 samples ]
+    ## sample_data() Sample Data:       [ 309 samples by 48 sample variables ]
+    ## tax_table()   Taxonomy Table:    [ 67553 taxa by 7 taxonomic ranks ]
+    ## phy_tree()    Phylogenetic Tree: [ 67553 tips and 67549 internal nodes ]
+
+``` r
 # Remove 2014 samples
 DNA_RNA.physeq = subset_samples(DNA_RNA.physeq, Year != 2014)
 DNA_RNA.physeq = prune_taxa(taxa_sums(DNA_RNA.physeq) > 0, DNA_RNA.physeq)
 DNA_RNA.physeq
+```
 
+    ## phyloseq-class experiment-level object
+    ## otu_table()   OTU Table:         [ 58033 taxa and 255 samples ]
+    ## sample_data() Sample Data:       [ 255 samples by 48 sample variables ]
+    ## tax_table()   Taxonomy Table:    [ 58033 taxa by 7 taxonomic ranks ]
+    ## phy_tree()    Phylogenetic Tree: [ 58033 tips and 58029 internal nodes ]
+
+``` r
 # Filter Unmatched DNA samples
 DNA_samples = filter(data.frame(sample_data(DNA_RNA.physeq)),
                      NucAcid_type == "DNA")$SampleID
@@ -106,7 +206,15 @@ RNA_samples = NULL
 DNA_RNA.physeq = subset_samples(DNA_RNA.physeq, SampleID %in% paired_samples)
 DNA_RNA.physeq = prune_taxa(taxa_sums(DNA_RNA.physeq) > 0, DNA_RNA.physeq)
 DNA_RNA.physeq
+```
 
+    ## phyloseq-class experiment-level object
+    ## otu_table()   OTU Table:         [ 57887 taxa and 250 samples ]
+    ## sample_data() Sample Data:       [ 250 samples by 48 sample variables ]
+    ## tax_table()   Taxonomy Table:    [ 57887 taxa by 7 taxonomic ranks ]
+    ## phy_tree()    Phylogenetic Tree: [ 57887 tips and 57883 internal nodes ]
+
+``` r
 # Filter samples with less than 100,000 RNA or DNA reads and sites with less than 3 years sampled
 DNA_RNA_depths.df = data.frame(sample_data(DNA_RNA.physeq)) %>%
   select(SampleID, NucAcid_type, read_count) %>%
@@ -117,7 +225,15 @@ DNA_RNA_depths.df = data.frame(sample_data(DNA_RNA.physeq)) %>%
 DNA_RNA.physeq = subset_samples(DNA_RNA.physeq, SampleID %in% filter(DNA_RNA_depths.df, RNA_depth > 100000 & DNA_depth > 100000)$SampleID)
 DNA_RNA.physeq = prune_taxa(taxa_sums(DNA_RNA.physeq) > 0, DNA_RNA.physeq)
 DNA_RNA.physeq
+```
 
+    ## phyloseq-class experiment-level object
+    ## otu_table()   OTU Table:         [ 56722 taxa and 216 samples ]
+    ## sample_data() Sample Data:       [ 216 samples by 48 sample variables ]
+    ## tax_table()   Taxonomy Table:    [ 56722 taxa by 7 taxonomic ranks ]
+    ## phy_tree()    Phylogenetic Tree: [ 56722 tips and 56718 internal nodes ]
+
+``` r
 # Remove sites not found in 3 or more years
 N.years = data.frame(sample_data(DNA_RNA.physeq)) %>%
   select(SiteID, Year) %>%
@@ -133,16 +249,35 @@ DNA_RNA.physeq = prune_taxa(taxa_sums(DNA_RNA.physeq) > 0, DNA_RNA.physeq)
 DNA_RNA.physeq
 ```
 
-## Rarefy dataset
-We will use rarefaction to normalize read counts to account for uneven sequencing depth across samples and across DNA and RNA datasets.
+    ## phyloseq-class experiment-level object
+    ## otu_table()   OTU Table:         [ 56032 taxa and 206 samples ]
+    ## sample_data() Sample Data:       [ 206 samples by 48 sample variables ]
+    ## tax_table()   Taxonomy Table:    [ 56032 taxa by 7 taxonomic ranks ]
+    ## phy_tree()    Phylogenetic Tree: [ 56032 tips and 56029 internal nodes ]
 
-```{r, fig.height=7, fig.width=7}
+## Rarefy dataset
+
+We will use rarefaction to normalize read counts to account for uneven
+sequencing depth across samples and across DNA and RNA datasets.
+
+``` r
 min_depth = min(c(DNA_RNA_depths.df$DNA_depth, DNA_RNA_depths.df$RNA_depth))
 
 # Make rarefaction curve
 test.otu = t(otu_table(DNA_RNA.physeq))
 class(test.otu) = "matrix"
+```
+
+    ## Warning in class(test.otu) = "matrix": Setting class(x) to "matrix" sets
+    ## attribute to NULL; result will no longer be an S4 object
+
+``` r
 rarecurve.out = rarecurve(test.otu, step=10000)
+```
+
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+``` r
 test.otu = NULL
 names(rarecurve.out) <- rownames(sample_data(DNA_RNA.physeq))
 
@@ -170,31 +305,57 @@ rarecurve.plot = ggplot(data=rarecurve.df, aes(x=Subsample_size, y=rare_count)) 
   basic_theme +
   theme(legend.position = c(0.75, 0.1))
 rarecurve.plot
-
-ggsave(rarecurve.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S12.tiff",
-       device="tiff", width=7, height=7, units="in", bg="white")
-
 ```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
 
-```{r}
+``` r
+ggsave(rarecurve.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S12.tiff",
+       device="tiff", width=7, height=7, units="in", bg="white")
+```
+
+``` r
 set.seed(4242)
 rare.DNA_RNA.physeq = rarefy_even_depth(DNA_RNA.physeq)
+```
 
+    ## You set `rngseed` to FALSE. Make sure you've set & recorded
+    ##  the random seed of your session for reproducibility.
+    ## See `?set.seed`
+
+    ## ...
+
+    ## 5790OTUs were removed because they are no longer 
+    ## present in any sample after random subsampling
+
+    ## ...
+
+``` r
 DNA_RNA.physeq = NULL
 
 rare.DNA_RNA.physeq
+```
 
+    ## phyloseq-class experiment-level object
+    ## otu_table()   OTU Table:         [ 50242 taxa and 206 samples ]
+    ## sample_data() Sample Data:       [ 206 samples by 48 sample variables ]
+    ## tax_table()   Taxonomy Table:    [ 50242 taxa by 7 taxonomic ranks ]
+    ## phy_tree()    Phylogenetic Tree: [ 50242 tips and 50239 internal nodes ]
+
+``` r
 raredepth = mean(colSums(otu_table(rare.DNA_RNA.physeq)))
 print(paste(c("Rarefied to", raredepth)))
 ```
 
-
+    ## [1] "Rarefied to" "100491"
 
 # Calculate DNA:RNA ratios
-Now that we have comparable data, lets get the RNA:DNA ratios for all OTUs. For this analysis, we need to add 1 to all DNA counts where DNA count is 0 and RNA count > 0 (phantoms).
 
-```{r}
+Now that we have comparable data, lets get the RNA:DNA ratios for all
+OTUs. For this analysis, we need to add 1 to all DNA counts where DNA
+count is 0 and RNA count \> 0 (phantoms).
+
+``` r
 # Generate ratios
 DNA_RNA_ratio.df = data.frame(otu_table(rare.DNA_RNA.physeq)) %>%
   tibble::rownames_to_column(var="OTU") %>%
@@ -211,26 +372,37 @@ DNA_RNA_ratio.df = data.frame(otu_table(rare.DNA_RNA.physeq)) %>%
   mutate(phantom = ifelse(DNA == 0 & RNA > 0, 1, 0),
          DNA_phan = ifelse(DNA == 0 & RNA > 0, 1, DNA)) %>%
   mutate(Ratio = RNA/DNA_phan)
-  
 ```
 
 # Examination of Phantom taxa
 
-Now lets take a look at the phantom taxa, specifically how many there are.
+Now lets take a look at the phantom taxa, specifically how many there
+are.
 
 How many OTUs in total are found to be active at any point
-```{r}
+
+``` r
 total_OTU_n = length(unique(DNA_RNA_ratio.df$OTU))
 active_OTU_n = length(unique(filter(DNA_RNA_ratio.df, Ratio >= 1)$OTU))
 
 print(paste("Total OTU count:", total_OTU_n))
-print(paste("Active OTU count:", active_OTU_n))
-print(paste("Percent OTU active:", active_OTU_n/total_OTU_n*100))
-
 ```
 
+    ## [1] "Total OTU count: 50242"
 
-```{r}
+``` r
+print(paste("Active OTU count:", active_OTU_n))
+```
+
+    ## [1] "Active OTU count: 38020"
+
+``` r
+print(paste("Percent OTU active:", active_OTU_n/total_OTU_n*100))
+```
+
+    ## [1] "Percent OTU active: 75.6737391027427"
+
+``` r
 UnrareDNA_counts.df = readRDS(file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Data/RNA_DNA_physeq.RDS") %>%
   subset_samples(NucAcid_type == "DNA" & Year != 2014) %>%
   otu_table() %>%
@@ -272,7 +444,7 @@ UnrareDNA_counts.df = NULL
 
 Now plot the results
 
-```{r, fig.height=7, fig.width=7}
+``` r
 Phantom.sum.sum = Phantom.sum %>%
   group_by(phantom_type) %>%
   summarize(mean_perc = mean(perc_active_OTU),
@@ -301,15 +473,24 @@ Phantom_bars.plot = ggplot(data=full_join(Phantom.sum, Phantom.labs, by = "phant
   facet_wrap(~phantom_label, ncol=1)
 
 Phantom_bars.plot
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
 ggsave(Phantom_bars.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S13.tiff",
        device="tiff", width=7, height=7, units="in", bg="white")
 ```
 
 # Alpha diversity
-Lets see if the within-sample active bacterial diversities vary. For this analysis we'll use multiple measures of alpha diversity (Richness, Active percent of OTUs, Total active relative abundance, and Faith's phylogenetic diversity index). We will probably only report one in the main manuscript.
 
-```{r, fig.height=7, fig.width=7}
+Lets see if the within-sample active bacterial diversities vary. For
+this analysis we’ll use multiple measures of alpha diversity (Richness,
+Active percent of OTUs, Total active relative abundance, and Faith’s
+phylogenetic diversity index). We will probably only report one in the
+main manuscript.
+
+``` r
 # Get alpha diversity measures
 active_OTU.df = DNA_RNA_ratio.df %>%
   group_by(SampleID) %>%
@@ -340,20 +521,25 @@ alpha_div.df = active_OTU.df %>%
   left_join(data.frame(sample_data(rare.DNA_RNA.physeq)) %>%
               filter(NucAcid_type == "DNA"), 
             by = "SampleID")
+```
 
+    ## `summarise()` has grouped output by 'SampleID'. You can override using the
+    ## `.groups` argument.
+
+``` r
 active_OTU.mat = NULL
 active_OTU.df = NULL
 
 alpha_index_names = data.frame(alpha_index = c("Richness", "Active percent of OTUs", "Active relative abundance (%)", "Faith's PD"),
                                index = c("richness", "active_OTU_perc", "active_RelAbund", "PD"))
 alpha_index_names$alpha_index = factor(alpha_index_names$alpha_index, levels = alpha_index_names$alpha_index)
-
 ```
 
 ## Over time
+
 First lets look at alpha diversity over time.
 
-```{r, fig.height=7, fig.width=7}
+``` r
 alpha_year.model.df = data.frame()
 for (idx in c("richness", "active_OTU_perc", "active_RelAbund", "PD")){
   for (FC in c("FireAffected", "Recovered", "Reference")){
@@ -399,15 +585,28 @@ alpha_year_lme.plot = ggplot(data=left_join(alpha_div.df, alpha_index_names, by=
         strip.background.y = element_blank()) +
   guides(fill=guide_legend(override.aes=list(shape=site.shape)),
          linetype=guide_legend(override.aes=list(color="black")))
-alpha_year_lme.plot
-
 ```
+
+    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+    ## ℹ Please use `linewidth` instead.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
+
+``` r
+alpha_year_lme.plot
+```
+
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ## Over soil temperature
 
-There does seem to be a significant shift over time but only in the fire affected soils. Since we know fire affected soils are cooling over time, lets see if there are shifts in alpha diversity over soil temperature. For this analysis we will not necessarily look at fire classification.
+There does seem to be a significant shift over time but only in the fire
+affected soils. Since we know fire affected soils are cooling over time,
+lets see if there are shifts in alpha diversity over soil temperature.
+For this analysis we will not necessarily look at fire classification.
 
-```{r, fig.height=7, fig.width=5}
+``` r
 alpha_temp.model.df = data.frame()
 for (idx in c("richness", "active_OTU_perc", "active_RelAbund", "PD")){
   alpha_temp.model = lme(measure ~ CoreTemp_C, random = ~1|SiteID, control=ctrl, 
@@ -453,8 +652,11 @@ alpha_temp.plot = ggplot(data=left_join(alpha_div.df, alpha_index_names, by="ind
 alpha_temp.plot
 ```
 
-Save the Faith's phylogenetic diversity plots for publication.
-```{r, fig.height=3.5, fig.width=7}
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+Save the Faith’s phylogenetic diversity plots for publication.
+
+``` r
 # By year
 write.table(filter(alpha_year.model.df, index=="PD"), file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/ActivePD_v_time_LME.txt", 
             sep="\t", quote = FALSE, row.names = FALSE)
@@ -478,12 +680,15 @@ PD_year_lme.plot = ggplot(data=filter(left_join(alpha_div.df, alpha_index_names,
   guides(fill=guide_legend(override.aes=list(shape=site.shape), ncol=7),
          linetype=guide_legend(override.aes=list(color="black")))
 PD_year_lme.plot
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+``` r
 saveRDS(PD_year_lme.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_S2B.RDS")
 ```
 
-
-```{r, fig.height=3.5, fig.width=3.5}
+``` r
 # By temperature
 write.table(filter(alpha_temp.model.df, index=="PD"), file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/ActivePD_v_temp_LME.txt", 
             sep="\t", quote = FALSE, row.names = FALSE)
@@ -503,15 +708,20 @@ PD_temp.plot = ggplot(data=filter(alpha_div.df, index=="PD"), aes(x=CoreTemp_C, 
         legend.title = element_text(size=7),
         legend.position = "none")
 PD_temp.plot
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+``` r
 saveRDS(PD_temp.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_1D.RDS")
-
 ```
 
 # Taxonomy of active taxa
-Now lets look at the taxonomy of the OTUs that are considered active in each sample and their relative abundances
 
-```{r, fig.height=7, fig.width=7}
+Now lets look at the taxonomy of the OTUs that are considered active in
+each sample and their relative abundances
+
+``` r
 # Make a table of active taxa and their taxonomies
 active_DNA_RNA_ratio.taxa.df = DNA_RNA_ratio.df %>%
   group_by(SampleID) %>%
@@ -541,16 +751,43 @@ active_DNA_RNA_ratio.taxa.df = DNA_RNA_ratio.df %>%
 
 
 print(paste("Number of active classified Phyla:", length(unique(active_DNA_RNA_ratio.taxa.df$Phylum))))
-print(paste("Number of active classified Classes:", length(unique(active_DNA_RNA_ratio.taxa.df$Class))))
-print(paste("Number of active classified Orders:", length(unique(active_DNA_RNA_ratio.taxa.df$Order))))
-print(paste("Number of active classified Families:", length(unique(active_DNA_RNA_ratio.taxa.df$Family))))
-print(paste("Number of active classified Genera:", length(unique(active_DNA_RNA_ratio.taxa.df$Genus))))
-print(paste("Number of active classified Species:", length(unique(active_DNA_RNA_ratio.taxa.df$Species))))
-
 ```
 
+    ## [1] "Number of active classified Phyla: 40"
+
+``` r
+print(paste("Number of active classified Classes:", length(unique(active_DNA_RNA_ratio.taxa.df$Class))))
+```
+
+    ## [1] "Number of active classified Classes: 122"
+
+``` r
+print(paste("Number of active classified Orders:", length(unique(active_DNA_RNA_ratio.taxa.df$Order))))
+```
+
+    ## [1] "Number of active classified Orders: 320"
+
+``` r
+print(paste("Number of active classified Families:", length(unique(active_DNA_RNA_ratio.taxa.df$Family))))
+```
+
+    ## [1] "Number of active classified Families: 571"
+
+``` r
+print(paste("Number of active classified Genera:", length(unique(active_DNA_RNA_ratio.taxa.df$Genus))))
+```
+
+    ## [1] "Number of active classified Genera: 1133"
+
+``` r
+print(paste("Number of active classified Species:", length(unique(active_DNA_RNA_ratio.taxa.df$Species))))
+```
+
+    ## [1] "Number of active classified Species: 1309"
+
 ## Phylum level diversity of active taxa
-```{r}
+
+``` r
 # Lets just look at phylum level diversity
 active_Phyla.df = active_DNA_RNA_ratio.taxa.df %>%
   mutate(Taxa = ifelse(Phylum == "Proteobacteria", Class, Phylum)) %>%
@@ -571,7 +808,14 @@ active_Phyla.df = active_DNA_RNA_ratio.taxa.df %>%
   ungroup %>%
   mutate(Perc_OTUs = n_OTUs/total_n_OTUs*100) %>%
   arrange(-CoreTemp_C)
+```
 
+    ## `summarise()` has grouped output by 'SampleID'. You can override using the
+    ## `.groups` argument.
+    ## `summarise()` has grouped output by 'SampleID'. You can override using the
+    ## `.groups` argument.
+
+``` r
 # Order taxa by name with "Less than 1%" last
 active_Phyla.df$Taxa = factor(active_Phyla.df$Taxa, levels = c(as.character(sort(unique(filter(active_Phyla.df, Taxa != "Less than 1%")$Taxa))), "Less than 1%"))
 # Order SampleID by decreasing soil temperature
@@ -585,7 +829,7 @@ names(taxa.col) = c(high.taxa, "Less than 1%")
 
 Plot over time
 
-```{r, fig.height=7, fig.width=7}
+``` r
 # Plot abundances
 active_Phyla.Year.RelAbund.plot = ggplot(data=active_Phyla.df, aes(x=as.factor(Year), y=sum_RelAbund)) +
   geom_bar(stat = "identity", aes(fill=Taxa), color="black") +
@@ -597,7 +841,11 @@ active_Phyla.Year.RelAbund.plot = ggplot(data=active_Phyla.df, aes(x=as.factor(Y
   facet_wrap(~FireClassification*SiteID, ncol=6)
 
 active_Phyla.Year.RelAbund.plot
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+``` r
 # Plot percent active OTUs
 active_Phyla.Year.Perc_OTUs.plot = ggplot(data=active_Phyla.df, aes(x=as.factor(Year), y=Perc_OTUs)) +
   geom_bar(stat = "identity", aes(fill=Taxa), color="black") +
@@ -609,11 +857,13 @@ active_Phyla.Year.Perc_OTUs.plot = ggplot(data=active_Phyla.df, aes(x=as.factor(
   facet_wrap(~FireClassification*SiteID, ncol=6)
 
 active_Phyla.Year.Perc_OTUs.plot
-
 ```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-16-2.png)<!-- -->
+
 Plot over soil temperature
-```{r, fig.height=5, fig.width=7}
+
+``` r
 RelAbund.coef = 1
 Perc_OTUs.coef = 0.5
 
@@ -635,7 +885,11 @@ active_Phyla.Temp.RelAbund.plot = ggplot(data=active_Phyla.df, aes(x=SampleID, y
          color=guide_legend(title.position = "top", ncol=1, override.aes=list(size=2)))
 
 active_Phyla.Temp.RelAbund.plot
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+``` r
 # Plot percent active OTUs
 active_Phyla.Temp.Perc_OTUs.plot = ggplot(data=active_Phyla.df, aes(x=SampleID, y=Perc_OTUs)) +
   geom_bar(stat = "identity", aes(fill=Taxa), color="black") +
@@ -654,17 +908,24 @@ active_Phyla.Temp.Perc_OTUs.plot = ggplot(data=active_Phyla.df, aes(x=SampleID, 
          color=guide_legend(title.position = "top", ncol=1, override.aes=list(size=2)))
 
 active_Phyla.Temp.Perc_OTUs.plot
-
 ```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-17-2.png)<!-- -->
 
 # Beta diversity
 
-Well, there is clearly variation in active bacterial diversity across samples. Now lets examine the between-sample active bacterial diversities and tease apart differences in community compositions. For this analysis we'll use two measures of beta diversity (Bray-Curtis dissimilarity and weighted UniFrac distance). We will probably only report one in the main manuscript.
+Well, there is clearly variation in active bacterial diversity across
+samples. Now lets examine the between-sample active bacterial
+diversities and tease apart differences in community compositions. For
+this analysis we’ll use two measures of beta diversity (Bray-Curtis
+dissimilarity and weighted UniFrac distance). We will probably only
+report one in the main manuscript.
 
-For this analysis we will want a phyloseq object that contains the relative abundances of just the taxa identified as active. It will also include abundance data with 1 added to each phantom.
+For this analysis we will want a phyloseq object that contains the
+relative abundances of just the taxa identified as active. It will also
+include abundance data with 1 added to each phantom.
 
-```{r}
+``` r
 active.otu = DNA_RNA_ratio.df %>%
   group_by(SampleID) %>%
   mutate(total_DNA_phan = sum(DNA_phan)) %>%
@@ -682,15 +943,20 @@ active.physeq = phyloseq(otu_table(active.otu, taxa_are_rows = TRUE),
                          tax_table(rare.DNA_RNA.physeq),
                          sample_data(rare.DNA_RNA.physeq))
 active.otu = NULL
-
 ```
 
 ## Bray-Curtis
-First lets use Bray-Curtis dissimilarity. This measure takes into account OTU differences and abundance variation but not phylogenetic distance.
+
+First lets use Bray-Curtis dissimilarity. This measure takes into
+account OTU differences and abundance variation but not phylogenetic
+distance.
 
 ### PERMANOVA
-Does fire class or sampling year explain any of the variation in community compositional differences?
-```{r}
+
+Does fire class or sampling year explain any of the variation in
+community compositional differences?
+
+``` r
 # Set up the blocking design for the permanova. In this case since we are repeatedly sampling the same sites over multiple years I include SiteID as the block. This is similar to "strata" in the old version of adonis.
 perm <- how(nperm = 999)
 dat = data.frame(sample_data(active.physeq))
@@ -705,12 +971,27 @@ BC.adonis = adonis2(formula = BC.dist ~ FireClassification*as.factor(Year),
                     permutations = perm, data = dat)
 
 BC.adonis
-
 ```
 
+    ## Permutation test for adonis under reduced model
+    ## Terms added sequentially (first to last)
+    ## Blocks:  with(dat, SiteID) 
+    ## Permutation: free
+    ## Number of permutations: 999
+    ## 
+    ## adonis2(formula = BC.dist ~ FireClassification * as.factor(Year), data = dat, permutations = perm)
+    ##                                     Df SumOfSqs      R2      F Pr(>F)    
+    ## FireClassification                   2    4.465 0.13144 7.1689  0.001 ***
+    ## as.factor(Year)                      6    1.575 0.04636 0.8429  0.001 ***
+    ## FireClassification:as.factor(Year)  12    2.394 0.07047 0.6406  0.027 *  
+    ## Residual                            82   25.538 0.75172                  
+    ## Total                              102   33.973 1.00000                  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ### Ordination
-```{r, fig.width=7, fig.height=5}
+
+``` r
 set.seed(4242)
 BC.ord = pcoa(BC.dist)
 Xaxis = paste("PCo1 (", round(BC.ord$values[1,2]*100, digits=2), "%)", sep="")
@@ -758,29 +1039,84 @@ cowplot::plot_grid(cowplot::plot_grid(BC_site.plot + theme(legend.position = "no
                                       BC_time.plot + theme(legend.position = "none"), nrow=1),
                    cowplot::plot_grid(BC_SiteID.leg, BC_FireClassYear.leg, nrow=1),
                    ncol=1, rel_heights = c(1,0.5))
-                   
 ```
 
-### Multivariate homogeneity of groups dispersions 
-Does the dispersion of the groups (fire classifications) differ? This may be one of the underylying causes of betadiversity variation across groups. It does appear so in the ordinations as fire affected sites seem to be more dispersed than either recovered or reference sites. Lets see if that is statistically relevant.
-```{r}
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+### Multivariate homogeneity of groups dispersions
+
+Does the dispersion of the groups (fire classifications) differ? This
+may be one of the underylying causes of betadiversity variation across
+groups. It does appear so in the ordinations as fire affected sites seem
+to be more dispersed than either recovered or reference sites. Lets see
+if that is statistically relevant.
+
+``` r
 batadisp.groups = factor(sample_data(active.physeq)$FireClassification)
 
 betadisper.res = betadisper(BC.dist, batadisp.groups)
 betadisper.res
-anova(betadisper.res)
+```
 
+    ## 
+    ##  Homogeneity of multivariate dispersions
+    ## 
+    ## Call: betadisper(d = BC.dist, group = batadisp.groups)
+    ## 
+    ## No. of Positive Eigenvalues: 102
+    ## No. of Negative Eigenvalues: 0
+    ## 
+    ## Average distance to median:
+    ## FireAffected    Recovered    Reference 
+    ##       0.5806       0.4643       0.4441 
+    ## 
+    ## Eigenvalues for PCoA axes:
+    ## (Showing 8 of 102 eigenvalues)
+    ##  PCoA1  PCoA2  PCoA3  PCoA4  PCoA5  PCoA6  PCoA7  PCoA8 
+    ## 3.9822 3.3530 2.0340 1.3077 1.2654 1.0832 0.9402 0.8526
+
+``` r
+anova(betadisper.res)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: Distances
+    ##            Df  Sum Sq  Mean Sq F value    Pr(>F)    
+    ## Groups      2 0.39989 0.199945  46.186 6.208e-15 ***
+    ## Residuals 100 0.43292 0.004329                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
 betadisper.HSD <- TukeyHSD(betadisper.res)
 betadisper.HSD
 ```
 
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = distances ~ group, data = df)
+    ## 
+    ## $group
+    ##                               diff         lwr         upr     p adj
+    ## Recovered-FireAffected -0.11624424 -0.15463404 -0.07785444 0.0000000
+    ## Reference-FireAffected -0.13648193 -0.17689955 -0.09606431 0.0000000
+    ## Reference-Recovered    -0.02023769 -0.06809757  0.02762220 0.5748106
 
 ## Weighted UniFrac
-Now lets use weighted UniFrac distance. This measure takes into account OTU differences and abundance variation and phylogenetic distance. UniFrac was found to be useful for distinguishing Centralia microbial communities in previous studies.
+
+Now lets use weighted UniFrac distance. This measure takes into account
+OTU differences and abundance variation and phylogenetic distance.
+UniFrac was found to be useful for distinguishing Centralia microbial
+communities in previous studies.
 
 ### PERMANOVA
-Does fire class or sampling year explain any of the variation in community compositional differences?
-```{r}
+
+Does fire class or sampling year explain any of the variation in
+community compositional differences?
+
+``` r
 # Set up the blocking design for the permanova. In this case since we are repeatedly sampling the same sites over multiple years I include SiteID as the block. This is similar to "strata" in the old version of adonis.
 perm <- how(nperm = 999)
 dat = data.frame(sample_data(active.physeq))
@@ -794,13 +1130,32 @@ set.seed(4242)
 wUF.adonis = adonis2(formula = wUF.dist ~ FireClassification*as.factor(Year), 
                     permutations = perm, data = dat)
 wUF.adonis
+```
 
+    ## Permutation test for adonis under reduced model
+    ## Terms added sequentially (first to last)
+    ## Blocks:  with(dat, SiteID) 
+    ## Permutation: free
+    ## Number of permutations: 999
+    ## 
+    ## adonis2(formula = wUF.dist ~ FireClassification * as.factor(Year), data = dat, permutations = perm)
+    ##                                     Df SumOfSqs      R2      F Pr(>F)    
+    ## FireClassification                   2  0.34268 0.12449 6.7926  0.001 ***
+    ## as.factor(Year)                      6  0.15767 0.05728 1.0418  0.002 ** 
+    ## FireClassification:as.factor(Year)  12  0.18395 0.06682 0.6077  0.180    
+    ## Residual                            82  2.06839 0.75141                  
+    ## Total                              102  2.75268 1.00000                  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
 write.table(wUF.adonis, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/Active_wUF_PERMANOVA.txt", 
             sep="\t", quote = FALSE, row.names = TRUE)
 ```
 
 ### Ordination
-```{r, fig.width=7, fig.height=5}
+
+``` r
 set.seed(4242)
 wUF.ord = pcoa(wUF.dist)
 Xaxis = paste("PCo1 (", round(wUF.ord$values[1,2]*100, digits=2), "%)", sep="")
@@ -849,34 +1204,90 @@ wUF_full.plot = cowplot::plot_grid(cowplot::plot_grid(wUF_site.plot + theme(lege
                                    cowplot::plot_grid(wUF_SiteID.leg, wUF_FireClassYear.leg, nrow=1),
                                    ncol=1, rel_heights = c(1,0.5))
 wUF_full.plot
-
-ggsave(wUF_full.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S6.tiff",
-       device="tiff", width=7, height=5, units="in", bg="white")
-                   
 ```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
-### Multivariate homogeneity of groups dispersions 
-Does the dispersion of the groups (fire classifications) differ? This may be one of the underylying causes of betadiversity variation across groups. It does appear so in the ordinations as fire affected sites seem to be more dispersed than either recovered or reference sites. Lets see if that is statistically relevant.
-```{r}
+``` r
+ggsave(wUF_full.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S6.tiff",
+       device="tiff", width=7, height=5, units="in", bg="white")
+```
+
+### Multivariate homogeneity of groups dispersions
+
+Does the dispersion of the groups (fire classifications) differ? This
+may be one of the underylying causes of betadiversity variation across
+groups. It does appear so in the ordinations as fire affected sites seem
+to be more dispersed than either recovered or reference sites. Lets see
+if that is statistically relevant.
+
+``` r
 batadisp.groups = factor(sample_data(active.physeq)$FireClassification)
 
 betadisper.res = betadisper(wUF.dist, batadisp.groups)
 betadisper.res
-anova(betadisper.res)
+```
 
+    ## 
+    ##  Homogeneity of multivariate dispersions
+    ## 
+    ## Call: betadisper(d = wUF.dist, group = batadisp.groups)
+    ## 
+    ## No. of Positive Eigenvalues: 78
+    ## No. of Negative Eigenvalues: 24
+    ## 
+    ## Average distance to median:
+    ## FireAffected    Recovered    Reference 
+    ##       0.1656       0.1254       0.1164 
+    ## 
+    ## Eigenvalues for PCoA axes:
+    ## (Showing 8 of 102 eigenvalues)
+    ##   PCoA1   PCoA2   PCoA3   PCoA4   PCoA5   PCoA6   PCoA7   PCoA8 
+    ## 0.44302 0.40977 0.27918 0.19692 0.17449 0.12449 0.09851 0.07855
+
+``` r
+anova(betadisper.res)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: Distances
+    ##            Df   Sum Sq   Mean Sq F value    Pr(>F)    
+    ## Groups      2 0.050116 0.0250580  17.536 2.963e-07 ***
+    ## Residuals 100 0.142895 0.0014289                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
 betadisper.HSD <- TukeyHSD(betadisper.res)
 betadisper.HSD
+```
 
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = distances ~ group, data = df)
+    ## 
+    ## $group
+    ##                                diff         lwr         upr     p adj
+    ## Recovered-FireAffected -0.040146391 -0.06220216 -0.01809062 0.0001043
+    ## Reference-FireAffected -0.049162698 -0.07238349 -0.02594190 0.0000063
+    ## Reference-Recovered    -0.009016307 -0.03651285  0.01848023 0.7160636
+
+``` r
 write.table(betadisper.HSD$group, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_tables/Active_wUF_betadispersion.txt", 
             sep="\t", quote = FALSE, row.names = TRUE)
 ```
 
-
 ## CCA analysis
-Now lets see how the betadiversity variation is related to various soil properties. For the properties, I'll test soil temp, CO2, pH, phosphate, potassium, calcium, magnesium, iron, SOM, Nitrate, ammonium, sulfate, and arsenic. Note that it is likely that many of these covary. For this again I will use weighted UniFrac.
 
-```{r, fig.width=3.5, fig.height=5}
+Now lets see how the betadiversity variation is related to various soil
+properties. For the properties, I’ll test soil temp, CO2, pH, phosphate,
+potassium, calcium, magnesium, iron, SOM, Nitrate, ammonium, sulfate,
+and arsenic. Note that it is likely that many of these covary. For this
+again I will use weighted UniFrac.
+
+``` r
 var_goodnames = data.frame(labels = c("CoreTemp_C", "Ca_ppm", "Fe_ppm", "NO3N_ppm",
                                       "Mg_ppm", "OrganicMatter_360", "pH", "P_ppm",
                                       "CarbonDioxide_ppm", "NH4N_ppm", "K_ppm", "As_ppm"),
@@ -956,18 +1367,21 @@ cap.plot = cap_plot +
   guides(shape = guide_legend(order = 1),
          fill = guide_legend(order = 2, override.aes=list(shape=22), ncol=2))
 cap.plot
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+
+``` r
 saveRDS(cap.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_S7B.RDS")
-
-
-
 ```
 
 ## Time lag analysis
 
-To see if the communities are significantly changing in composition over time. We expect more distant timepoints to be more distant in composition. I'll use weighted UniFrac here.
+To see if the communities are significantly changing in composition over
+time. We expect more distant timepoints to be more distant in
+composition. I’ll use weighted UniFrac here.
 
-```{r, fig.height=5, fig.width=7}
+``` r
 # Metadata for both samples
 SamID_1.meta = data.frame(sample_data(active.physeq)) %>%
   select(SampleID, SiteID, Year, FireClassification, CoreTemp_C, pH) %>%
@@ -1036,14 +1450,15 @@ timelag.plot = ggplot(data=time.wUF.dist.df, aes(x=sqrt_delta_year, y=wUF)) +
   guides(linetype=guide_legend(override.aes=list(color="black")),
          fill=guide_legend(ncol=2, override.aes=list(shape=site.shape)))
 timelag.plot
-
-saveRDS(timelag.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_2B.RDS")
-
-
 ```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
-```{r, fig.height=3.5, fig.width=3.5}
+``` r
+saveRDS(timelag.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_2B.RDS")
+```
+
+``` r
 timelag.sep.df = data.frame()
 for (SiteID in unique(time.wUF.dist.df$SiteID_1)){
   sub.model = lm(wUF ~ sqrt_delta_year, filter(time.wUF.dist.df, SiteID_1 == SiteID))
@@ -1063,13 +1478,40 @@ timelag.meta.df = data.frame(sample_data(active.physeq)) %>%
   mutate(delta_temp = max_temp-min_temp,
          FireClassification_1 = FireClassification) %>%
   mutate(testemp = delta_temp/max_temp)
+```
+
+    ## `summarise()` has grouped output by 'SiteID'. You can override using the
+    ## `.groups` argument.
+
+``` r
 timelag.sep.df = left_join(timelag.sep.df, timelag.meta.df, by = "SiteID") %>%
   mutate(sig = ifelse(p_slope < 0.05, "< 0.05", "≥ 0.05"))
 
 ## Compare slopes and maximum temperature
 maxtempslope.model = lm(slope ~ max_temp, data=timelag.sep.df)
 summary(maxtempslope.model)
+```
 
+    ## 
+    ## Call:
+    ## lm(formula = slope ~ max_temp, data = timelag.sep.df)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.040976 -0.016372 -0.010407  0.007909  0.094057 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept) -0.0314556  0.0242750  -1.296   0.2134  
+    ## max_temp     0.0024110  0.0008407   2.868   0.0112 *
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.03644 on 16 degrees of freedom
+    ## Multiple R-squared:  0.3395, Adjusted R-squared:  0.2982 
+    ## F-statistic: 8.224 on 1 and 16 DF,  p-value: 0.01116
+
+``` r
 timelag_slope_temp.plot = ggplot(data=timelag.sep.df, aes(x=max_temp, y=slope)) +
   geom_point(size=2, aes(fill=SiteID, shape=FireClassification)) +
   geom_abline(intercept = summary(maxtempslope.model)$coefficients[[1]], 
@@ -1084,17 +1526,21 @@ timelag_slope_temp.plot = ggplot(data=timelag.sep.df, aes(x=max_temp, y=slope)) 
   basic_theme +
   theme(legend.position = "none")
 timelag_slope_temp.plot
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+
+``` r
 saveRDS(timelag_slope_temp.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_2D.RDS")
-
-
 ```
 
 ## Trajectory analysis
 
-Now we want to see if the communities are changing directionally over time which would potentially indicate a change in state. For this we'll just use 
+Now we want to see if the communities are changing directionally over
+time which would potentially indicate a change in state. For this we’ll
+just use
 
-```{r}
+``` r
 # Metadata for both samples
 SiteID_1.meta = data.frame(sample_data(active.physeq)) %>%
   group_by(SiteID, FireClassification) %>%
@@ -1106,7 +1552,12 @@ SiteID_1.meta = data.frame(sample_data(active.physeq)) %>%
   ungroup %>%
   rename(SiteID_1 = SiteID,
          FireClassification_1 = FireClassification)
+```
 
+    ## `summarise()` has grouped output by 'SiteID'. You can override using the
+    ## `.groups` argument.
+
+``` r
 SiteID_2.meta = data.frame(sample_data(active.physeq)) %>%
   group_by(SiteID, FireClassification) %>%
   summarize(mean_pH_2 = mean(pH),
@@ -1117,7 +1568,12 @@ SiteID_2.meta = data.frame(sample_data(active.physeq)) %>%
   ungroup %>%
   rename(SiteID_2 = SiteID,
          FireClassification_2 = FireClassification)
+```
 
+    ## `summarise()` has grouped output by 'SiteID'. You can override using the
+    ## `.groups` argument.
+
+``` r
 # data for analysis
 D = as.matrix(wUF.dist)
 All.samples.meta = data.frame(sample_data(active.physeq)) %>%
@@ -1133,24 +1589,63 @@ traj.direct.df = data.frame(directionality = trajectoryDirectionality(D, sites, 
   tibble::rownames_to_column(var="SiteID_1") %>%
   left_join(SiteID_1.meta, by = "SiteID_1") %>%
   mutate(delta_temp = max_temp_1-min_temp_1)
-
 ```
 
-
 First look at directionaitiy across fire classifications
-```{r}
+
+``` r
 traj.direct.dunn = dunn.test::dunn.test(traj.direct.df$directionality, traj.direct.df$FireClassification_1, method="bh")
 ```
 
+    ##   Kruskal-Wallis rank sum test
+    ## 
+    ## data: x and group
+    ## Kruskal-Wallis chi-squared = 8.6675, df = 2, p-value = 0.01
+    ## 
+    ## 
+    ##                            Comparison of x by group                            
+    ##                              (Benjamini-Hochberg)                              
+    ## Col Mean-|
+    ## Row Mean |   FireAffe   Recovere
+    ## ---------+----------------------
+    ## Recovere |   2.471754
+    ##          |    0.0202*
+    ##          |
+    ## Referenc |   2.143836  -0.061313
+    ##          |    0.0240*     0.4756
+    ## 
+    ## alpha = 0.05
+    ## Reject Ho if p <= alpha/2
+
 Next look at directionality over maximum disturbance intensity
-```{r, fig.height=3.5, fig.width=7}
+
+``` r
 traj_max_temp.model = lm(directionality~max_temp_1, data=traj.direct.df)
 summary(traj_max_temp.model)
-
 ```
 
+    ## 
+    ## Call:
+    ## lm(formula = directionality ~ max_temp_1, data = traj.direct.df)
+    ## 
+    ## Residuals:
+    ##       Min        1Q    Median        3Q       Max 
+    ## -0.082019 -0.029603 -0.008579  0.006063  0.108400 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 0.291024   0.034772   8.370 3.07e-07 ***
+    ## max_temp_1  0.002754   0.001204   2.287   0.0362 *  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.05219 on 16 degrees of freedom
+    ## Multiple R-squared:  0.2463, Adjusted R-squared:  0.1992 
+    ## F-statistic: 5.229 on 1 and 16 DF,  p-value: 0.03618
+
 Now plot these results
-```{r, fig.height=3.5, fig.width=3.5}
+
+``` r
 # Across fire class
 traj.direct.plot = ggplot(data=traj.direct.df, aes(x=FireClassification_1, y=directionality)) +
   geom_boxplot(outlier.shape = NA) +
@@ -1186,17 +1681,27 @@ traj_max_temp.plot = ggplot(data=traj.direct.df, aes(x=max_temp_1, y=directional
 trajectory_full.plot = cowplot::plot_grid(traj.direct.plot, traj_max_temp.plot, 
                                           ncol=1, labels = c("B", "D"), label_size = 8)
 trajectory_full.plot
-
-saveRDS(trajectory_full.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_3BD.RDS")
-
 ```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+
+``` r
+saveRDS(trajectory_full.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_3BD.RDS")
+```
 
 # Community distances to reference over time and disturbance intensity
-Unfortunately, our sampling design precludes us from directly measuring resiliance and resistance. Instead lets take a look at how the bacterial communities in the fire affected or recovered soils differ from reference communities across time and disturbance intensity.
 
-First we need a dataframe of paired sample distance/dissimilarity measures and metadata with average measures across reference sites. These will be disturbed sites paired with reference sites within the same year. We also need average distances among reference sites.
-```{r}
+Unfortunately, our sampling design precludes us from directly measuring
+resiliance and resistance. Instead lets take a look at how the bacterial
+communities in the fire affected or recovered soils differ from
+reference communities across time and disturbance intensity.
+
+First we need a dataframe of paired sample distance/dissimilarity
+measures and metadata with average measures across reference sites.
+These will be disturbed sites paired with reference sites within the
+same year. We also need average distances among reference sites.
+
+``` r
 # Metadata dataframe
 Reference.meta = data.frame(sample_data(rare.DNA_RNA.physeq)) %>%
   filter(NucAcid_type == "DNA", FireClassification == "Reference") %>%
@@ -1232,18 +1737,22 @@ Reference_Dist.df = data.frame(wUF.dist.mat) %>%
              by = c("Reference_sample1")) %>%
   inner_join(rename(Reference.meta, Reference_sample2 = Reference_sample), 
              by = c("Reference_sample2", "Year"))
-
 ```
-
 
 Now lets plot the distances/dissimilarites over temperature
 
-```{r, fig.height=5, fig.width=5}
+``` r
 # Weighted UniFrac
 wUF_by_temp.model = lme(mean_wUF ~ CoreTemp_C, random = ~1|SiteID, data=Disturbed_Dist.df)
 wUF_by_temp.model.sum = summary(wUF_by_temp.model)$tTable
 wUF_by_temp.model.sum
+```
 
+    ##                   Value    Std.Error DF  t-value      p-value
+    ## (Intercept) 0.150736015 0.0107491454 67 14.02307 1.312503e-21
+    ## CoreTemp_C  0.003061906 0.0004246796 67  7.20992 6.369238e-10
+
+``` r
 wUF_by_temp.plot = ggplot(data=Disturbed_Dist.df, aes(x=CoreTemp_C, y=mean_wUF)) +
   geom_hline(yintercept = Reference_Dist.df$wUF, color="grey", linetype=2) +
   geom_errorbar(aes(ymin=mean_wUF-SE_wUF, ymax=mean_wUF+SE_wUF), color="black", size=1, width=0) +
@@ -1261,14 +1770,13 @@ wUF_by_temp.plot = ggplot(data=Disturbed_Dist.df, aes(x=CoreTemp_C, y=mean_wUF))
   theme(legend.position = "none")
 
 wUF_by_temp.plot
-
-
 ```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
 
 Now lets plot the distances/dissimilarities over time
 
-```{r, fig.height=5, fig.width=5}
+``` r
 # Linear regressions
 wUF_by_time.model.df = data.frame()
 for (FC in c("FireAffected", "Recovered")){
@@ -1310,40 +1818,46 @@ wUF_by_time.plot = ggplot(data=Disturbed_Dist.df, aes(x=Year, y=mean_wUF)) +
 
 
 wUF_by_time.plot
-
-
 ```
+
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
 
 Now plot the two together
 
-```{r, fig.height=3.5, fig.width=7}
-
+``` r
 wUF_to_ref.plot = cowplot::plot_grid(wUF_by_temp.plot + theme(legend.position = "none"), 
                                      wUF_by_time.plot + theme(legend.position = "none", 
                                                               axis.title.y=element_blank()),
                                      nrow=1, rel_widths = c(1,1), axis = "tb", align="h",
                                      labels = c("C", "D"), label_size = 8)
 wUF_to_ref.plot
-
-saveRDS(wUF_to_ref.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_4CD.RDS")
-
 ```
 
-```{r, fig.height=3.5, fig.width=3.5}
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+
+``` r
+saveRDS(wUF_to_ref.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_4CD.RDS")
+```
+
+``` r
 wUF_to_ref_tall.plot = cowplot::plot_grid(wUF_by_time.plot + labs(y="Active community\nmean weighted UniFrac\ndistance to references") + theme(legend.position = "none"), 
                                           wUF_by_temp.plot + labs(y="Active community\nmean weighted UniFrac\ndistance to references") + theme(legend.position = "none"),
                                           nrow=2, labels = c("F", "H"), label_size = 8)
 wUF_to_ref_tall.plot
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+
+``` r
 saveRDS(wUF_to_ref_tall.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Raw_figures/Fig_3FH.RDS")
-
 ```
 
 ## Percent of Bray-Curtis dissimilarity due to active
 
-Lets see what percentage of the Bray-Curtis dissimilarity is due to active taxa.
+Lets see what percentage of the Bray-Curtis dissimilarity is due to
+active taxa.
 
-```{r}
+``` r
 # Metadata for both samples
 SamID_1.meta = data.frame(sample_data(rare.DNA_RNA.physeq)) %>%
   filter(NucAcid_type == "DNA") %>%
@@ -1444,7 +1958,8 @@ Active.percBC.man.df = data.frame(All.BC.man.mat) %>%
 ```
 
 Now plot.
-```{r, fig.height=7, fig.width=7}
+
+``` r
 perc_BC_Timelag = function(time.Active.percBC.man.df, plot_lab1 = "A", plot_lab2 = "B", plot_title = "Test output", plot_out = TRUE){
   time.Active.percBC.model = aov(percent_BC~FireClassification, data=time.Active.percBC.man.df)
   time.Active.percBC.model.sum = summary(time.Active.percBC.model)
@@ -1544,6 +2059,11 @@ perc_BC_Timelag = function(time.Active.percBC.man.df, plot_lab1 = "A", plot_lab2
 
 # Active at first timepoint
 print("Early active OTUs")
+```
+
+    ## [1] "Early active OTUs"
+
+``` r
 Early_Active.percBC.man.df = Active.percBC.man.df %>%
   filter(Year_1 < Year_2,
          SiteID_1 == SiteID_2) %>%
@@ -1554,9 +2074,32 @@ Early_Active.percBC.man.df = Active.percBC.man.df %>%
          percent_BC = Single_active_PercBC)
 
 Early_Active.percBC.man.plot = perc_BC_Timelag(Early_Active.percBC.man.df, plot_lab1 = "A", plot_lab2 = "C", plot_title = "Active at first timepoint")
+```
 
+    ##                     Df Sum Sq Mean Sq F value Pr(>F)  
+    ## FireClassification   2    116   57.93   3.892 0.0216 *
+    ## Residuals          253   3766   14.89                 
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = percent_BC ~ FireClassification, data = time.Active.percBC.man.df)
+    ## 
+    ## $FireClassification
+    ##                              diff        lwr       upr     p adj
+    ## Recovered-FireAffected  1.6576498  0.2387109 3.0765887 0.0172959
+    ## Reference-FireAffected  0.7407890 -0.6869417 2.1685198 0.4405388
+    ## Reference-Recovered    -0.9168607 -2.6133777 0.7796562 0.4111116
+
+``` r
 # Active at Second timepoint
 print("Late active OTUs")
+```
+
+    ## [1] "Late active OTUs"
+
+``` r
 Late_Active.percBC.man.df = Active.percBC.man.df %>%
   filter(Year_1 > Year_2,
          SiteID_1 == SiteID_2) %>%
@@ -1567,19 +2110,40 @@ Late_Active.percBC.man.df = Active.percBC.man.df %>%
          percent_BC = Single_active_PercBC)
 
 Late_Active.percBC.man.plot = perc_BC_Timelag(Late_Active.percBC.man.df, plot_lab1 = "B", plot_lab2 = "D", plot_title = "Active at second timepoint")
+```
 
+    ##                     Df Sum Sq Mean Sq F value Pr(>F)
+    ## FireClassification   2     81   40.35     2.1  0.125
+    ## Residuals          253   4861   19.21               
+    ##   Tukey multiple comparisons of means
+    ##     95% family-wise confidence level
+    ## 
+    ## Fit: aov(formula = percent_BC ~ FireClassification, data = time.Active.percBC.man.df)
+    ## 
+    ## $FireClassification
+    ##                              diff        lwr       upr     p adj
+    ## Recovered-FireAffected -0.6937700 -2.3057387 0.9181987 0.5682789
+    ## Reference-FireAffected  0.9702625 -0.6516941 2.5922190 0.3370845
+    ## Reference-Recovered     1.6640325 -0.2632755 3.5913404 0.1058671
+
+``` r
 Active.percBC.man.plot.leg = perc_BC_Timelag(Early_Active.percBC.man.df, plot_out = FALSE)
 
 active_partitioning_BC.plot = cowplot::plot_grid(Early_Active.percBC.man.plot, Late_Active.percBC.man.plot, Active.percBC.man.plot.leg, 
                                                  nrow=1, rel_widths = c(1, 1, 0.5))
 active_partitioning_BC.plot
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
+
+``` r
 ggsave(active_partitioning_BC.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_5.tiff",
        device="tiff", width=7, height=7, units="in", bg="white")
 ```
 
 New version with just linear regression
-```{r, fig.height=7, fig.width=3.5}
+
+``` r
 perc_BC_Timelag = function(time.Active.percBC.man.df){
   deltayear.Active.percBC.model.coefs = data.frame()
   deltayear.Active.percBC.model.df = data.frame()
@@ -1627,6 +2191,11 @@ perc_BC_Timelag = function(time.Active.percBC.man.df){
 
 # Active at first timepoint
 print("Early active OTUs")
+```
+
+    ## [1] "Early active OTUs"
+
+``` r
 Early_Active.percBC.man.df = Active.percBC.man.df %>%
   filter(Year_1 < Year_2,
          SiteID_1 == SiteID_2) %>%
@@ -1640,6 +2209,11 @@ Early_Active.percBC.man.plot = perc_BC_Timelag(Early_Active.percBC.man.df)
 
 # Active at Second timepoint
 print("Late active OTUs")
+```
+
+    ## [1] "Late active OTUs"
+
+``` r
 Late_Active.percBC.man.df = Active.percBC.man.df %>%
   filter(Year_1 > Year_2,
          SiteID_1 == SiteID_2) %>%
@@ -1664,16 +2238,29 @@ active_partitioning_BC.plot = cowplot::plot_grid(Early_Active.percBC.man.plot +
                                                  labels = c("A", "B", ""), label_size = 9)
                                                  
 active_partitioning_BC.plot
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
+
+``` r
 ggsave(active_partitioning_BC.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_5.tiff",
        device="tiff", width=3.5, height=7, units="in", bg="white")
 ```
 
-
 # UpSet plots
 
-```{r}
+``` r
 library(UpSetR)
+```
+
+    ## 
+    ## Attaching package: 'UpSetR'
+
+    ## The following object is masked from 'package:lattice':
+    ## 
+    ##     histogram
+
+``` r
 # Matrix of activity
 Active_years.df = DNA_RNA_ratio.df %>%
   left_join(data.frame(sample_data(rare.DNA_RNA.physeq)) %>%
@@ -1690,7 +2277,12 @@ Active_years.df = DNA_RNA_ratio.df %>%
   ungroup %>%
   filter(n_active_sites > 0,
          total_active_sites >= 5)
+```
 
+    ## `summarise()` has grouped output by 'OTU', 'FireClass'. You can override using
+    ## the `.groups` argument.
+
+``` r
 FireAffected_yearly_active_list = c()
 NoFire_yearly_active_list = c()
 for (year in c(2015, 2016, 2017, 2018, 2019, 2020, 2021)){
@@ -1700,12 +2292,18 @@ for (year in c(2015, 2016, 2017, 2018, 2019, 2020, 2021)){
   
 upset(fromList(FireAffected_yearly_active_list), order.by = "freq", nintersects = 20, 
       sets = c("Year 2015", "Year 2016", "Year 2017", "Year 2018", "Year 2019", "Year 2020", "Year 2021"))
-upset(fromList(NoFire_yearly_active_list), order.by = "freq", nintersects = 20,
-      sets = c("Year 2015", "Year 2016", "Year 2017", "Year 2018", "Year 2019", "Year 2020", "Year 2021"))
-
 ```
 
-```{r, fig.height=7, fig.width=7}
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
+
+``` r
+upset(fromList(NoFire_yearly_active_list), order.by = "freq", nintersects = 20,
+      sets = c("Year 2015", "Year 2016", "Year 2017", "Year 2018", "Year 2019", "Year 2020", "Year 2021"))
+```
+
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-40-2.png)<!-- -->
+
+``` r
 # Sam's upset... hehe
 test.tax = tax_table(rare.DNA_RNA.physeq) %>%
   data.frame() %>%
@@ -1732,7 +2330,13 @@ upset_bar.taxa.df = Active_years.df %>%
   group_by(FireClass, Taxa, n_OTU_FireClass, Y2015, Y2016, Y2017, Y2018, Y2019, Y2020, Y2021, Year_group) %>%
   summarize(n_OTU_taxa_group = n()) %>%
   ungroup
+```
 
+    ## `summarise()` has grouped output by 'FireClass', 'Taxa', 'n_OTU_FireClass',
+    ## 'Y2015', 'Y2016', 'Y2017', 'Y2018', 'Y2019', 'Y2020', 'Y2021'. You can override
+    ## using the `.groups` argument.
+
+``` r
 # Top 10 represented taxa
 top_tax = upset_bar.taxa.df %>%
   group_by(FireClass, Taxa) %>%
@@ -1743,7 +2347,12 @@ top_tax = upset_bar.taxa.df %>%
   mutate(taxa_rank = row_number()) %>%
   ungroup %>%
   mutate(ranked_taxa = ifelse(taxa_rank > 10, "Not top 10", Taxa))
+```
 
+    ## `summarise()` has grouped output by 'FireClass'. You can override using the
+    ## `.groups` argument.
+
+``` r
 top_10_taxa = sort(unique(filter(top_tax)$ranked_taxa))
 top_10_taxa = top_10_taxa[top_10_taxa != "Not top 10"]
 
@@ -1762,7 +2371,12 @@ group_rank = upset_bar.taxa.df %>%
   ungroup %>%
   mutate(top_groups = ifelse(group_rank <= 20, group_rank, "Other")) %>%
   mutate(top_groups = factor(top_groups, levels = c(seq(1,20), "Other")))
-  
+```
+
+    ## `summarise()` has grouped output by 'FireClass'. You can override using the
+    ## `.groups` argument.
+
+``` r
 upset_bar.taxa.df = upset_bar.taxa.df %>%
   left_join(group_rank, by = c("FireClass", "Year_group"))
 
@@ -1778,11 +2392,12 @@ upset_yearbar.df = upset_point.df %>%
   group_by(FireClass, top_groups, Year) %>%
   summarize(sum_OTU_group = sum(n_OTU_group)) %>%
   ungroup
-
 ```
 
+    ## `summarise()` has grouped output by 'FireClass', 'top_groups'. You can override
+    ## using the `.groups` argument.
 
-```{r, fig.height=7, fig.width=7}
+``` r
 make_sams_upset = function(count.df, point.df, top.sum, FC){
   
   top_10_taxa = c("Acidobacteria", "Actinobacteria", "Alphaproteobacteria", "Bacteroidetes",
@@ -1862,10 +2477,9 @@ make_sams_upset = function(count.df, point.df, top.sum, FC){
   
   return(comb.plot)
 }
-
 ```
 
-```{r, fig.height=7, fig.width=7}
+``` r
 # Make legend
 taxa.col = c(paultol_colors(10), "#777777")
 top_10_taxa = levels(upset_bar.taxa.df$ranked_taxa)
@@ -1890,8 +2504,12 @@ top_10_taxa.df = upset_bar.taxa.df %>%
   summarize(n_OTU = sum(n_OTU_taxa_group)) %>%
   ungroup %>%
   left_join(taxa_names_short, by = "ranked_taxa")
+```
 
+    ## `summarise()` has grouped output by 'FireClass'. You can override using the
+    ## `.groups` argument.
 
+``` r
 top_10_taxa.plot = ggplot(data=top_10_taxa.df, aes(x=ranked_taxa_short, y=n_OTU)) +
   geom_bar(stat="identity", aes(fill=ranked_taxa), color="black") +
   geom_text(aes(y=n_OTU + 100, label=n_OTU), size=6*5/14, angle=90, hjust=0) +
@@ -1906,7 +2524,12 @@ top_10_taxa_Actgroups.df = upset_bar.taxa.df %>%
   summarize(n_OTU = sum(n_OTU_taxa_group)) %>%
   ungroup %>%
   left_join(taxa_names_short, by = "ranked_taxa")
+```
 
+    ## `summarise()` has grouped output by 'FireClass', 'ranked_taxa'. You can
+    ## override using the `.groups` argument.
+
+``` r
 top_10_taxa_Actgroups.plot = ggplot(data=top_10_taxa_Actgroups.df, aes(x=ranked_taxa_short, y=n_OTU)) +
   geom_bar(stat="identity", aes(fill=top_groups), color="black") +
   scale_fill_manual(values = c(gray.colors(20, start = 0, end = 0.8), "white")) +
@@ -1920,24 +2543,34 @@ top_10_taxa_Actgroups.plot = ggplot(data=top_10_taxa_Actgroups.df, aes(x=ranked_
 cowplot::plot_grid(make_sams_upset(upset_bar.taxa.df, upset_point.df, upset_yearbar.df, "FireAffected"),
                    cowplot::plot_grid(g_legend(top_10_taxa.plot), ncol=1),
                    nrow=1, rel_widths = c(1, 0.2))
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+
+``` r
 cowplot::plot_grid(make_sams_upset(upset_bar.taxa.df, upset_point.df, upset_yearbar.df, "NoFire"),
                    cowplot::plot_grid(g_legend(top_10_taxa.plot), ncol=1),
                    nrow=1, rel_widths = c(1, 0.2))
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-43-2.png)<!-- -->
+
+``` r
 top20_pattern_upset.plot = cowplot::plot_grid(cowplot::plot_grid(make_sams_upset(upset_bar.taxa.df, upset_point.df, upset_yearbar.df, "FireAffected"),
                                                                  make_sams_upset(upset_bar.taxa.df, upset_point.df, upset_yearbar.df, "NoFire"), ncol=1,
                                                                  labels = c("A", "B"), label_size = 9),
                                               g_legend(top_10_taxa.plot), nrow=1, rel_widths = c(1, 0.2))
 top20_pattern_upset.plot
-
-ggsave(top20_pattern_upset.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_6.tiff",
-       device="tiff", width=7, height=7, units="in", bg="white")
-
 ```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-43-3.png)<!-- -->
 
-```{r, fig.height=7, fig.width=7}
+``` r
+ggsave(top20_pattern_upset.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_6.tiff",
+       device="tiff", width=7, height=7, units="in", bg="white")
+```
+
+``` r
 # Sam's upset... hehe
 test.tax = tax_table(rare.DNA_RNA.physeq) %>%
   data.frame() %>%
@@ -1964,7 +2597,13 @@ upset_bar.taxa.df = Active_years.df %>%
   group_by(FireClass, Taxa, n_OTU_FireClass, Y2015, Y2016, Y2017, Y2018, Y2019, Y2020, Y2021, Year_group) %>%
   summarize(n_OTU_taxa_group = n()) %>%
   ungroup
+```
 
+    ## `summarise()` has grouped output by 'FireClass', 'Taxa', 'n_OTU_FireClass',
+    ## 'Y2015', 'Y2016', 'Y2017', 'Y2018', 'Y2019', 'Y2020', 'Y2021'. You can override
+    ## using the `.groups` argument.
+
+``` r
 # Top 10 represented taxa
 top_tax = upset_bar.taxa.df %>%
   group_by(FireClass, Taxa) %>%
@@ -1975,7 +2614,12 @@ top_tax = upset_bar.taxa.df %>%
   mutate(taxa_rank = row_number()) %>%
   ungroup %>%
   mutate(ranked_taxa = ifelse(taxa_rank > 10, "Not top 10", Taxa))
+```
 
+    ## `summarise()` has grouped output by 'FireClass'. You can override using the
+    ## `.groups` argument.
+
+``` r
 top_10_taxa = sort(unique(filter(top_tax)$ranked_taxa))
 top_10_taxa = top_10_taxa[top_10_taxa != "Not top 10"]
 
@@ -1994,7 +2638,12 @@ group_rank = upset_bar.taxa.df %>%
   ungroup %>%
   mutate(top_groups = ifelse(group_rank <= 20, group_rank, "Other")) %>%
   mutate(top_groups = factor(top_groups, levels = c(seq(1,20), "Other")))
+```
 
+    ## `summarise()` has grouped output by 'FireClass'. You can override using the
+    ## `.groups` argument.
+
+``` r
 upset_bar.taxa.df = upset_bar.taxa.df %>%
   left_join(group_rank, by = c("FireClass", "Year_group"))
 
@@ -2006,7 +2655,12 @@ upset_bar.taxa.sum = upset_bar.taxa.df %>%
   group_by(FireClass, top_groups) %>%
   mutate(n_OTU_group = sum(n_OTU_taxa_group)) %>%
   ungroup
+```
 
+    ## `summarise()` has grouped output by 'FireClass', 'n_OTU_FireClass',
+    ## 'ranked_taxa'. You can override using the `.groups` argument.
+
+``` r
 # Dataframe for point plot
 upset_point.df = upset_bar.taxa.df %>%
   select(FireClass, Y2015, Y2016, Y2017, Y2018, Y2019, Y2020, Y2021, n_OTU_group, group_rank, top_groups) %>%
@@ -2019,10 +2673,12 @@ upset_yearbar.df = upset_point.df %>%
   group_by(FireClass, top_groups, Year) %>%
   summarize(sum_OTU_group = sum(n_OTU_group)) %>%
   ungroup
-
 ```
 
-```{r, fig.height=7, fig.width=7}
+    ## `summarise()` has grouped output by 'FireClass', 'top_groups'. You can override
+    ## using the `.groups` argument.
+
+``` r
 count.df = upset_bar.taxa.sum
 FC = "NoFire"
 
@@ -2109,11 +2765,9 @@ make_sams_upset = function(count.df, point.df, top.sum, FC){
   
   return(comb.plot)
 }
-
 ```
 
-
-```{r, fig.height=7, fig.width=7}
+``` r
 # Make legend
 taxa.col = c(paultol_colors(10), "#777777")
 top_10_taxa = levels(upset_bar.taxa.df$ranked_taxa)
@@ -2138,8 +2792,12 @@ top_10_taxa.df = upset_bar.taxa.df %>%
   summarize(n_OTU = sum(n_OTU_taxa_group)) %>%
   ungroup %>%
   left_join(taxa_names_short, by = "ranked_taxa")
+```
 
+    ## `summarise()` has grouped output by 'FireClass'. You can override using the
+    ## `.groups` argument.
 
+``` r
 top_10_taxa.plot = ggplot(data=top_10_taxa.df, aes(x=ranked_taxa_short, y=n_OTU)) +
   geom_bar(stat="identity", aes(fill=ranked_taxa), color="black") +
   geom_text(aes(y=n_OTU + 100, label=n_OTU), size=6*5/14, angle=90, hjust=0) +
@@ -2154,7 +2812,12 @@ top_10_taxa_Actgroups.df = upset_bar.taxa.df %>%
   summarize(n_OTU = sum(n_OTU_taxa_group)) %>%
   ungroup %>%
   left_join(taxa_names_short, by = "ranked_taxa")
+```
 
+    ## `summarise()` has grouped output by 'FireClass', 'ranked_taxa'. You can
+    ## override using the `.groups` argument.
+
+``` r
 top_10_taxa_Actgroups.plot = ggplot(data=top_10_taxa_Actgroups.df, aes(x=ranked_taxa_short, y=n_OTU)) +
   geom_bar(stat="identity", aes(fill=top_groups), color="black") +
   scale_fill_manual(values = c(gray.colors(20, start = 0, end = 0.8), "white")) +
@@ -2168,25 +2831,36 @@ top_10_taxa_Actgroups.plot = ggplot(data=top_10_taxa_Actgroups.df, aes(x=ranked_
 cowplot::plot_grid(make_sams_upset(upset_bar.taxa.sum, upset_point.df, upset_yearbar.df, "FireAffected"),
                    cowplot::plot_grid(g_legend(top_10_taxa.plot), ncol=1),
                    nrow=1, rel_widths = c(1, 0.2))
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
+
+``` r
 cowplot::plot_grid(make_sams_upset(upset_bar.taxa.sum, upset_point.df, upset_yearbar.df, "NoFire"),
                    cowplot::plot_grid(g_legend(top_10_taxa.plot), ncol=1),
                    nrow=1, rel_widths = c(1, 0.2))
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-46-2.png)<!-- -->
+
+``` r
 alt_top20_pattern_upset.plot = cowplot::plot_grid(cowplot::plot_grid(make_sams_upset(upset_bar.taxa.sum, upset_point.df, upset_yearbar.df, "FireAffected"),
                                                                      make_sams_upset(upset_bar.taxa.sum, upset_point.df, upset_yearbar.df, "NoFire"), ncol=1,
                                                                      labels = c("A", "B"), label_size = 9),
                                                   g_legend(top_10_taxa.plot), nrow=1, rel_widths = c(1, 0.2))
 alt_top20_pattern_upset.plot
+```
 
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-46-3.png)<!-- -->
 
+``` r
 ggsave(alt_top20_pattern_upset.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/AltFig_6.tiff",
        device="tiff", width=7, height=7, units="in", bg="white")
 ```
 
 ### Plot all activity patterns
 
-```{r, fig.height=10, fig.width=7}
+``` r
 make_sams_tempertantrum = function(count.df, point.df, FC, min_rank, max_rank){
   
   top_10_taxa = c("Acidobacteria", "Actinobacteria", "Alphaproteobacteria", "Bacteroidetes",
@@ -2286,15 +2960,43 @@ FireAffected_all_pattern_upset.plot = cowplot::plot_grid(cowplot::plot_grid(make
                                                                             make_sams_tempertantrum(upset_bar.taxa.df, upset_point.df, "FireAffected", 86, 127),
                                                                             ncol=1),
                                                          g_legend(top_10_taxa.plot), nrow=1, rel_widths = c(1, 0.2))
-FireAffected_all_pattern_upset.plot
+```
 
+    ## `summarise()` has grouped output by 'FireClass', 'sub_groups'. You can override
+    ## using the `.groups` argument.
+    ## `summarise()` has grouped output by 'FireClass', 'sub_groups'. You can override
+    ## using the `.groups` argument.
+    ## `summarise()` has grouped output by 'FireClass', 'sub_groups'. You can override
+    ## using the `.groups` argument.
+
+``` r
+FireAffected_all_pattern_upset.plot
+```
+
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+
+``` r
 NoFire_all_pattern_upset.plot = cowplot::plot_grid(cowplot::plot_grid(make_sams_tempertantrum(upset_bar.taxa.df, upset_point.df, "NoFire", 1, 42),
                                                                             make_sams_tempertantrum(upset_bar.taxa.df, upset_point.df, "NoFire", 43, 85),
                                                                             make_sams_tempertantrum(upset_bar.taxa.df, upset_point.df, "NoFire", 86, 127),
                                                                             ncol=1),
                                                          g_legend(top_10_taxa.plot), nrow=1, rel_widths = c(1, 0.2))
-NoFire_all_pattern_upset.plot
+```
 
+    ## `summarise()` has grouped output by 'FireClass', 'sub_groups'. You can override
+    ## using the `.groups` argument.
+    ## `summarise()` has grouped output by 'FireClass', 'sub_groups'. You can override
+    ## using the `.groups` argument.
+    ## `summarise()` has grouped output by 'FireClass', 'sub_groups'. You can override
+    ## using the `.groups` argument.
+
+``` r
+NoFire_all_pattern_upset.plot
+```
+
+![](RNA_DNA_ratio_analysis_files/figure-gfm/unnamed-chunk-47-2.png)<!-- -->
+
+``` r
 ggsave(FireAffected_all_pattern_upset.plot,
        file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S8.tiff",
        device="tiff", width=7, height=10, units="in", bg="white")
@@ -2302,13 +3004,62 @@ ggsave(FireAffected_all_pattern_upset.plot,
 ggsave(NoFire_all_pattern_upset.plot,
        file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S9.tiff",
        device="tiff", width=7, height=10, units="in", bg="white")
-
-
 ```
 
 # Session info
-```{r}
+
+``` r
 sessionInfo()
 ```
 
-
+    ## R version 4.2.2 (2022-10-31)
+    ## Platform: aarch64-apple-darwin20 (64-bit)
+    ## Running under: macOS Ventura 13.0.1
+    ## 
+    ## Matrix products: default
+    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRblas.0.dylib
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRlapack.dylib
+    ## 
+    ## locale:
+    ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+    ## 
+    ## attached base packages:
+    ## [1] grid      stats     graphics  grDevices utils     datasets  methods  
+    ## [8] base     
+    ## 
+    ## other attached packages:
+    ##  [1] UpSetR_1.4.0    gridExtra_2.3   eulerr_6.1.1    ggplot2_3.4.4  
+    ##  [5] ecotraj_0.0.3   Rcpp_1.0.10     picante_1.8.2   nlme_3.1-160   
+    ##  [9] vegan_2.6-4     lattice_0.20-45 permute_0.9-7   readxl_1.4.1   
+    ## [13] ape_5.6-2       phyloseq_1.42.0 dplyr_1.0.10   
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] ggtext_0.1.2           bitops_1.0-7           GenomeInfoDb_1.34.3   
+    ##  [4] tools_4.2.2            utf8_1.2.2             R6_2.5.1              
+    ##  [7] DBI_1.1.3              BiocGenerics_0.44.0    mgcv_1.8-41           
+    ## [10] colorspace_2.0-3       rhdf5filters_1.10.0    ade4_1.7-20           
+    ## [13] withr_2.5.0            tidyselect_1.2.0       compiler_4.2.2        
+    ## [16] textshaping_0.3.6      cli_3.4.1              Biobase_2.58.0        
+    ## [19] xml2_1.3.3             labeling_0.4.2         scales_1.2.1          
+    ## [22] commonmark_1.8.1       systemfonts_1.0.4      stringr_1.5.0         
+    ## [25] digest_0.6.30          rmarkdown_2.18         XVector_0.38.0        
+    ## [28] pkgconfig_2.0.3        htmltools_0.5.3        fastmap_1.1.0         
+    ## [31] dunn.test_1.3.5        highr_0.9              rlang_1.1.0           
+    ## [34] rstudioapi_0.14        generics_0.1.3         farver_2.1.1          
+    ## [37] jsonlite_1.8.3         RCurl_1.98-1.9         magrittr_2.0.3        
+    ## [40] GenomeInfoDbData_1.2.9 biomformat_1.26.0      Matrix_1.5-3          
+    ## [43] munsell_0.5.0          S4Vectors_0.36.0       Rhdf5lib_1.20.0       
+    ## [46] fansi_1.0.3            lifecycle_1.0.3        stringi_1.7.8         
+    ## [49] yaml_2.3.6             MASS_7.3-58.1          zlibbioc_1.44.0       
+    ## [52] rhdf5_2.42.0           plyr_1.8.8             parallel_4.2.2        
+    ## [55] crayon_1.5.2           Biostrings_2.66.0      cowplot_1.1.1         
+    ## [58] splines_4.2.2          multtest_2.54.0        gridtext_0.1.5        
+    ## [61] knitr_1.40             pillar_1.8.1           igraph_1.4.1          
+    ## [64] boot_1.3-28            markdown_1.4           reshape2_1.4.4        
+    ## [67] codetools_0.2-18       stats4_4.2.2           glue_1.6.2            
+    ## [70] evaluate_0.18          data.table_1.14.4      vctrs_0.5.2           
+    ## [73] foreach_1.5.2          cellranger_1.1.0       gtable_0.3.1          
+    ## [76] purrr_1.0.1            tidyr_1.3.0            assertthat_0.2.1      
+    ## [79] xfun_0.34              ragg_1.2.4             Kendall_2.2.1         
+    ## [82] survival_3.4-0         tibble_3.1.8           iterators_1.0.14      
+    ## [85] IRanges_2.32.0         cluster_2.1.4
