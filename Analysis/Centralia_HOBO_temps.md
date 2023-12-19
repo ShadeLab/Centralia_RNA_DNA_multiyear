@@ -1,18 +1,20 @@
----
-title: "Centralia yearly temperatures from HOBO trackers"
-author: "Sam Barnett"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-output:
-  github_document:
-    toc: true
-    toc_depth: 2
----
+Centralia yearly temperatures from HOBO trackers
+================
+Sam Barnett
+19 December, 2023
+
+-   [Introduction](#introduction)
+    -   [Import data](#import-data)
+-   [Seasonal analysis](#seasonal-analysis)
+    -   [By year for each site](#by-year-for-each-site)
+-   [Session Info](#session-info)
 
 # Introduction
 
-Lets take a look at the daily temperatures monitored with the HOBO trackers left in ~5 sites over the 7 sampling years. 
+Lets take a look at the daily temperatures monitored with the HOBO
+trackers left in \~5 sites over the 7 sampling years.
 
-```{r, message=FALSE, warning=FALSE}
+``` r
 library(readxl)
 library(dplyr)
 library(ggplot2)
@@ -34,13 +36,11 @@ basic_theme = theme_bw() +
         legend.title = element_text(size=7, hjust=0.5),
         strip.text = element_text(size=7),
         plot.title = element_text(size=8, hjust=0.5))
-
 ```
-
 
 ## Import data
 
-```{r, message=FALSE, warning=FALSE}
+``` r
 # Site metadata
 site.info = read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_project/Centralia_soil_metadata.xlsx", 
                         sheet = "Site_metadata", na="NA")
@@ -104,15 +104,14 @@ HOBO_data.df = rbind(read_xlsx("/Users/sambarnett/Documents/Shade_lab/Centralia_
                        mutate(Season = "2021_2022")) %>%
   rename(SiteID = Site) %>%
   left_join(site.info, by = "SiteID")
-
 ```
-
-
 
 # Seasonal analysis
 
-First summarize data by mean daily temperature (not every hour as measured)
-```{r, message=FALSE, warning=FALSE}
+First summarize data by mean daily temperature (not every hour as
+measured)
+
+``` r
 HOBO_data.sum = HOBO_data.df %>%
   tidyr::separate(Date_time, into=c("Date", "Time"), sep=" ") %>%
   mutate(Date = as.Date(Date),
@@ -131,14 +130,14 @@ HOBO_data.sum = HOBO_data.df %>%
   mutate(days_before_next_sampling = row_number()) %>%
   ungroup %>%
   tidyr::separate(Date, into=c("Year", "Month", "Day"), remove=FALSE, sep="-", convert = TRUE)
-
 ```
 
 ## By year for each site
 
-First lets look at this over the year with separate curves for each year.
+First lets look at this over the year with separate curves for each
+year.
 
-```{r, message=FALSE, warning=FALSE, fig.height=7, fig.width=7}
+``` r
 # Summarize HOBO data formatted for plotting this
 PlotByYear.df = HOBO_data.sum %>%
   tidyr::separate(Season, into=c("start_year", "end_year"), remove=FALSE, sep="-") %>%
@@ -208,15 +207,19 @@ hobo.plot = cowplot::ggdraw(PlotByYear.plot) +
   cowplot::draw_plot(core.leg, x=0.65, y=0.05, 0.5, 0.5)
 
 hobo.plot
+```
 
+![](Centralia_HOBO_temps_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
 ggsave(hobo.plot, file="/Users/sambarnett/Documents/Shade_lab/Centralia_project/Multi_year_project/Analysis/Manuscript_figures/Fig_S11.tiff",
        device="tiff", width=7, height=7, units="in")
 ```
 
-Lets look at this another way with a continuous curve across all 7 years.
+Lets look at this another way with a continuous curve across all 7
+years.
 
-```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=7}
-
+``` r
 core_temp_points.df = sample.meta %>%
   mutate(Date = as.Date(paste(Year, Month, Day, sep="-")))
 
@@ -261,15 +264,43 @@ long_hobo.plot = cowplot::ggdraw(Plotfull.plot) +
   cowplot::draw_plot(core.leg, x=0.65, y=0.05, 0.5, 0.5)
 
 long_hobo.plot
-
 ```
+
+![](Centralia_HOBO_temps_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 # Session Info
 
-```{r, message=FALSE, warning=FALSE}
+``` r
 sessionInfo()
 ```
 
-
-
-
+    ## R version 4.2.2 (2022-10-31)
+    ## Platform: aarch64-apple-darwin20 (64-bit)
+    ## Running under: macOS Ventura 13.0.1
+    ## 
+    ## Matrix products: default
+    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRblas.0.dylib
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRlapack.dylib
+    ## 
+    ## locale:
+    ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+    ## 
+    ## attached base packages:
+    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
+    ## 
+    ## other attached packages:
+    ## [1] ggplot2_3.4.4 dplyr_1.0.10  readxl_1.4.1 
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] highr_0.9         cellranger_1.1.0  pillar_1.8.1      compiler_4.2.2   
+    ##  [5] tools_4.2.2       digest_0.6.30     evaluate_0.18     lifecycle_1.0.3  
+    ##  [9] tibble_3.1.8      gtable_0.3.1      pkgconfig_2.0.3   rlang_1.1.0      
+    ## [13] cli_3.4.1         DBI_1.1.3         rstudioapi_0.14   yaml_2.3.6       
+    ## [17] xfun_0.34         fastmap_1.1.0     withr_2.5.0       stringr_1.5.0    
+    ## [21] knitr_1.40        systemfonts_1.0.4 generics_0.1.3    vctrs_0.5.2      
+    ## [25] cowplot_1.1.1     grid_4.2.2        tidyselect_1.2.0  glue_1.6.2       
+    ## [29] R6_2.5.1          textshaping_0.3.6 fansi_1.0.3       rmarkdown_2.18   
+    ## [33] farver_2.1.1      tidyr_1.3.0       purrr_1.0.1       magrittr_2.0.3   
+    ## [37] scales_1.2.1      htmltools_0.5.3   assertthat_0.2.1  colorspace_2.0-3 
+    ## [41] ragg_1.2.4        labeling_0.4.2    utf8_1.2.2        stringi_1.7.8    
+    ## [45] munsell_0.5.0
