@@ -1,7 +1,7 @@
 ## Github Repository for
 # Arrive and wait: inactive bacterial taxa contribute to perceived soil microbiome resilience after a multidecadal press disturbance
 ## by Samuel Barnett and Ashley Shade
-<i>This work is not published but is available on bioRxiv.</i>
+<i>This work is published.</i>
 
 
 ### Data
@@ -11,7 +11,7 @@ The processed data for this study are available on figshare under DOI [10.6084/m
 
 ### To cite this work or code
 
-Barnett SE, Shade A. 2023. Arrive and wait: inactive bacterial taxa contribute to perceived soil microbiome resilience after a multidecadal press disturbance. bioRxiv 2023.05.25.542271.
+Barnett, S.E., Shade, A., 2024. Arrive and wait: Inactive bacterial taxa contribute to perceived soil microbiome resilience after a multidecadal press disturbance. Ecology Letters 27, e14393. doi:https://doi.org/10.1111/ele.14393
 
 ### Abstract
 
